@@ -1,2 +1,55 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-inter bg-background-light text-text-dark;
+  }
+}
+
+@layer components {
+  .sidebar-link {
+    @apply transition-all duration-200 rounded-lg flex items-center gap-3 px-4 py-2.5 font-medium;
+  }
+
+  /* Mitra Panel Sidebar Link */
+  #mitra-sidebar .sidebar-link {
+    @apply text-slate-700;
+  }
+  #mitra-sidebar .sidebar-link:hover {
+    @apply bg-brand-secondary text-brand-primary;
+  }
+  #mitra-sidebar .sidebar-link.active {
+    @apply bg-brand-primary text-white font-semibold;
+  }
+
+  /* Admin Panel Sidebar Link */
+  #admin-sidebar .sidebar-link {
+    @apply text-slate-300 hover:text-white;
+  }
+  #admin-sidebar .sidebar-link:hover {
+    @apply bg-white/10;
+  }
+  #admin-sidebar .sidebar-link.active {
+    @apply bg-brand-primary text-white;
+  }
+
+  /* Custom Styles from HTML */
+  .icon-large {
+    font-size: 3rem; /* ~48px */
+    line-height: 1;
+    margin-bottom: 1rem;
+    display: inline-block;
+    color: var(--brand-primary);
+  }
+  .step-icon {
+    font-size: 2.5rem; /* ~40px */
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: var(--brand-primary);
+  }
+}

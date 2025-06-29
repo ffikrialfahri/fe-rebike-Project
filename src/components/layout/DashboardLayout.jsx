@@ -1,4 +1,6 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../../store/auth/authSlice";
 
 const Sidebar = ({ navItems, panelType }) => (
   <aside
@@ -38,9 +40,13 @@ const Sidebar = ({ navItems, panelType }) => (
 
 const PanelHeader = ({ title }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const handleLogout = () => {
+    dispatch(logout());
     navigate("/login");
   };
+
   return (
     <header className="bg-card-bg p-4 border-b flex justify-between items-center shadow-sm">
       <h1 className="text-xl font-semibold text-slate-800">{title}</h1>

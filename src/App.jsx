@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import LandingPage from "./pages/LandingPage.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
-import MitraPanel from "./pages/MitraPanel.jsx";
-import AdminPanel from "./pages/AdminPanel.jsx";
+import LandingPage from "./components/pages/LandingPage/LandingPage.jsx";
+import LoginPage from "./components/pages/Login/LoginPage.jsx";
+import MitraPanel from "./components/pages/Mitra/MitraPanel.jsx";
+import AdminPanel from "./components/pages/Admin/AdminPanel.jsx";
 
 // Mitra Panel Sections
 import MitraDashboard from "./features/mitra/MitraDashboard.jsx";
@@ -19,7 +19,6 @@ import ContentManagement from "./features/admin/ContentManagement.jsx";
 import FinanceManagement from "./features/admin/FinanceManagement.jsx";
 
 function App() {
-  // ... (sisa kode sama)
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />

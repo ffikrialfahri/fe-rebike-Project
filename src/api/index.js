@@ -2,10 +2,9 @@ import axios from 'axios';
 import store from '../store';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8083/api', // Your backend API base URL
+    baseURL: 'http://localhost:8083/api',
 });
 
-// Add a request interceptor to include the token in headers
 api.interceptors.request.use(
     (config) => {
         const token = store.getState().auth.token;

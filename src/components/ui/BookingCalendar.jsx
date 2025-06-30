@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import Card from "./Card"; // <-- TAMBAHKAN BARIS INI
+import Card from "./Card";
 
 export default function BookingCalendar() {
   const { days, emptyDays } = useMemo(() => {

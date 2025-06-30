@@ -65,12 +65,10 @@ const PanelHeader = ({ title }) => {
 export default function DashboardLayout({ navItems, panelType }) {
   const location = useLocation();
 
-  // Logika yang lebih tangguh untuk menemukan item navigasi yang aktif
   const currentNavItem =
     navItems.find((item) => location.pathname.startsWith(item.path)) ||
     navItems[0];
 
-  // Pastikan pageTitle tidak menyebabkan error jika currentNavItem tidak ditemukan
   const pageTitle = currentNavItem ? currentNavItem.name : "Dashboard";
 
   return (

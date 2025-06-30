@@ -38,16 +38,15 @@
     @apply bg-brand-primary text-white;
   }
 
-  /* Custom Styles from HTML */
   .icon-large {
-    font-size: 3rem; /* ~48px */
+    font-size: 3rem;
     line-height: 1;
     margin-bottom: 1rem;
     display: inline-block;
     color: var(--brand-primary);
   }
   .step-icon {
-    font-size: 2.5rem; /* ~40px */
+    font-size: 2.5rem;
     display: inline-block;
     margin-bottom: 0.5rem;
     color: var(--brand-primary);

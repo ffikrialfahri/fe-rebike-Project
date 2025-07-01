@@ -50,8 +50,7 @@ export default function LandingPage() {
         {/* Main Content (Section 1) */}
         <main id="hero" className="bg-white">
           <div className="flex min-h-[680px] flex-col lg:flex-row bg-slate-50">
-            {/* Left Section - Changed justify-center to justify-start */}
-            <div className="w-full lg:w-1/2 px-6 pb-10 pt-10 flex flex-col justify-start"> {/* Added pt-10 and changed justify-center to justify-start */}
+            <div className="w-full lg:w-1/2 px-6 pb-10 pt-10 flex flex-col justify-start">
               <img
                 src={Logo3}
                 alt="Rebike Logo"
@@ -192,7 +191,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      { /* Popular Locations Section - Recreated based on the new screenshot */}
+      { /* Popular Locations Section */}
       <section id="popular-locations" className="py-20 bg-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-2">Tersedia di Lokasi Populer</h2>

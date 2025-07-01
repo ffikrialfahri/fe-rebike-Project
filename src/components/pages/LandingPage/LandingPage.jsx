@@ -5,6 +5,14 @@ import Logo2 from "@/assets/Logo2.png"
 import Logo3 from "@/assets/logo3.png"
 
 export default function LandingPage() {
+
+  const ICON_LOCATIONS = (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" className="w-6 h-6">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 
+      9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
+    </svg>
+  );
+
   return (
     <LandingLayout>
       <div className="bg-white">
@@ -40,11 +48,10 @@ export default function LandingPage() {
         </header>
 
         {/* Main Content (Section 1) */}
-        <main id="hero" className="bg-white pb-24">
-          {/* Apply bg-slate-200 to the container of both sections */}
-          <div className="flex flex-col lg:flex-row bg-white"> {/* Added bg-slate-200 here */}
-            {/* Left Section - removed bg-slate-200 here */}
-            <div className="w-full lg:w-1/2 px-6 py-10 flex flex-col justify-center">
+        <main id="hero" className="bg-white">
+          <div className="flex min-h-[680px] flex-col lg:flex-row bg-slate-50">
+            {/* Left Section - Changed justify-center to justify-start */}
+            <div className="w-full lg:w-1/2 px-6 pb-10 pt-10 flex flex-col justify-start"> {/* Added pt-10 and changed justify-center to justify-start */}
               <img
                 src={Logo3}
                 alt="Rebike Logo"
@@ -76,7 +83,6 @@ export default function LandingPage() {
             </div>
 
             {/* Right Section */}
-            {/* Keep bg-white here if you want it white, otherwise remove it to inherit bg-slate-200 */}
             <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-6">
               <img
                 src={Logo2}
@@ -88,7 +94,7 @@ export default function LandingPage() {
         </main>
 
         {/* Why Choose Us (Section 2) */}
-        <section id="why-us" className="py-20 bg-slate-50">
+        <section id="why-us" className="py-20 bg-white">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-3xl font-bold mb-2">Kenapa Memilih Rebike?</h2>
             <p className="text-slate-500 mb-12 max-w-2xl mx-auto">
@@ -182,6 +188,61 @@ export default function LandingPage() {
                 perjalanan Anda.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      { /* Popular Locations Section - Recreated based on the new screenshot */}
+      <section id="popular-locations" className="py-20 bg-white">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-2">Tersedia di Lokasi Populer</h2>
+          <p className="text-slate-500 mb-12 max-w-2xl mx-auto">
+            Jemput motormu dengan mudah di titik-titik strategis Kota Malang.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a
+              href="https://maps.app.goo.gl/MMCQzdoikSSYcXXu5"
+              className="flex items-center gap-2 bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-700 transition shadow-md"
+            >
+              <span className="text-xl">{ICON_LOCATIONS}</span>
+              Alun-Alun Kota Malang
+            </a>
+            <a
+              href="https://maps.app.goo.gl/bL7G1Q17LiF1T3Lr8"
+              className="flex items-center gap-2 bg-teal-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-teal-700 transition shadow-md"
+            >
+              <span className="text-xl">{ICON_LOCATIONS}</span>
+              Stasiun Malang Kota Lama
+            </a>
+            <a
+              href="https://maps.app.goo.gl/rvawmjBVLuaGZ9Ps9"
+              className="flex items-center gap-2 bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-700 transition shadow-md"
+            >
+              <span className="text-xl">{ICON_LOCATIONS}</span>
+              Stasiun Blimbing
+            </a>
+            <a
+              href="https://maps.app.goo.gl/M2DriUebLBwnm9a2A"
+              className="flex items-center gap-2 bg-teal-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-teal-700 transition shadow-md"
+            >
+              <span className="text-xl">{ICON_LOCATIONS}</span>
+              Universitas Brawijaya
+            </a>
+
+            <a
+              href="https://maps.app.goo.gl/iqkJSpY5Y5cSHxen9"
+              className="flex items-center gap-2 bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-700 transition shadow-md"
+            >
+              <span className="text-xl">{ICON_LOCATIONS}</span>
+              Mall Dinoyo City
+            </a>
+            <a
+              href="https://maps.app.goo.gl/MrBm7H8ecFni8Vep8"
+              className="flex items-center gap-2 bg-teal-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-teal-700 transition shadow-md"
+            >
+              <span className="text-xl">{ICON_LOCATIONS}</span>
+              Universitas Muhammadiyah
+            </a>
           </div>
         </div>
       </section>

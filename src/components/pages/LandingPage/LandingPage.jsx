@@ -3,6 +3,7 @@ import LandingLayout from "@/components/layout/LandingLayout";
 import Card from "@/components/ui/Card";
 import Logo1 from "@/assets/Logo1.jpeg"
 import Logo2 from "@/assets/Logo2.jpg"
+import Logo3 from "@/assets/logo3.png"
 
 export default function LandingPage() {
   return (
@@ -38,14 +39,14 @@ export default function LandingPage() {
         </header>
 
         {/* Main Content (was Hero Section) */}
-        <main id="hero" className="container mx-auto px-6 pt-12 pb-24">
+        <main id="hero" className="container mx-auto px-6 pt-4 pb-24">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Left Column */}
             <div className="lg:w-1/2 text-center lg:text-left items-center">
               <img
-                src={Logo1}
+                src={Logo3}
                 alt="Rebike Logo"
-                className="w-40 md:w-48 mb-8 mx-auto lg:mx-0"
+                className="w-20 md:w-48 mb-2 mx-auto lg:mx-0"
               />
               <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 !leading-tight mb-4">
                 Sewa Motor di Malang Lebih Mudah

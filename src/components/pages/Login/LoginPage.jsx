@@ -1,112 +1,132 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Import Link dari react-router-dom
+import { useNavigate, Link } from "react-router-dom";
+import Logo3 from "@/assets/logo3.png"; // Pastikan path ini benar
 
-// Komponen InputField untuk reuseability
+// Komponen InputField untuk input form yang reusable
 const InputField = ({ id, label, type, value, onChange, placeholder, hint }) => (
   <div className="mb-4">
-    <label htmlFor={id} className="block text-sm font-medium text-slate-700 mb-1">
+    <label htmlFor={id} className="block text-slate-700 text-sm font-semibold mb-2">
       {label}
     </label>
     <input
       type={type}
       id={id}
-      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-brand-primary focus:border-brand-primary transition duration-150 ease-in-out"
+      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-150 ease-in-out"
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      required
     />
-    {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+    {hint && <p className="text-xs text-slate-500 mt-1">{hint}</p>}
   </div>
 );
 
-// Komponen Button untuk reuseability
-const AuthButton = ({ onClick, disabled, children, className = "" }) => (
+// Komponen AuthButton untuk tombol submit yang reusable
+const AuthButton = ({ disabled, children, className = "" }) => (
   <button
-    type="button"
-    onClick={onClick}
+    type="submit" // Penting: type="submit" agar form bisa disubmit
     disabled={disabled}
-    className={`w-full py-2.5 rounded-lg font-semibold shadow-md transition duration-200 ease-in-out disabled:bg-slate-400 disabled:cursor-not-allowed ${className}`}
+    className={`w-full font-bold py-3 rounded-lg transition shadow-md ${className} ${
+      disabled ? "opacity-50 cursor-not-allowed" : ""
+    }`}
   >
     {children}
   </button>
 );
 
-export default function LoginPage() {
+// Komponen utama LoginPage yang akan menjadi modal
+// Menerima props isOpen (boolean) dan onClose (fungsi untuk menutup modal)
+export default function LoginPage({ isOpen, onClose }) {
   const navigate = useNavigate();
 
-  // Menggunakan state lokal untuk simulasi loading dan error
+  // State untuk menangani loading dan error saat proses login
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [email, setEmail] = useState("mitra@example.com"); // Default value for demo
-  const [password, setPassword] = useState("password");   // Default value for demo
+  // State untuk input email dan password
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  // Mengatur simulasi login
-  const handleLogin = (role) => {
+  // Efek untuk mereset error saat modal dibuka atau ditutup
+  useEffect(() => {
+    if (isOpen) {
+      setError(null);
+      setEmail("");
+      setPassword("");
+    }
+  }, [isOpen]);
+
+  // Fungsi untuk menangani proses login (mockup)
+  // Sekarang hanya menangani login mitra
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault(); // Mencegah refresh halaman default dari form submit
+
     setLoading(true);
-    setError(null); // Reset error on new login attempt
+    setError(null);
 
-    // Simulasi penundaan API
-    setTimeout(() => {
-      if (email === "mitra@example.com" && password === "password" && role === "mitra") {
-        setLoading(false);
-        // Simulasi navigasi ke dashboard mitra
-        navigate("/mitra/dashboard", { replace: true });
-      } else if (email === "admin@example.com" && password === "password" && role === "admin") {
-        setLoading(false);
-        // Simulasi navigasi ke dashboard admin
-        navigate("/admin/dashboard", { replace: true });
-      } else {
-        setLoading(false);
-        setError("Email atau kata sandi salah. Silakan coba lagi.");
-      }
-    }, 1500); // Simulasi loading selama 1.5 detik
+    // Simulasi panggilan API dengan setTimeout
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Logika validasi dan navigasi mockup untuk mitra
+    if (email === "mitra@example.com" && password === "password") {
+      setLoading(false);
+      navigate("/mitra/dashboard", { replace: true }); // Navigasi ke dashboard mitra
+      onClose(); // Tutup modal setelah berhasil login
+    } else {
+      setLoading(false);
+      setError("Email atau kata sandi salah. Silakan coba lagi.");
+    }
   };
 
+  // Jika modal tidak terbuka, jangan render apa-apa
+  if (!isOpen) return null;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-panel-bg p-4 sm:p-6">
-      <div className="flex bg-card-bg rounded-xl shadow-xl overflow-hidden w-full max-w-5xl">
-        {/* Bagian Kiri: Ilustrasi */}
-        <div className="hidden md:flex w-1/2 bg-gradient-to-br from-brand-primary to-teal-400 items-center justify-center p-8 relative">
-          <img
-            src="https://placehold.co/600x400/ccfbf1/0d9488?text=Selamat+Datang+di+ReBike" // Placeholder image
-            alt="Ilustrasi Selamat Datang"
-            className="w-full max-w-md h-auto rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
-            onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/ccfbf1/0d9488?text=ReBike+Ilustrasi"}} // Fallback image
-          />
-          <div className="absolute bottom-8 text-center text-white text-lg font-semibold">
-            "Kelola bisnismu lebih mudah dengan e-panel ReBike!"
-          </div>
+    // Overlay modal
+    <div
+      className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-[999] p-4"
+      onClick={onClose} // Tutup modal saat klik di luar
+    >
+      {/* Konten modal utama */}
+      <div
+        className="bg-white rounded-lg shadow-2xl flex flex-col md:flex-row max-w-4xl w-full overflow-hidden"
+        onClick={(e) => e.stopPropagation()} // Cegah event klik menyebar ke overlay
+      >
+        {/* Kolom Kiri (Logo) - Sesuai desain Figma */}
+        <div className="hidden md:flex w-2/5 p-8 items-center justify-center bg-white rounded-l-lg">
+          <img src={Logo3} alt="Rebike Logo" className="w-full max-w-[200px]" />
         </div>
 
-        {/* Bagian Kanan: Form Login */}
-        <div className="w-full md:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
-          <h2 className="text-4xl font-extrabold text-center mb-2 text-brand-primary font-poppins">
-            Selamat Datang Kembali
+        {/* Kolom Kanan (Form Login) - Sesuai desain Figma */}
+        <div className="w-full md:w-3/5 p-8 flex flex-col justify-center">
+          <h2 className="text-3xl font-bold mb-2 text-slate-800">
+            Welcome to{" "}
+            <span className="text-orange-500">ReBike</span>
           </h2>
-          <p className="text-center text-text-light mb-8">
-            Masuk ke panel Anda sebagai Admin atau Mitra.
+          <p className="text-slate-600 mb-6">
+            Kelola bisnismu dengan lebih mudah dengan e-panel
           </p>
 
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+          {/* Form Login - onSubmit akan memanggil handleLoginSubmit */}
+          <form onSubmit={handleLoginSubmit}>
             <InputField
               id="email"
-              label="Email"
+              label="*email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Masukkan email Anda"
-              hint="Gunakan 'mitra@example.com' untuk Mitra; 'admin@example.com' untuk Admin"
+              placeholder="masukan email"
+              hint="email harus menggunakan '@'"
             />
 
             <InputField
               id="password"
-              label="Kata Sandi"
+              label="*password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Masukkan kata sandi Anda"
-              hint="Gunakan 'password' untuk semua peran"
+              placeholder="********"
+              hint="password minimal 8 character"
             />
 
             {error && (
@@ -115,34 +135,23 @@ export default function LoginPage() {
               </p>
             )}
 
+            {/* Tombol Login (sekarang hanya satu tombol "Login") */}
             <AuthButton
-              onClick={() => handleLogin("mitra")}
               disabled={loading}
-              className="bg-brand-primary text-white hover:bg-teal-700"
+              className="bg-teal-500 text-white hover:bg-teal-600" // Kelas disesuaikan
             >
-              {loading ? "Memuat..." : "Login sebagai Mitra"}
-            </AuthButton>
-
-            <AuthButton
-              onClick={() => handleLogin("admin")}
-              disabled={loading}
-              className="bg-text-dark text-white hover:bg-slate-700"
-            >
-              {loading ? "Memuat..." : "Login sebagai Admin"}
+              {loading ? "Memuat..." : "Login"} {/* Teks tombol menjadi "Login" */}
             </AuthButton>
           </form>
 
-          <div className="mt-8 text-center">
-            <Link
-              to="/"
-              className="text-sm text-text-light hover:text-brand-primary transition duration-150 ease-in-out"
-            >
-              ← Kembali ke Halaman Utama
+          <p className="text-center text-slate-600 text-sm mt-6">
+            Don't have an Account?{" "}
+            <Link to="/register" className="text-teal-600 hover:underline">
+              Registrasi
             </Link>
-          </div>
+          </p>
         </div>
       </div>
     </div>
   );
 }
-

@@ -1,11 +1,23 @@
+import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import LandingLayout from "@/components/layout/LandingLayout";
 import Card from "@/components/ui/Card";
 import Logo2 from "@/assets/Logo2.png"
 import Logo3 from "@/assets/logo3.png"
+import LoginPage from '@/components/pages/Login/LoginPage';
+import bg1 from "@/assets/bg1.png" 
+import bg2 from "@/assets/bg2.png"
 
 export default function LandingPage() {
+  // State untuk mengontrol visibilitas modal login, sekarang di LandingPage
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
+  // Fungsi untuk membuka modal
+  const openLoginModal = () => setIsLoginModalOpen(true);
+  // Fungsi untuk menutup modal
+  const closeLoginModal = () => setIsLoginModalOpen(false);
+
+  // SVG Icon untuk lokasi
   const ICON_LOCATIONS = (
     <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" className="w-6 h-6">
       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 
@@ -30,19 +42,26 @@ export default function LandingPage() {
                 <a href="#how-it-works" className="text-gray-600 hover:text-teal-600">
                   Cara Kerja
                 </a>
+                <a href="#why-us" className="text-gray-600 hover:text-teal-600">
+                  Kenapa Kami?
+                </a>
+                <a href="#popular-locations" className="text-gray-600 hover:text-teal-600">
+                  lokasi
+                </a>
                 <a href="#partner-cta" className="text-gray-600 hover:text-teal-600">
                   Jadi Mitra
                 </a>
-                <a href="#contact" className="text-gray-600 hover:text-teal-600">
+                <a href="#footer" className="text-gray-600 hover:text-teal-600">
                   Hubungi Kami
                 </a>
               </nav>
-              <Link
-                to="/login"
+              {/* Tombol Login di Header - Memanggil openLoginModal */}
+              <button
+                onClick={openLoginModal}
                 className="border border-teal-600 text-teal-600 font-semibold px-4 py-2 rounded-lg hover:bg-teal-50 transition"
               >
                 Login
-              </Link>
+              </button>
             </div>
           </div>
         </header>
@@ -309,7 +328,10 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+        {/* Tidak ada lagi modal di sini, akan dirender oleh komponen LoginPage */}
       </div>
+      {/* Render komponen LoginPage di luar div utama LandingPage */}
+      <LoginPage isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </LandingLayout>
   );
 }

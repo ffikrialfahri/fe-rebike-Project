@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import LandingLayout from "@/components/layout/LandingLayout";
 import Card from "@/components/ui/Card";
-import Logo1 from "@/assets/Logo1.jpeg"
-import Logo2 from "@/assets/Logo2.jpg"
+import Logo2 from "@/assets/Logo2.png"
 import Logo3 from "@/assets/logo3.png"
 
 export default function LandingPage() {
@@ -15,34 +14,37 @@ export default function LandingPage() {
             <Link to="/" className="text-2xl font-bold text-teal-600">
               Rebike
             </Link>
-            <nav className="hidden md:flex items-center space-x-6">
-              <a href="#hero" className="text-gray-600 hover:text-teal-600">
-                Beranda
-              </a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-teal-600">
-                Cara Kerja
-              </a>
-              <a href="#partner-cta" className="text-gray-600 hover:text-teal-600">
-                Jadi Mitra
-              </a>
-              <a href="#contact" className="text-gray-600 hover:text-teal-600">
-                Hubungi Kami
-              </a>
-            </nav>
-            <Link
-              to="/login"
-              className="border border-teal-600 text-teal-600 font-semibold px-4 py-2 rounded-lg hover:bg-teal-50 transition"
-            >
-              Login Mitra / Admin
-            </Link>
+            <div className="flex items-center space-x-6">
+              <nav className="hidden md:flex items-center space-x-6">
+                <a href="#hero" className="text-gray-600 hover:text-teal-600">
+                  Beranda
+                </a>
+                <a href="#how-it-works" className="text-gray-600 hover:text-teal-600">
+                  Cara Kerja
+                </a>
+                <a href="#partner-cta" className="text-gray-600 hover:text-teal-600">
+                  Jadi Mitra
+                </a>
+                <a href="#contact" className="text-gray-600 hover:text-teal-600">
+                  Hubungi Kami
+                </a>
+              </nav>
+              <Link
+                to="/login"
+                className="border border-teal-600 text-teal-600 font-semibold px-4 py-2 rounded-lg hover:bg-teal-50 transition"
+              >
+                Login
+              </Link>
+            </div>
           </div>
         </header>
 
-        {/* Main Content (was Hero Section) */}
-        <main id="hero" className="container mx-auto px-6 pt-4 pb-24">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            {/* Left Column */}
-            <div className="lg:w-1/2 text-center lg:text-left items-center">
+        {/* Main Content (Section 1) */}
+        <main id="hero" className="bg-white pb-24">
+          {/* Apply bg-slate-200 to the container of both sections */}
+          <div className="flex flex-col lg:flex-row bg-white"> {/* Added bg-slate-200 here */}
+            {/* Left Section - removed bg-slate-200 here */}
+            <div className="w-full lg:w-1/2 px-6 py-10 flex flex-col justify-center">
               <img
                 src={Logo3}
                 alt="Rebike Logo"
@@ -73,18 +75,19 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right Column */}
-            <div className="lg:w-1/2">
+            {/* Right Section */}
+            {/* Keep bg-white here if you want it white, otherwise remove it to inherit bg-slate-200 */}
+            <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-6">
               <img
                 src={Logo2}
                 alt="Tiga motor scooter Honda Beat, Scoopy, dan Vario"
-                className="max-w-full lg:max-w-3xl"
+                className="w-full max-w-3xl h-auto"
               />
             </div>
           </div>
         </main>
 
-        {/* Why Choose Us (Section from your original code) */}
+        {/* Why Choose Us (Section 2) */}
         <section id="why-us" className="py-20 bg-slate-50">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-3xl font-bold mb-2">Kenapa Memilih Rebike?</h2>
@@ -129,7 +132,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* How It Works */}
+        {/* How It Works (Section 3) */}
       <section id="how-it-works" className="py-20 bg-slate-50">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-2">Bagaimana Rebike Bekerja?</h2>
@@ -183,7 +186,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-        {/* Partner CTA */}
+        {/* Partner CTA (Section 4) */}
       <section id="partner-cta" className="py-20 bg-brand-primary text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Punya Usaha Rental Motor?</h2>
@@ -200,7 +203,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-        {/* Download App */}
+        {/* Download App (Sections 5)*/}
         <section id="download-app" className="py-20 bg-slate-50">
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center gap-12">

@@ -1,8 +1,12 @@
+// File: src/components/pages/Login/LoginPage.jsx
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Logo3 from "@/assets/logo3.png"; // Pastikan path ini benar
+import { useDispatch, useSelector } from "react-redux"; // Import Redux hooks
+import { loginRequest } from "@/store/auth/authSlice"; // Import Redux action
+import Logo3 from "@/assets/logo3.png";
 
-// Komponen InputField untuk input form yang reusable
+// Komponen InputField (sudah baik, tidak perlu diubah)
 const InputField = ({ id, label, type, value, onChange, placeholder, hint }) => (
   <div className="mb-4">
     <label htmlFor={id} className="block text-slate-700 text-sm font-semibold mb-2">
@@ -21,10 +25,10 @@ const InputField = ({ id, label, type, value, onChange, placeholder, hint }) => 
   </div>
 );
 
-// Komponen AuthButton untuk tombol submit yang reusable
+// Komponen AuthButton (sudah baik, tidak perlu diubah)
 const AuthButton = ({ disabled, children, className = "" }) => (
   <button
-    type="submit" // Penting: type="submit" agar form bisa disubmit
+    type="submit"
     disabled={disabled}
     className={`w-full font-bold py-3 rounded-lg transition shadow-md ${className} ${
       disabled ? "opacity-50 cursor-not-allowed" : ""
@@ -34,48 +38,44 @@ const AuthButton = ({ disabled, children, className = "" }) => (
   </button>
 );
 
-// Komponen utama LoginPage yang akan menjadi modal
-// Menerima props isOpen (boolean) dan onClose (fungsi untuk menutup modal)
+// Komponen utama LoginPage
 export default function LoginPage({ isOpen, onClose }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // State untuk menangani loading dan error saat proses login
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // Ambil state dari Redux store, bukan state lokal
+  const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
 
-  // State untuk input email dan password
+  // State lokal hanya untuk field input form
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Efek untuk mereset error saat modal dibuka atau ditutup
+  // Efek untuk mereset field form saat modal dibuka
   useEffect(() => {
     if (isOpen) {
-      setError(null);
       setEmail("");
       setPassword("");
+      // Error akan direset secara otomatis saat loginRequest di-dispatch
     }
   }, [isOpen]);
 
-  // Fungsi untuk menangani proses login (mockup)
-  // Sekarang hanya menangani login mitra
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault(); // Mencegah refresh halaman default dari form submit
-
-    setLoading(true);
-    setError(null);
-
-    // Simulasi panggilan API dengan setTimeout
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Logika validasi dan navigasi mockup untuk mitra
-    if (email === "mitra@example.com" && password === "password") {
-      setLoading(false);
-      navigate("/mitra/dashboard", { replace: true }); // Navigasi ke dashboard mitra
-      onClose(); // Tutup modal setelah berhasil login
-    } else {
-      setLoading(false);
-      setError("Email atau kata sandi salah. Silakan coba lagi.");
+  // Efek untuk menavigasi pengguna setelah login berhasil
+  // Ini akan bereaksi terhadap perubahan state 'isAuthenticated' dari Redux
+  useEffect(() => {
+    // Cek apakah sudah terotentikasi DAN apakah rolenya adalah PARTNER
+    if (isOpen && isAuthenticated && user?.roles?.includes("ROLE_PARTNER")) {
+      navigate("/mitra/dashboard", { replace: true });
+      onClose(); // Tutup modal setelah navigasi berhasil
     }
+  }, [isAuthenticated, user, navigate, onClose, isOpen]);
+
+
+  // Handler untuk submit form, sekarang menggunakan Redux
+  const handleLoginSubmit = (e) => {
+    e.preventDefault(); // Mencegah refresh halaman
+    // Dispatch action 'loginRequest' dengan kredensial
+    // Saga akan menangani API call, loading, dan state error
+    dispatch(loginRequest({ credentials: { email, password } }));
   };
 
   // Jika modal tidak terbuka, jangan render apa-apa
@@ -84,30 +84,28 @@ export default function LoginPage({ isOpen, onClose }) {
   return (
     // Overlay modal
     <div
-      className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-[999] p-4"
-      onClick={onClose} // Tutup modal saat klik di luar
+      className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4 transition-opacity duration-300"
+      onClick={onClose}
     >
       {/* Konten modal utama */}
       <div
-        className="bg-white rounded-lg shadow-2xl flex flex-col md:flex-row max-w-4xl w-full overflow-hidden"
-        onClick={(e) => e.stopPropagation()} // Cegah event klik menyebar ke overlay
+        className="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Kolom Kiri (Logo) - Sesuai desain Figma */}
+        {/* Kolom Kiri (Logo) */}
         <div className="hidden md:flex w-2/5 p-8 items-center justify-center bg-white rounded-l-lg">
           <img src={Logo3} alt="Rebike Logo" className="w-full max-w-[200px]" />
         </div>
 
-        {/* Kolom Kanan (Form Login) - Sesuai desain Figma */}
+        {/* Kolom Kanan (Form Login) */}
         <div className="w-full md:w-3/5 p-8 flex flex-col justify-center">
           <h2 className="text-3xl font-bold mb-2 text-slate-800">
-            Welcome to{" "}
-            <span className="text-orange-500">ReBike</span>
+            Welcome to <span className="text-orange-500">ReBike</span>
           </h2>
           <p className="text-slate-600 mb-6">
             Kelola bisnismu dengan lebih mudah dengan e-panel
           </p>
 
-          {/* Form Login - onSubmit akan memanggil handleLoginSubmit */}
           <form onSubmit={handleLoginSubmit}>
             <InputField
               id="email"
@@ -118,7 +116,6 @@ export default function LoginPage({ isOpen, onClose }) {
               placeholder="masukan email"
               hint="email harus menggunakan '@'"
             />
-
             <InputField
               id="password"
               label="*password"
@@ -126,27 +123,31 @@ export default function LoginPage({ isOpen, onClose }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="********"
-              hint="password minimal 8 character"
+              hint="password minimal 8 karakter"
             />
 
+            {/* Tampilkan error dari Redux store */}
             {error && (
               <p className="text-red-500 text-sm mb-4 text-center animate-pulse">
                 {error}
               </p>
             )}
 
-            {/* Tombol Login (sekarang hanya satu tombol "Login") */}
             <AuthButton
-              disabled={loading}
-              className="bg-teal-500 text-white hover:bg-teal-600" // Kelas disesuaikan
+              disabled={loading} // Ambil status loading dari Redux
+              className="bg-teal-500 text-white hover:bg-teal-600"
             >
-              {loading ? "Memuat..." : "Login"} {/* Teks tombol menjadi "Login" */}
+              {loading ? "Memuat..." : "Login"}
             </AuthButton>
           </form>
 
           <p className="text-center text-slate-600 text-sm mt-6">
             Don't have an Account?{" "}
-            <Link to="/register" className="text-teal-600 hover:underline">
+            <Link
+              to="/register"
+              className="text-teal-600 hover:underline"
+              onClick={onClose}
+            >
               Registrasi
             </Link>
           </p>

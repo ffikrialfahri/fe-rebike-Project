@@ -3,6 +3,7 @@ import LandingPage from "./components/pages/LandingPage/LandingPage.jsx";
 import LoginPage from "./components/pages/Login/LoginPage.jsx";
 import MitraPanel from "./components/pages/Mitra/MitraPanel.jsx";
 import AdminPanel from "./components/pages/Admin/AdminPanel.jsx";
+import RegisterPage from "./components/pages/Registrasi/RegistrasiPage.jsx";
 
 // Mitra Panel Sections
 import MitraDashboard from "./features/mitra/MitraDashboard.jsx";
@@ -23,6 +24,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       <Route path="/mitra" element={<MitraPanel />}>
         <Route index element={<MitraDashboard />} />

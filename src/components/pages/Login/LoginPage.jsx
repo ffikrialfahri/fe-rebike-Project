@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux"; // Import Redux hooks
 import { loginRequest } from "@/store/auth/authSlice"; // Import Redux action
 import Logo3 from "@/assets/logo3.png";
 
-// Komponen InputField (sudah baik, tidak perlu diubah)
 const InputField = ({ id, label, type, value, onChange, placeholder, hint }) => (
   <div className="mb-4">
     <label htmlFor={id} className="block text-slate-700 text-sm font-semibold mb-2">
@@ -25,7 +24,6 @@ const InputField = ({ id, label, type, value, onChange, placeholder, hint }) => 
   </div>
 );
 
-// Komponen AuthButton (sudah baik, tidak perlu diubah)
 const AuthButton = ({ disabled, children, className = "" }) => (
   <button
     type="submit"
@@ -38,51 +36,38 @@ const AuthButton = ({ disabled, children, className = "" }) => (
   </button>
 );
 
-// Komponen utama LoginPage
 export default function LoginPage({ isOpen, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // Ambil state dari Redux store, bukan state lokal
   const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
 
-  // State lokal hanya untuk field input form
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Efek untuk mereset field form saat modal dibuka
   useEffect(() => {
     if (isOpen) {
       setEmail("");
       setPassword("");
-      // Error akan direset secara otomatis saat loginRequest di-dispatch
     }
   }, [isOpen]);
 
-  // Efek untuk menavigasi pengguna setelah login berhasil
-  // Ini akan bereaksi terhadap perubahan state 'isAuthenticated' dari Redux
   useEffect(() => {
-    // Cek apakah sudah terotentikasi DAN apakah rolenya adalah PARTNER
     if (isOpen && isAuthenticated && user?.roles?.includes("ROLE_PARTNER")) {
       navigate("/mitra/dashboard", { replace: true });
-      onClose(); // Tutup modal setelah navigasi berhasil
+      onClose();
     }
   }, [isAuthenticated, user, navigate, onClose, isOpen]);
 
 
   // Handler untuk submit form, sekarang menggunakan Redux
   const handleLoginSubmit = (e) => {
-    e.preventDefault(); // Mencegah refresh halaman
-    // Dispatch action 'loginRequest' dengan kredensial
-    // Saga akan menangani API call, loading, dan state error
+    e.preventDefault();
     dispatch(loginRequest({ credentials: { email, password } }));
   };
 
-  // Jika modal tidak terbuka, jangan render apa-apa
   if (!isOpen) return null;
 
   return (
-    // Overlay modal
     <div
       className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4 transition-opacity duration-300"
       onClick={onClose}

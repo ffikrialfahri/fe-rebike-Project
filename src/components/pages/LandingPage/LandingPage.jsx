@@ -1,117 +1,57 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
+import { HashLink } from "react-router-hash-link"; // Import HashLink
 import LandingLayout from "@/components/layout/LandingLayout";
 import Card from "@/components/ui/Card";
-import Logo2 from "@/assets/Logo2.png"
-import Logo3 from "@/assets/logo3.png"
 import LoginPage from '@/components/pages/Login/LoginPage';
-import bg1 from "@/assets/bg1.png" 
-import bg2 from "@/assets/bg2.png"
+
+// Pastikan path aset Anda benar
+import Logo2 from "@/assets/Logo2.png";
+import Logo3 from "@/assets/logo3.png";
 
 export default function LandingPage() {
-  // State untuk mengontrol visibilitas modal login, sekarang di LandingPage
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  // Fungsi untuk membuka modal
   const openLoginModal = () => setIsLoginModalOpen(true);
-  // Fungsi untuk menutup modal
   const closeLoginModal = () => setIsLoginModalOpen(false);
 
-  // SVG Icon untuk lokasi
   const ICON_LOCATIONS = (
     <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" className="w-6 h-6">
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 
-      9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
     </svg>
   );
 
   return (
-    <LandingLayout>
-      <div className="bg-white">
-        {/* Header / Navigation Bar */}
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-          <div className="container mx-auto flex justify-between items-center p-4">
-            <Link to="/" className="text-2xl font-bold text-teal-600">
-              Rebike
-            </Link>
-            <div className="flex items-center space-x-6">
-              <nav className="hidden md:flex items-center space-x-6">
-                <a href="#hero" className="text-gray-600 hover:text-teal-600">
-                  Beranda
-                </a>
-                <a href="#how-it-works" className="text-gray-600 hover:text-teal-600">
-                  Cara Kerja
-                </a>
-                <a href="#why-us" className="text-gray-600 hover:text-teal-600">
-                  Kenapa Kami?
-                </a>
-                <a href="#popular-locations" className="text-gray-600 hover:text-teal-600">
-                  lokasi
-                </a>
-                <a href="#partner-cta" className="text-gray-600 hover:text-teal-600">
-                  Jadi Mitra
-                </a>
-                <a href="#footer" className="text-gray-600 hover:text-teal-600">
-                  Hubungi Kami
-                </a>
-              </nav>
-              {/* Tombol Login di Header - Memanggil openLoginModal */}
-              <button
-                onClick={openLoginModal}
-                className="border border-teal-600 text-teal-600 font-semibold px-4 py-2 rounded-lg hover:bg-teal-50 transition"
-              >
-                Login
-              </button>
+    // Teruskan `onLoginClick` ke LandingLayout
+    <LandingLayout onLoginClick={openLoginModal}>
+      {/* Tidak ada elemen <header> di sini lagi. Itu sudah ditangani oleh LandingLayout. */}
+      
+      {/* Main Content (Section 1) */}
+      <main id="hero" className="bg-white">
+        <div className="flex min-h-[680px] flex-col lg:flex-row bg-slate-50">
+          <div className="w-full lg:w-1/2 px-6 pb-10 pt-10 flex flex-col justify-start">
+            <img src={Logo3} alt="Rebike Logo" className="w-20 md:w-48 mb-2 mx-auto lg:mx-0" />
+            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 !leading-tight mb-4">
+              Sewa Motor di Malang Lebih Mudah
+            </h1>
+            <p className="text-slate-600 max-w-lg mb-8 mx-auto lg:mx-0">
+              Temukan ratusan pilihan motor berkualitas dari mitra terpercaya kami, siap mengantar Anda menjelajahi keindahan Malang dan sekitarnya. Dengan proses pemesanan yang cepat dan mudah melalui aplikasi, liburan Anda dijamin tenang dan penuh kebebasan.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <HashLink to="/#download-app" smooth className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-lg transition shadow-md text-center">
+                Download Aplikasi
+              </HashLink>
+              <HashLink to="/#partner-cta" smooth className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg transition shadow-md text-center">
+                Jadi Mitra
+              </HashLink>
             </div>
           </div>
-        </header>
-
-        {/* Main Content (Section 1) */}
-        <main id="hero" className="bg-white">
-          <div className="flex min-h-[680px] flex-col lg:flex-row bg-slate-50">
-            <div className="w-full lg:w-1/2 px-6 pb-10 pt-10 flex flex-col justify-start">
-              <img
-                src={Logo3}
-                alt="Rebike Logo"
-                className="w-20 md:w-48 mb-2 mx-auto lg:mx-0"
-              />
-              <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 !leading-tight mb-4">
-                Sewa Motor di Malang Lebih Mudah
-              </h1>
-              <p className="text-slate-600 max-w-lg mb-8 mx-auto lg:mx-0">
-                Temukan ratusan pilihan motor berkualitas dari mitra terpercaya
-                kami, siap mengantar Anda menjelajahi keindahan Malang dan
-                sekitarnya. Dengan proses pemesanan yang cepat dan mudah melalui
-                aplikasi, liburan Anda dijamin tenang dan penuh kebebasan.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <a
-                  href="#download-app"
-                  className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-lg transition shadow-md text-center"
-                >
-                  Download Aplikasi
-                </a>
-                <a
-                  href="#partner-cta"
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg transition shadow-md text-center"
-                >
-                  Jadi Mitra
-                </a>
-              </div>
-            </div>
-
-            {/* Right Section */}
-            <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-6">
-              <img
-                src={Logo2}
-                alt="Tiga motor scooter Honda Beat, Scoopy, dan Vario"
-                className="w-full max-w-3xl h-auto"
-              />
-            </div>
+          <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-6">
+            <img src={Logo2} alt="Tiga motor scooter" className="w-full max-w-3xl h-auto"/>
           </div>
-        </main>
+        </div>
+      </main>
 
-        {/* Why Choose Us (Section 2) */}
+      {/* Why Choose Us (Section 2) */}
         <section id="why-us" className="py-20 bg-white">
           <div className="container mx-auto px-6 text-center">
             <h2 className="text-3xl font-bold mb-2">Kenapa Memilih Rebike?</h2>
@@ -328,9 +268,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        {/* Tidak ada lagi modal di sini, akan dirender oleh komponen LoginPage */}
-      </div>
-      {/* Render komponen LoginPage di luar div utama LandingPage */}
       <LoginPage isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </LandingLayout>
   );

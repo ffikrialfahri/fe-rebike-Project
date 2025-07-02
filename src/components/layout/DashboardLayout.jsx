@@ -1,6 +1,8 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../../store/auth/authSlice";
+import { useState } from "react";
+import LogoutConfirmationModal from "../ui/LogoutConfirmationModal";
 
 const Sidebar = ({ navItems, panelType }) => (
   <aside
@@ -41,10 +43,24 @@ const Sidebar = ({ navItems, panelType }) => (
 const PanelHeader = ({ title }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/login");
+    navigate("/");
+  };
+
+  const openLogoutModal = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const closeLogoutModal = () => {
+    setIsLogoutModalOpen(false);
+  };
+
+  const confirmLogout = () => {
+    handleLogout();
+    closeLogoutModal();
   };
 
   return (
@@ -52,12 +68,17 @@ const PanelHeader = ({ title }) => {
       <h1 className="text-xl font-semibold text-slate-800">{title}</h1>
       <div>
         <button
-          onClick={handleLogout}
+          onClick={openLogoutModal}
           className="text-sm text-slate-600 hover:text-brand-primary font-semibold transition"
         >
           Logout
         </button>
       </div>
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={closeLogoutModal}
+        onConfirm={confirmLogout}
+      />
     </header>
   );
 };

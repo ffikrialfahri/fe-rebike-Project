@@ -2,71 +2,85 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-// State yang sudah ada diperluas dengan mutationLoading
 const initialState = {
     token: localStorage.getItem('token') || null,
     user: JSON.parse(localStorage.getItem('user')) || null,
     isAuthenticated: !!localStorage.getItem('token'),
-    loading: false, // Untuk login, fetch user, etc.
-    mutationLoading: false, // Khusus untuk create/update/delete seperti registrasi
+    loading: false,
+    mutationLoading: false,
     error: null,
-    verifySuccess: false, // Tambahkan ini jika Anda menangani verifikasi email
+    verifySuccess: false,
 };
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // ... (loginRequest, loginSuccess, loginFailure, logout sudah ada)
-        loginRequest: (state) => {
-            state.loading = true;
-            state.error = null;
-        },
-        loginSuccess: (state, action) => {
-            state.loading = false;
-            state.isAuthenticated = true;
-            state.token = action.payload.token;
-            state.user = action.payload.user;
-        },
-        loginFailure: (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        },
+        // ... (login, logout, register reducers sudah ada di sini)
+        loginRequest: (state) => { /*...*/ },
+        loginSuccess: (state, action) => { /*...*/ },
+        loginFailure: (state, action) => { /*...*/ },
         logout: (state) => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
             state.token = null;
             state.user = null;
             state.isAuthenticated = false;
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            state.error = null;
         },
-
-        // === TAMBAHKAN REDUCER UNTUK REGISTRASI DI SINI ===
-        registerRequest: (state) => {
+        registerRequest: (state) => { /*...*/ },
+        registerSuccess: (state) => { /*...*/ },
+        registerFailure: (state, action) => { /*...*/ },
+        
+        // --- TAMBAHKAN REDUCERS BARU DI SINI ---
+        forgotPasswordRequest: (state) => {
             state.mutationLoading = true;
             state.error = null;
         },
-        registerSuccess: (state) => {
+        forgotPasswordSuccess: (state) => {
             state.mutationLoading = false;
         },
-        registerFailure: (state, action) => {
+        forgotPasswordFailure: (state, action) => {
             state.mutationLoading = false;
             state.error = action.payload;
         },
+
+        resetPasswordRequest: (state) => {
+            state.mutationLoading = true;
+            state.error = null;
+        },
+        resetPasswordSuccess: (state) => {
+            state.mutationLoading = false;
+        },
+        resetPasswordFailure: (state, action) => {
+            state.mutationLoading = false;
+            state.error = action.payload;
+        },
+
+        // --- Reducers lain yang sudah ada ---
+        verifyEmailRequest: (state) => { state.mutationLoading = true; state.error = null; },
+        verifyEmailSuccess: (state) => { state.mutationLoading = false; state.verifySuccess = true; },
+        verifyEmailFailure: (state, action) => { state.mutationLoading = false; state.error = action.payload; },
         
-        // Reducer lain yang mungkin Anda butuhkan nanti
-        // (Saya ambil dari file lain yang Anda berikan untuk kelengkapan)
+        resendOtpRequest: (state) => { state.mutationLoading = true; state.error = null; },
+        resendOtpSuccess: (state) => { state.mutationLoading = false; },
+        resendOtpFailure: (state, action) => { state.mutationLoading = false; state.error = action.payload; },
+
         resetAuthStatus: (state) => {
             state.verifySuccess = false;
             state.error = null;
         },
-        // ... (tambahkan reducer lain seperti forgotPassword, verifyEmail, dll.)
     },
 });
 
-// Ekspor action yang baru
+// --- PERBARUI EKSPOR DI SINI ---
 export const {
     loginRequest, loginSuccess, loginFailure, logout,
-    registerRequest, registerSuccess, registerFailure, // <-- Ekspor yang baru
+    registerRequest, registerSuccess, registerFailure,
+    forgotPasswordRequest, forgotPasswordSuccess, forgotPasswordFailure, // <-- Tambahkan ini
+    resetPasswordRequest, resetPasswordSuccess, resetPasswordFailure,   // <-- Tambahkan ini
+    verifyEmailRequest, verifyEmailSuccess, verifyEmailFailure,
+    resendOtpRequest, resendOtpSuccess, resendOtpFailure,
     resetAuthStatus
 } = authSlice.actions;
 

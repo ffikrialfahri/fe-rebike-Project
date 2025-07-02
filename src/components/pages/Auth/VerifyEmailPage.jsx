@@ -23,7 +23,7 @@ export default function VerifyEmailPage() {
     if (verifySuccess) {
       toast.success("Verifikasi berhasil! Silakan login.");
       dispatch(resetAuthStatus());
-      navigate("/login");
+      navigate("/");
     }
   }, [verifySuccess, navigate, dispatch]);
 

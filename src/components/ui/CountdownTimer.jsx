@@ -6,32 +6,28 @@ export default function CountdownTimer({ initialSeconds, onResend, onTimeout }) 
   const [canResend, setCanResend] = useState(false);
 
   useEffect(() => {
-    // Jangan mulai timer jika sudah 0
     if (seconds <= 0) {
       setCanResend(true);
       if (onTimeout) {
-          // Hanya panggil onTimeout jika timer benar-benar habis, bukan saat inisialisasi
           if (seconds === 0) onTimeout();
       }
       return;
     }
 
-    // Set canResend menjadi false saat timer berjalan
     setCanResend(false);
 
     const interval = setInterval(() => {
       setSeconds((prev) => prev - 1);
     }, 1000);
 
-    // Bersihkan interval saat komponen di-unmount atau timer selesai
     return () => clearInterval(interval);
   }, [seconds, onTimeout]);
 
   const handleResendClick = useCallback(() => {
     if (canResend) {
-      setSeconds(initialSeconds); // Reset timer
+      setSeconds(initialSeconds);
       setCanResend(false);
-      onResend(); // Panggil fungsi resend dari props
+      onResend();
     } else {
         toast.error(`Harap tunggu ${seconds} detik sebelum mengirim ulang.`);
     }

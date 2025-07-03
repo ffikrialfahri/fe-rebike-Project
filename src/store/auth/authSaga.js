@@ -20,15 +20,21 @@ function* handleLogin(action) {
         const response = yield call(api.post, '/auth/login', credentials);
         const token = response.data.data.token;
 
+        // Simpan token dan info user ke localStorage
         localStorage.setItem('token', token);
         const decodedUser = jwtDecode(token);
+        
+        // Normalisasi peran untuk menangani 'roles' (array) atau 'role' (string)
+        const roles = decodedUser.roles || (decodedUser.role ? [decodedUser.role] : []);
+
         const user = {
             username: decodedUser.sub,
-            roles: decodedUser.roles,
-            firstName: decodedUser.firstName
+            roles: roles,
+            firstName: decodedUser.firstName // Ambil firstName dari token jika ada
         };
         localStorage.setItem('user', JSON.stringify(user));
 
+        // Dispatch success dengan data token dan user
         yield put(loginSuccess({ token, user }));
         toast.success(`Selamat datang, ${user.firstName || user.username}!`);
 
@@ -43,22 +49,22 @@ function* handleLogin(action) {
     }
 }
 
-// Handler untuk registrasi
 function* handleRegister(action) {
     const { userData, onComplete } = action.payload;
     try {
         // Panggil endpoint API untuk registrasi partner
+        // Endpoint dari BE: /api/auth/register/partner
         yield call(api.post, '/auth/register/partner', userData);
 
-        // Jalankan callback onComplete untuk mengubah UI ke form verifikasi
+        // Jika berhasil, dispatch action success
+        yield put(registerSuccess());
+        
+        toast.success('Registrasi berhasil! Silakan periksa email Anda untuk verifikasi.');
+        
+        // Jalankan callback onComplete jika ada (untuk membuka modal login)
         if (onComplete) {
             yield call(onComplete);
         }
-
-        // Dispatch action success setelah UI berubah
-        yield put(registerSuccess());
-        toast.success('Registrasi berhasil! Silakan periksa email Anda untuk verifikasi.');
-
     } catch (error) {
         const errorMessage = error.response?.data?.message || 'Registrasi gagal. Coba lagi.';
         yield put(registerFailure(errorMessage));

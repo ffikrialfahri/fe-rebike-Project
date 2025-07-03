@@ -69,8 +69,17 @@ export default function LoginPage({ isOpen, onClose }) {
     dispatch(
       loginRequest({
         credentials: { email: data.email, password: data.password },
-        onSuccess: () => {
-          navigate("/mitra", { replace: true });
+        onSuccess: (user) => {
+          if (user && user.roles) {
+            if (user.roles.includes("ROLE_ADMIN")) {
+              navigate("/admin/dashboard", { replace: true });
+            } else if (user.roles.includes("ROLE_PARTNER")) {
+              console.log("ini mitra", user)
+              navigate("/mitra/dashboard", { replace: true });
+            } else {
+              navigate("/", { replace: true });
+            }
+          }
           onClose();
         },
       })

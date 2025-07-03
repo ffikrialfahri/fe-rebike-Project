@@ -1,4 +1,3 @@
-// File: src/store/auth/authSlice.js
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -16,10 +15,20 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // ... (login, logout, register reducers sudah ada di sini)
-        loginRequest: (state) => { /*...*/ },
-        loginSuccess: (state, action) => { /*...*/ },
-        loginFailure: (state, action) => { /*...*/ },
+        loginRequest: (state) => {
+            state.loading = true;
+            state.error = null;
+        },
+        loginSuccess: (state, action) => {
+            state.loading = false;
+            state.isAuthenticated = true;
+            state.token = action.payload.token;
+            state.user = action.payload.user;
+        },
+        loginFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
         logout: (state) => {
             localStorage.removeItem('token');
             localStorage.removeItem('user');

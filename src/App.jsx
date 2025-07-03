@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 // Layout dan Halaman Publik
@@ -17,74 +17,75 @@ import SsoCallbackPage from "./components/pages/Auth/SsoCallbackPage.jsx";
 import MitraPanel from "./components/pages/Mitra/MitraPanel.jsx";
 import AdminPanel from "./components/pages/Admin/AdminPanel.jsx";
 
-// Fitur Panel
+// Fitur Panel Mitra
 import MitraDashboard from "./features/mitra/MitraDashboard.jsx";
-import PesananManagement from "./features/mitra/PesananManagement.jsx";
 import ArmadaManagement from "./features/mitra/ArmadaManagement.jsx";
-import Laporan from "./features/mitra/Laporan.jsx";
-import Profil from "./features/mitra/Profil.jsx";
+import TransactionMitra from "./features/mitra/Transaction.jsx";
+import LaporanMitra from "./features/mitra/Laporan.jsx";
+import ProfilMitra from "./features/mitra/ProfileSetting.jsx";
+import HistoryMitra from "./features/mitra/History.jsx";
+import BillingMitra from "./features/mitra/Billing.jsx";
+
+// Fitur Panel Admin
 import AdminDashboard from "./features/admin/AdminDashboard.jsx";
-import UserManagement from "./features/admin/UserManagement.jsx";
-import TransactionManagement from "./features/admin/TransactionManagement.jsx";
-import ContentManagement from "./features/admin/ContentManagement.jsx";
-import FinanceManagement from "./features/admin/FinanceManagement.jsx";
+import UserManagement from "./features/admin/UserManajement.jsx";
+import TransactionManagement from "./features/admin/Transaction.jsx";
+import LaporanAdmin from "./features/admin/Laporan.jsx";
+import HistoryAdmin from "./features/admin/History.jsx";
+import BillingAdmin from "./features/admin/Billing.jsx";
+import ProfileSettingAdmin from "./features/admin/ProfileSetting.jsx";
 
 function App() {
   return (
     <>
-    <Toaster 
-        position="top-center"
-        reverseOrder={false}
-      />
-    <Routes>
-      {/* --- RUTE PUBLIK & OTENTIKASI --- */}
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      {/* Hapus rute /login karena sekarang ditangani modal */}
-      {/* <Route path="/login" element={<LoginPage />} /> */}
-      
-      <Route path="/login/admin" element={<AdminLoginPage />} />
-      <Route path="/verify-email" element={<VerifyEmailPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-      <Route path="/auth/sso-callback" element={<SsoCallbackPage />} />
+      <Toaster position="top-center" reverseOrder={false} />
+      <Routes>
+        {/* --- RUTE PUBLIK & OTENTIKASI --- */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login/admin" element={<AdminLoginPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/auth/sso-callback" element={<SsoCallbackPage />} />
 
-      {/* --- RUTE PANEL MITRA (DILINDUNGI) --- */}
-      <Route
-        path="/mitra"
-        element={
-          <ProtectedRoute requiredRole="ROLE_PARTNER">
-            <MitraPanel />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<MitraDashboard />} />
-        <Route path="dashboard" element={<MitraDashboard />} />
-        <Route path="pesanan" element={<PesananManagement />} />
-        <Route path="armada" element={<ArmadaManagement />} />
-        <Route path="laporan" element={<Laporan />} />
-        <Route path="profil" element={<Profil />} />
-      </Route>
+        <Route
+          path="/mitra"
+          element={
+            <ProtectedRoute requiredRole="ROLE_PARTNER">
+              <MitraPanel />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/mitra/dashboard" replace />} />
+          <Route path="dashboard" element={<MitraDashboard />} />
+          <Route path="pesanan" element={<TransactionMitra />} />
+          <Route path="armada" element={<ArmadaManagement />} />
+          <Route path="laporan" element={<LaporanMitra />} />
+          <Route path="profil" element={<ProfilMitra />} />
+          <Route path="history" element={<HistoryMitra />} />
+          <Route path="billing" element={<BillingMitra />} />
+        </Route>
 
-      {/* --- RUTE PANEL ADMIN (DILINDUNGI) --- */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute requiredRole="ROLE_ADMIN">
-            <AdminPanel />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<AdminDashboard />} />
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="pengguna" element={<UserManagement />} />
-        <Route path="transaksi" element={<TransactionManagement />} />
-        <Route path="konten" element={<ContentManagement />} />
-        <Route path="keuangan" element={<FinanceManagement />} />
-      </Route>
-    </Routes>
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole="ROLE_ADMIN">
+              <AdminPanel />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="pengguna" element={<UserManagement />} />
+          <Route path="transaksi" element={<TransactionManagement />} />
+          <Route path="laporan" element={<LaporanAdmin />} />
+          <Route path="history" element={<HistoryAdmin />} />
+          <Route path="billing" element={<BillingAdmin />} />
+          <Route path="profil" element={<ProfileSettingAdmin />} />
+        </Route>
+      </Routes>
     </>
-    
   );
 }
 

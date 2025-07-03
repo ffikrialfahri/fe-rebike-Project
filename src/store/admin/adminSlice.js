@@ -1,4 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '../../api/axios';
+import toast from 'react-hot-toast';
 
 const initialState = {
     partners: [],
@@ -7,27 +9,42 @@ const initialState = {
     error: null,
 };
 
+// Async Thunks
+export const fetchPartners = createAsyncThunk(
+    'admin/fetchPartners',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get('/admin/partners');
+            return response.data.data;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Failed to fetch partners';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
     reducers: {
-        fetchPartnersRequest: (state) => { state.loading = true; },
-        fetchPartnersSuccess: (state, action) => {
-            state.loading = false;
-            state.partners = action.payload;
-        },
-        fetchPartnersFailure: (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        },
-        // Add other actions like verifyPartner etc.
+        // Add other reducers for direct state manipulation if needed
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchPartners.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchPartners.fulfilled, (state, action) => {
+                state.loading = false;
+                state.partners = action.payload;
+            })
+            .addCase(fetchPartners.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     },
 });
-
-export const {
-    fetchPartnersRequest,
-    fetchPartnersSuccess,
-    fetchPartnersFailure,
-} = adminSlice.actions;
 
 export default adminSlice.reducer;

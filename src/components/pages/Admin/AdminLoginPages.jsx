@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loginRequest } from "@/store/auth/authSlice";
+import { loginUser } from "@/store/auth/authSlice";
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
       return;
     }
     setValidationError("");
-    dispatch(loginRequest({ credentials: { email, password } }));
+    dispatch(loginUser({ credentials: { email, password } }));
   };
 
   return (

@@ -3,8 +3,8 @@ import { useLocation, useNavigate, Link, Navigate } from "react-router-dom"; // 
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import {
-  verifyEmailRequest,
-  resendOtpRequest,
+  verifyEmail,
+  resendOtp,
   resetAuthStatus,
 } from "@/store/auth/authSlice";
 import CountdownTimer from "@/components/ui/CountdownTimer";
@@ -37,11 +37,11 @@ export default function VerifyEmailPage() {
       toast.error("OTP harus 6 digit.");
       return;
     }
-    dispatch(verifyEmailRequest({ email, otp }));
+    dispatch(verifyEmail({ email, otp }));
   };
 
   const handleResend = () => {
-    dispatch(resendOtpRequest({ email }));
+    dispatch(resendOtp({ email }));
     toast.success("OTP baru telah dikirim ke email Anda.");
   };
 

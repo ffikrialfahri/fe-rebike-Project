@@ -1,14 +1,14 @@
 import Card from "../../components/ui/Card";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPartnersRequest } from "../../store/admin/adminSlice";
+import { fetchPartners } from "../../store/admin/adminSlice";
 
 export default function UserManajement() {
   const dispatch = useDispatch();
   const { bikes, loading, error } = useSelector((state) => state.mitra);
 
   useEffect(() => {
-    dispatch(fetchPartnersRequest());
+    dispatch(fetchPartners());
   }, [dispatch]);
 
   return (

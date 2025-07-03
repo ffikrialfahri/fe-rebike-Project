@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { registerRequest } from "@/store/auth/authSlice";
+import { registerUser } from "@/store/auth/authSlice";
 import RegisterLayout from "@/components/layout/RegisterLayout";
 import LoginPage from "@/components/pages/Login/LoginPage";
 import { useForm } from "react-hook-form";
@@ -88,7 +88,7 @@ export default function RegisterPage() {
     };
 
     dispatch(
-      registerRequest({
+      registerUser({
         userData: completeUserData,
         onComplete: () => {
           navigate("/verify-email", { state: { email: completeUserData.email } });

@@ -1,14 +1,14 @@
 import Card from "../../components/ui/Card";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBikesRequest } from "../../store/mitra/mitraSlice";
+import { fetchBikes } from "../../store/mitra/mitraSlice";
 
 export default function ArmadaManagement() {
   const dispatch = useDispatch();
   const { bikes, loading, error } = useSelector((state) => state.mitra);
 
   useEffect(() => {
-    dispatch(fetchBikesRequest());
+    dispatch(fetchBikes());
   }, [dispatch]);
 
   return (

@@ -8,8 +8,9 @@ Directory Structure:
         │           └── doaibu
         │               └── rebikeapi
         │                   ├── config
+        │                   │   ├── CloudinaryConfig.java
         │                   │   ├── DataInitializer.java
-        │                   │   ├── JwtProperties.java
+        │                   │   ├── JwtConfig.java
         │                   │   ├── MidtransConfig.java
         │                   │   ├── OpenApiConfig.java
         │                   │   ├── PasswordEncoderConfig.java
@@ -23,6 +24,7 @@ Directory Structure:
         │                   │   └── UserRole.java
         │                   ├── controller
         │                   │   ├── AdminController.java
+        │                   │   ├── AdminSettingController.java
         │                   │   ├── AuthController.java
         │                   │   ├── CustomerController.java
         │                   │   ├── PartnerController.java
@@ -39,6 +41,7 @@ Directory Structure:
         │                   │   │   ├── PartnerDetailUpdateRequest.java
         │                   │   │   ├── PartnerUpdateRequest.java
         │                   │   │   ├── PayoutRequest.java
+        │                   │   │   ├── PayoutRequestPayload.java
         │                   │   │   ├── PickupPointRequest.java
         │                   │   │   ├── ProcessPayoutRequest.java
         │                   │   │   ├── RegisterCustomerRequest.java
@@ -77,6 +80,7 @@ Directory Structure:
         │                   │   ├── Payout.java
         │                   │   ├── PickupPoint.java
         │                   │   ├── Role.java
+        │                   │   ├── SystemConfiguration.java
         │                   │   ├── Transaction.java
         │                   │   ├── UsagePolicy.java
         │                   │   └── User.java
@@ -90,7 +94,9 @@ Directory Structure:
         │                   │   ├── PayoutRepository.java
         │                   │   ├── PickupPointRepository.java
         │                   │   ├── RoleRepository.java
+        │                   │   ├── SystemConfigurationRepository.java
         │                   │   ├── TransactionRepository.java
+        │                   │   ├── UsagePolicyRepository.java
         │                   │   └── UserRepository.java
         │                   ├── security
         │                   │   ├── CustomOAuth2AuthenticationSuccessHandler.java
@@ -99,7 +105,9 @@ Directory Structure:
         │                   ├── service
         │                   │   ├── impl
         │                   │   │   ├── AdminDashboardServiceImpl.java
+        │                   │   │   ├── AdminSettingServiceImpl.java
         │                   │   │   ├── BikeServiceImpl.java
+        │                   │   │   ├── CloudinaryServiceImpl.java
         │                   │   │   ├── EmailServiceImpl.java
         │                   │   │   ├── MidtransServiceImpl.java
         │                   │   │   ├── PartnerServiceImpl.java
@@ -110,7 +118,9 @@ Directory Structure:
         │                   │   │   ├── UserDetailsServiceImpl.java
         │                   │   │   └── UserServiceImpl.java
         │                   │   ├── AdminDashboardService.java
+        │                   │   ├── AdminSettingService.java
         │                   │   ├── BikeService.java
+        │                   │   ├── CloudinaryService.java
         │                   │   ├── EmailService.java
         │                   │   ├── MidtransService.java
         │                   │   ├── PartnerService.java
@@ -133,15 +143,57 @@ Directory Structure:
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/config/CloudinaryConfig.java
+---
+
+package com.doaibu.rebikeapi.config;
+
+import com.cloudinary.Cloudinary;
+import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Configuration
+public class CloudinaryConfig {
+    private String cloudName;
+    private String apiKey;
+    private String apiSecret;
+
+    public CloudinaryConfig() {
+        Dotenv dotenv = Dotenv.load();
+
+        this.cloudName = dotenv.get("CLOUDINARY_CLOUD_NAME");
+        this.apiKey = dotenv.get("CLOUDINARY_API_KEY");
+        this.apiSecret = dotenv.get("CLOUDINARY_API_SECRET");
+    }
+
+    @Bean
+    public Cloudinary cloudinary() {
+        Map<String, String> config = new HashMap<>();
+        config.put("cloud_name", cloudName);
+        config.put("api_key", apiKey);
+        config.put("api_secret", apiSecret);
+        return new Cloudinary(config);
+    }
+}
+
+
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/config/DataInitializer.java
 ---
 
 package com.doaibu.rebikeapi.config;
 
+import com.doaibu.rebikeapi.constant.BikeStatus;
 import com.doaibu.rebikeapi.constant.UserRole;
-import com.doaibu.rebikeapi.entity.Partner;
-import com.doaibu.rebikeapi.entity.Role;
-import com.doaibu.rebikeapi.entity.User;
+import com.doaibu.rebikeapi.entity.*;
+import com.doaibu.rebikeapi.repository.BikeRepository;
+import com.doaibu.rebikeapi.repository.UsagePolicyRepository;
 import com.doaibu.rebikeapi.repository.UserRepository;
 import com.doaibu.rebikeapi.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -149,9 +201,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -160,84 +212,211 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final BikeRepository bikeRepository;
+    private final UsagePolicyRepository usagePolicyRepository;
 
     @Override
     public void run(String... args) throws Exception {
+        createInitialUsers();
+        createInitialBikes();
+    }
+
+    private void createInitialUsers() {
         if (!userRepository.existsByEmail("admin@example.com")) {
+            String rawPassword = "password";
             Set<Role> adminRole = new HashSet<>();
             adminRole.add(roleService.getOrCreate(UserRole.ADMIN));
 
             User adminUser = User.builder()
                     .firstName("Admin").lastName("Rebike").username("admin")
-                    .email("admin@example.com").password(passwordEncoder.encode("password"))
+                    .email("admin@example.com").password(passwordEncoder.encode(rawPassword))
                     .phoneNumber("081234567890").roles(adminRole).createdAt(LocalDateTime.now())
                     .isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
             userRepository.save(adminUser);
+            System.out.println("[Rebike Initializer] Created ADMIN: admin@example.com | password: " + rawPassword);
         }
 
-        if (!userRepository.existsByEmail("mitra@example.com")) {
+        if (!userRepository.existsByEmail("mitra1@example.com")) {
+            String rawPassword = "passmitra1";
             Set<Role> partnerRole = new HashSet<>();
             partnerRole.add(roleService.getOrCreate(UserRole.PARTNER));
 
             User partnerUser = User.builder()
-                    .firstName("Mitra").lastName("Satu").username("mitra")
-                    .email("mitra@example.com").password(passwordEncoder.encode("password"))
+                    .firstName("Mitra").lastName("Satu").username("mitra1")
+                    .email("mitra1@example.com").password(passwordEncoder.encode(rawPassword))
                     .phoneNumber("089876543210").roles(partnerRole).createdAt(LocalDateTime.now())
                     .isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
-
             Partner partner = Partner.builder()
-                    .user(partnerUser).locationName("Rental Barokah")
+                    .user(partnerUser).locationName("Rental Barokah Jaya")
                     .bankAccountName("Mitra Satu").bankAccountNumber("1234567890")
                     .bankName("BCA").isVerified(true).build();
-
             partnerUser.setPartnerDetail(partner);
             userRepository.save(partnerUser);
+            System.out.println("[Rebike Initializer] Created PARTNER: mitra1@example.com | password: " + rawPassword);
         }
 
-        if (!userRepository.existsByEmail("customer@example.com")) {
-            Set<Role> customerRole = new HashSet<>();
-            customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
-
-            User customerUser = User.builder()
-                    .firstName("Customer").lastName("Satu").username("customer")
-                    .email("customer@example.com").password(passwordEncoder.encode("password"))
-                    .phoneNumber("089876543217").roles(customerRole).createdAt(LocalDateTime.now())
-                    .isAccountNonExpired(true).isAccountNonLocked(true)
-                    .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
-                    .build();
-            userRepository.save(customerUser);
-        }
-
-        if (!userRepository.existsByEmail("iambaehaqi@gmail.com")) {
+        if (!userRepository.existsByEmail("mitra2@example.com")) {
+            String rawPassword = generateRandomPassword();
             Set<Role> partnerRole = new HashSet<>();
             partnerRole.add(roleService.getOrCreate(UserRole.PARTNER));
 
             User partnerUser = User.builder()
                     .firstName("Imam").lastName("Baehaqi").username("iambaehaqi")
-                    .email("iambaehaqi@gmail.com").password(passwordEncoder.encode("password"))
+                    .email("mitra2@example.com").password(passwordEncoder.encode(rawPassword))
                     .phoneNumber("081222333444").roles(partnerRole).createdAt(LocalDateTime.now())
                     .isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
-
             Partner partner = Partner.builder()
                     .user(partnerUser).locationName("Baehaqi Motor")
                     .bankAccountName("Imam Baehaqi").bankAccountNumber("0987654321")
                     .bankName("Mandiri").isVerified(true).build();
-
             partnerUser.setPartnerDetail(partner);
             userRepository.save(partnerUser);
+            System.out.println("[Rebike Initializer] Created PARTNER: mitra2@example.com | password: " + rawPassword);
         }
+
+        if (!userRepository.existsByEmail("customer1@example.com")) {
+            String rawPassword = generateRandomPassword();
+            Set<Role> customerRole = new HashSet<>();
+            customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
+
+            User customerUser = User.builder()
+                    .firstName("Budi").lastName("Santoso").username("budi")
+                    .email("customer1@example.com").password(passwordEncoder.encode(rawPassword))
+                    .phoneNumber("085611112222").roles(customerRole).createdAt(LocalDateTime.now())
+                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
+                    .build();
+            userRepository.save(customerUser);
+            System.out.println("[Rebike Initializer] Created CUSTOMER: customer1@example.com | password: " + rawPassword);
+        }
+
+        if (!userRepository.existsByEmail("customer2@example.com")) {
+            String rawPassword = generateRandomPassword();
+            Set<Role> customerRole = new HashSet<>();
+            customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
+
+            User customerUser = User.builder()
+                    .firstName("Citra").lastName("Lestari").username("citra")
+                    .email("customer2@example.com").password(passwordEncoder.encode(rawPassword))
+                    .phoneNumber("085733334444").roles(customerRole).createdAt(LocalDateTime.now())
+                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
+                    .build();
+            userRepository.save(customerUser);
+            System.out.println("[Rebike Initializer] Created CUSTOMER: customer2@example.com | password: " + rawPassword);
+        }
+
+        if (!userRepository.existsByEmail("customer3@example.com")) {
+            String rawPassword = generateRandomPassword();
+            Set<Role> customerRole = new HashSet<>();
+            customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
+
+            User customerUser = User.builder()
+                    .firstName("Dewi").lastName("Anggraini").username("dewi")
+                    .email("customer3@example.com").password(passwordEncoder.encode(rawPassword))
+                    .phoneNumber("081355556666").roles(customerRole).createdAt(LocalDateTime.now())
+                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
+                    .build();
+            userRepository.save(customerUser);
+            System.out.println("[Rebike Initializer] Created CUSTOMER: customer3@example.com | password: " + rawPassword);
+        }
+    }
+
+    private void createInitialBikes() {
+        if (bikeRepository.count() > 0) {
+            return;
+        }
+
+        User mitra1 = userRepository.findByEmail("mitra1@example.com");
+        User mitra2 = userRepository.findByEmail("mitra2@example.com");
+
+        if (mitra1 == null || mitra2 == null) {
+            System.out.println("[Rebike Initializer] Skipping bike creation: Mitra not found.");
+            return;
+        }
+
+        Set<UsagePolicy> allPolicies = new HashSet<>(usagePolicyRepository.findAll());
+        List<Bike> bikesToCreate = new ArrayList<>();
+
+        bikesToCreate.add(Bike.builder()
+                .partner(mitra1)
+                .name("Honda Vario 125 CBS")
+                .brand("Honda")
+                .plateNumber("N 1234 ABC")
+                .year(2022)
+                .machineCapacity("125cc")
+                .transmissionType("AUTOMATIC")
+                .weekdayPricePerDay(new BigDecimal("70000"))
+                .weekendPricePerDay(new BigDecimal("85000"))
+                .status(BikeStatus.AVAILABLE)
+                .photoURL("https://i.ibb.co/6y4Yc6Z/honda-vario-125.png")
+                .usagePolicies(allPolicies)
+                .build());
+
+        bikesToCreate.add(Bike.builder()
+                .partner(mitra1)
+                .name("Honda Scoopy Stylish")
+                .brand("Honda")
+                .plateNumber("N 5678 DEF")
+                .year(2023)
+                .machineCapacity("110cc")
+                .transmissionType("AUTOMATIC")
+                .weekdayPricePerDay(new BigDecimal("75000"))
+                .weekendPricePerDay(new BigDecimal("90000"))
+                .status(BikeStatus.AVAILABLE)
+                .photoURL("https://i.ibb.co/3sY3jYx/honda-scoopy.png")
+                .usagePolicies(allPolicies)
+                .build());
+
+        bikesToCreate.add(Bike.builder()
+                .partner(mitra2)
+                .name("Yamaha NMAX Connected")
+                .brand("Yamaha")
+                .plateNumber("N 9101 GHI")
+                .year(2022)
+                .machineCapacity("155cc")
+                .transmissionType("AUTOMATIC")
+                .weekdayPricePerDay(new BigDecimal("120000"))
+                .weekendPricePerDay(new BigDecimal("150000"))
+                .status(BikeStatus.AVAILABLE)
+                .photoURL("https://i.ibb.co/WcWzWB9/yamaha-nmax.png")
+                .usagePolicies(allPolicies)
+                .build());
+
+        bikesToCreate.add(Bike.builder()
+                .partner(mitra2)
+                .name("Honda PCX 160 ABS")
+                .brand("Honda")
+                .plateNumber("N 1121 JKL")
+                .year(2023)
+                .machineCapacity("160cc")
+                .transmissionType("AUTOMATIC")
+                .weekdayPricePerDay(new BigDecimal("130000"))
+                .weekendPricePerDay(new BigDecimal("160000"))
+                .status(BikeStatus.RENTED) // Contoh status berbeda
+                .photoURL("https://i.ibb.co/QjgpT3M/honda-pcx-160.png")
+                .usagePolicies(allPolicies)
+                .build());
+
+        bikeRepository.saveAll(bikesToCreate);
+        System.out.println("[Rebike Initializer] Created " + bikesToCreate.size() + " initial bikes for development.");
+    }
+
+    private String generateRandomPassword() {
+        return UUID.randomUUID().toString().substring(0, 8);
     }
 }
 
 
 ---
-File: be-rebike/src/main/java/com/doaibu/rebikeapi/config/JwtProperties.java
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/config/JwtConfig.java
 ---
 
 package com.doaibu.rebikeapi.config;
@@ -248,18 +427,17 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-public class JwtProperties {
+public class JwtConfig {
     private String secretKey;
     private long expirationMs;
 
-    public JwtProperties() {
+    public JwtConfig() {
         Dotenv dotenv = Dotenv.load();
-        
+
         this.secretKey = dotenv.get("JWT_SECRET_KEY");
         this.expirationMs = Long.parseLong(dotenv.get("JWT_EXPIRATION_MS"));
     }
 }
-
 
 
 ---
@@ -282,7 +460,7 @@ public class MidtransConfig {
 
     public MidtransConfig() {
         Dotenv dotenv = Dotenv.load();
-        
+
         this.serverKey = dotenv.get("MIDTRANS_SERVER_KEY");
         this.apiUrl = dotenv.get("MIDTRANS_API_URL");
     }
@@ -292,8 +470,6 @@ public class MidtransConfig {
         return new RestTemplate();
     }
 }
-
-
 
 
 ---
@@ -365,6 +541,7 @@ import com.doaibu.rebikeapi.constant.Endpoint;
 import com.doaibu.rebikeapi.security.CustomOAuth2AuthenticationSuccessHandler;
 import com.doaibu.rebikeapi.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -382,6 +559,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -391,6 +569,9 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final CustomOAuth2AuthenticationSuccessHandler oauth2SuccessHandler;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("#{'${cors.allowed-origins}'.split(',')}")
+    private List<String> allowedOrigins;
 
     private static final String[] SWAGGER_WHITELIST = {
             "/swagger-ui.html",
@@ -409,10 +590,13 @@ public class SecurityConfig {
                     authorizeRequests
                             .requestMatchers(SWAGGER_WHITELIST).permitAll()
                             .requestMatchers(Endpoint.AUTH + "/**", "/login/oauth2/**", "/oauth2/**").permitAll()
+                            .requestMatchers(Endpoint.API + "/callback/**").permitAll()
                             .requestMatchers(HttpMethod.GET, Endpoint.PUBLIC + "/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, Endpoint.PUBLIC + "/**").permitAll()
 
                             .requestMatchers(Endpoint.USER + "/**").hasAnyRole("PARTNER", "ADMIN", "CUSTOMER")
                             .requestMatchers(Endpoint.PARTNER + "/**").hasRole("PARTNER")
+                            .requestMatchers(Endpoint.ADMIN + "/settings/**").hasRole("ADMIN")
                             .requestMatchers(Endpoint.ADMIN + "/**").hasRole("ADMIN")
                             .requestMatchers(Endpoint.CUSTOMER + "/**").hasRole("CUSTOMER")
 
@@ -429,7 +613,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5175"));
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
         configuration.setAllowCredentials(true);
@@ -509,10 +693,10 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/constant/PaymentStatus.java
 package com.doaibu.rebikeapi.constant;
 
 public enum PaymentStatus {
-    UNPAID,
-    PENDING_CONFIRMATION,
+    CANCELLED,
+    PENDING,
     PAID,
-    REFUNDED
+    EXPIRED,
 }
 
 
@@ -525,6 +709,7 @@ package com.doaibu.rebikeapi.constant;
 
 public enum PayoutStatus {
     PENDING,
+    PROCESSING,
     APPROVED,
     REJECTED
 }
@@ -561,15 +746,14 @@ import com.doaibu.rebikeapi.service.*;
 import com.doaibu.rebikeapi.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(Endpoint.ADMIN)
@@ -582,27 +766,6 @@ public class AdminController {
     private final PayoutService payoutService;
     private final AdminDashboardService adminDashboardService;
 
-    @PostMapping("/partners/{partnerId}/verify")
-    public ResponseEntity<?> verifyPartner(@PathVariable String partnerId,
-            @RequestBody VerifyPartnerRequest request) {
-        userService.verifyPartner(partnerId, request.isVerified());
-
-        return ResponseUtil.response(
-                HttpStatus.OK,
-                "Partner verified successfully",
-                null);
-    }
-
-    @PostMapping("/transactions/{transactionId}/verify-payment")
-    public ResponseEntity<?> verifyPayment(@PathVariable String transactionId,
-            @RequestBody VerifyPaymentRequest request) {
-        transactionService.verifyPayment(transactionId, request.isValid(), request.getReason());
-        return ResponseUtil.response(
-                HttpStatus.OK,
-                "Payment verification processed",
-                null);
-    }
-
     @GetMapping("/partners")
     public ResponseEntity<?> getAllPartners(@RequestParam(required = false, defaultValue = "0") int page,
                                             @RequestParam(required = false, defaultValue = "10") int size,
@@ -614,7 +777,7 @@ public class AdminController {
         PagedResponse<AdminPartnerResponse> response = userService.getAllPartners(pageable);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "All partners retrieved successfully",
+                "All partners retrieved successfully.",
                 response);
     }
 
@@ -623,8 +786,17 @@ public class AdminController {
         AdminPartnerResponse response = userService.getPartnerById(partnerId);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Partner details retrieved successfully",
+                "Partner details retrieved successfully.",
                 response);
+    }
+
+    @PostMapping("/partners/{partnerId}/verify")
+    public ResponseEntity<?> verifyPartner(@PathVariable String partnerId) {
+        userService.verifyPartner(partnerId);
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Partner verified successfully.",
+                null);
     }
 
     @GetMapping("/transactions")
@@ -632,16 +804,27 @@ public class AdminController {
         PagedResponse<TransactionDetailResponse> response = transactionService.getAllTransactions(pageable);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "All transactions retrieved successfully",
+                "All transactions retrieved successfully.",
                 response);
     }
+
+    @PostMapping("/transactions/{transactionId}/verify-payment")
+    public ResponseEntity<?> verifyPayment(@PathVariable String transactionId,
+                                           @RequestBody VerifyPaymentRequest request) {
+        transactionService.verifyPayment(transactionId, request.isValid(), request.getReason());
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Payment verification processed.",
+                null);
+    }
+
 
     @PostMapping("/pickup-points")
     public ResponseEntity<?> createPickupPoint(@RequestBody PickupPointRequest request) {
         PickupPointResponse response = pickupPointService.createPickupPoint(request);
         return ResponseUtil.response(
                 HttpStatus.CREATED,
-                "Pickup point created successfully",
+                "Pickup point created successfully.",
                 response);
     }
 
@@ -650,7 +833,7 @@ public class AdminController {
         PickupPointResponse response = pickupPointService.updatePickupPoint(pointId, request);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Pickup point updated successfully",
+                "Pickup point updated successfully.",
                 response);
     }
 
@@ -659,7 +842,7 @@ public class AdminController {
         pickupPointService.deletePickupPoint(pointId);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Pickup point deleted successfully",
+                "Pickup point deleted successfully.",
                 null);
     }
 
@@ -668,7 +851,7 @@ public class AdminController {
         List<PayoutResponse> response = payoutService.getAllPayouts();
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "All payout requests retrieved",
+                "All payout requests retrieved.",
                 response);
     }
 
@@ -677,7 +860,7 @@ public class AdminController {
         payoutService.processPayout(payoutId, request);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Payout processed successfully",
+                "Payout processed successfully.",
                 null);
     }
 
@@ -686,11 +869,51 @@ public class AdminController {
         DashboardSummaryResponse response = adminDashboardService.getDashboardSummary();
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Dashboard summary retrieved successfully",
+                "Dashboard summary retrieved successfully.",
                 response);
     }
+
 }
 
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/controller/AdminSettingController.java
+---
+
+package com.doaibu.rebikeapi.controller;
+
+import com.doaibu.rebikeapi.constant.Endpoint;
+import com.doaibu.rebikeapi.service.AdminSettingService;
+import com.doaibu.rebikeapi.util.ResponseUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Map;
+
+@RestController
+@RequestMapping(Endpoint.ADMIN + "/settings")
+@RequiredArgsConstructor
+public class AdminSettingController {
+
+    private final AdminSettingService adminSettingService;
+
+    @GetMapping("/fee")
+    public ResponseEntity<?> getFee() {
+        BigDecimal fee = adminSettingService.getPlatformFeePercentage();
+        return ResponseUtil.response(HttpStatus.OK, "Fee fetched successfully", Map.of("percentage", fee.multiply(new BigDecimal("100"))));
+    }
+
+    @PostMapping("/fee")
+    public ResponseEntity<?> updateFee(@RequestBody Map<String, String> payload) {
+        BigDecimal newFee = new BigDecimal(payload.get("percentage"));
+        adminSettingService.updatePlatformFeePercentage(newFee);
+        return ResponseUtil.response(HttpStatus.OK, "Fee updated successfully", null);
+    }
+}
 
 
 ---
@@ -729,7 +952,7 @@ public class AuthController {
         RegisterResponse response = userService.registerCustomer(request);
         return ResponseUtil.response(
                 HttpStatus.CREATED,
-                "User registered as a Customer successfully",
+                "User registered as a Customer successfully.",
                 response);
     }
 
@@ -738,7 +961,7 @@ public class AuthController {
         RegisterResponse response = userService.registerPartner(request);
         return ResponseUtil.response(
                 HttpStatus.CREATED,
-                "User registered as a Partner successfully",
+                "User registered as a Partner successfully.",
                 response);
     }
 
@@ -747,13 +970,13 @@ public class AuthController {
         LoginResponse response = userService.login(request);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Login successfully",
+                "Login successfully.",
                 response);
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request,
-            HttpServletRequest servletRequest) {
+                                            HttpServletRequest servletRequest) {
         String feBaseUrl = servletRequest.getHeader("Origin");
         if (feBaseUrl == null) {
             feBaseUrl = "http://localhost:5173";
@@ -761,14 +984,17 @@ public class AuthController {
         userService.processForgotPassword(request.getEmail(), feBaseUrl);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Link reset password telah dikirim ke email Anda",
+                "Password reset link has been sent to your email.",
                 null);
     }
 
     @PostMapping("/reset-password-with-otp")
     public ResponseEntity<?> resetPasswordWithOtp(@Valid @RequestBody ResetPasswordWithOtpRequest request) {
         userService.resetPasswordWithOtp(request);
-        return ResponseUtil.response(HttpStatus.OK, "Password berhasil direset", null);
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Password changed successfully.",
+                null);
     }
 
     @PostMapping("/verify-email")
@@ -776,7 +1002,7 @@ public class AuthController {
         userService.verifyEmailOtp(request.getEmail(), request.getOtp());
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Email berhasil diverifikasi.",
+                "Email verified successfully.",
                 null);
     }
 
@@ -785,7 +1011,7 @@ public class AuthController {
         userService.resendVerificationOtp(request.getEmail());
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "OTP baru telah dikirim.",
+                "OTP code resent successfully.",
                 null);
     }
 
@@ -849,7 +1075,7 @@ public class CustomerController {
 
     @PostMapping("/transactions/{transactionId}/payment")
     public ResponseEntity<?> uploadPaymentProof(@PathVariable String transactionId,
-            @RequestParam("paymentProof") MultipartFile paymentProof) {
+                                                @RequestParam("paymentProof") MultipartFile paymentProof) {
         String paymentProofUrl = "http://example.com/payment_proofs/" + transactionId + "_"
                 + paymentProof.getOriginalFilename();
         transactionService.uploadPaymentProof(transactionId, paymentProofUrl);
@@ -871,12 +1097,16 @@ package com.doaibu.rebikeapi.controller;
 import com.doaibu.rebikeapi.constant.Endpoint;
 import com.doaibu.rebikeapi.dto.request.*;
 import com.doaibu.rebikeapi.dto.response.*;
+import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
 import com.doaibu.rebikeapi.service.BikeService;
 import com.doaibu.rebikeapi.service.PartnerService;
 import com.doaibu.rebikeapi.service.PayoutService;
 import com.doaibu.rebikeapi.service.TransactionService;
 import com.doaibu.rebikeapi.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -902,24 +1132,6 @@ public class PartnerController {
                 null);
     }
 
-    @GetMapping("/bank-info")
-    public ResponseEntity<?> getBankInformation() {
-        PartnerDetailResponse response = partnerService.getBankInformation();
-        return ResponseUtil.response(
-                HttpStatus.OK,
-                "Bank information retrieved successfully",
-                response);
-    }
-
-    @PutMapping("/bank-info")
-    public ResponseEntity<?> updateBankInformation(@RequestBody PartnerUpdateRequest request) {
-        partnerService.updateBankInformation(request);
-        return ResponseUtil.response(
-                HttpStatus.OK,
-                "Bank information updated successfully",
-                null);
-    }
-
     @PostMapping("/bikes")
     public ResponseEntity<?> addBike(@RequestBody BikeRequest bikeRequest) {
         BikeResponse response = bikeService.addBike(bikeRequest);
@@ -930,8 +1142,14 @@ public class PartnerController {
     }
 
     @GetMapping("/bikes")
-    public ResponseEntity<?> getAllBikes() {
-        List<BikeResponse> response = bikeService.getAllBikes();
+    public ResponseEntity<?> getAllBikes(@RequestParam(required = false, defaultValue = "0") int page,
+                                         @RequestParam(required = false, defaultValue = "10") int size,
+                                         @RequestParam(required = false, defaultValue = "name") String sortBy,
+                                         @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection.equalsIgnoreCase("asc") ?
+                Sort.Direction.ASC : Sort.Direction.DESC, sortBy));
+
+        PagedResponse<BikeResponse> response = bikeService.getAllBikes(pageable);
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "All bikes retrieved successfully",
@@ -956,6 +1174,16 @@ public class PartnerController {
                 bikeResponse);
     }
 
+    @PutMapping("/bikes/{bikeId}/status")
+    public ResponseEntity<?> updateBikeStatus(@PathVariable String bikeId,
+                                              @RequestBody UpdateBikeStatusRequest request) {
+        BikeResponse response = bikeService.updateBikeStatus(bikeId, request.getStatus());
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Bike status updated successfully",
+                response);
+    }
+
     @DeleteMapping("/bikes/{bikeId}")
     public ResponseEntity<?> deleteBike(@PathVariable String bikeId) {
         bikeService.deleteBike(bikeId);
@@ -966,13 +1194,21 @@ public class PartnerController {
                 null);
     }
 
-    @PostMapping("/transactions/{transactionId}/confirm")
-    public ResponseEntity<?> confirmTransaction(@PathVariable String transactionId,
-            @RequestBody ConfirmTransactionRequest request) {
-        transactionService.confirmTransaction(transactionId, request.getStatus());
+    @GetMapping("/bank-info")
+    public ResponseEntity<?> getBankInformation() {
+        PartnerDetailResponse response = partnerService.getBankInformation();
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Transaction status updated successfully",
+                "Bank information retrieved successfully",
+                response);
+    }
+
+    @PutMapping("/bank-info")
+    public ResponseEntity<?> updateBankInformation(@RequestBody PartnerUpdateRequest request) {
+        partnerService.updateBankInformation(request);
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Bank information updated successfully",
                 null);
     }
 
@@ -985,22 +1221,22 @@ public class PartnerController {
                 response);
     }
 
+    @PostMapping("/transactions/{transactionId}/confirm")
+    public ResponseEntity<?> confirmTransaction(@PathVariable String transactionId,
+                                                @RequestBody ConfirmTransactionRequest request) {
+        transactionService.confirmTransaction(transactionId, request.getStatus());
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Transaction status updated successfully",
+                null);
+    }
+
     @GetMapping("/financial-summary")
     public ResponseEntity<?> getFinancialSummary() {
         FinancialSummaryResponse response = transactionService.getFinancialSummaryForPartner();
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "Financial summary retrieved successfully",
-                response);
-    }
-
-    @PutMapping("/bikes/{bikeId}/status")
-    public ResponseEntity<?> updateBikeStatus(@PathVariable String bikeId,
-            @RequestBody UpdateBikeStatusRequest request) {
-        BikeResponse response = bikeService.updateBikeStatus(bikeId, request.getStatus());
-        return ResponseUtil.response(
-                HttpStatus.OK,
-                "Bike status updated successfully",
                 response);
     }
 
@@ -1045,18 +1281,24 @@ import com.doaibu.rebikeapi.constant.Endpoint;
 import com.doaibu.rebikeapi.dto.response.BikeDetailResponse;
 import com.doaibu.rebikeapi.dto.response.BikeResponse;
 import com.doaibu.rebikeapi.dto.response.PickupPointResponse;
+import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
+import com.doaibu.rebikeapi.exception.CustomException;
 import com.doaibu.rebikeapi.service.BikeService;
+import com.doaibu.rebikeapi.service.CloudinaryService;
+import com.doaibu.rebikeapi.service.MidtransService;
 import com.doaibu.rebikeapi.service.PickupPointService;
 import com.doaibu.rebikeapi.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(Endpoint.PUBLIC)
@@ -1065,6 +1307,7 @@ public class PublicController {
 
     private final PickupPointService pickupPointService;
     private final BikeService bikeService;
+    private final MidtransService midtransService;
 
     @GetMapping("/pickup-points")
     public ResponseEntity<?> getAllPickupPoints() {
@@ -1076,8 +1319,14 @@ public class PublicController {
     }
 
     @GetMapping("/bikes")
-    public ResponseEntity<?> getAllBikes() {
-        List<BikeResponse> response = bikeService.getAllBikes();
+    public ResponseEntity<?> getAllBikes(@RequestParam(required = false, defaultValue = "0") int page,
+                                         @RequestParam(required = false, defaultValue = "10") int size,
+                                         @RequestParam(required = false, defaultValue = "name") String sortBy,
+                                         @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection.equalsIgnoreCase("asc") ?
+                Sort.Direction.ASC : Sort.Direction.DESC, sortBy));
+
+        PagedResponse<BikeResponse> response = bikeService.getAllBikes(pageable);
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "All bikes retrieved successfully",
@@ -1093,6 +1342,30 @@ public class PublicController {
                 response);
     }
 
+    @PostMapping("/notification")
+    public ResponseEntity<String> handleWebhook(@RequestBody Map<String, Object> payload) {
+        midtransService.handleWebhook(payload);
+        return ResponseEntity.ok("Notification sent successfully");
+    }
+
+    private final CloudinaryService cloudinaryService;
+
+    private static final long MAX_FILE_SIZE = 2 * 1024 * 1024;
+
+    @PostMapping("/bike-photo")
+    public ResponseEntity<String> uploadBikePhoto(@RequestParam MultipartFile file) {
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new CustomException.BadRequestException("File size exceeds 2MB limit.");
+        }
+
+        String fileName = file.getOriginalFilename();
+        if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
+            throw new CustomException.BadRequestException("Only JPG/PNG files are allowed.");
+        }
+
+        String url = cloudinaryService.uploadFile(file, "bikes");
+        return ResponseEntity.ok(url);
+    }
 }
 
 
@@ -1308,6 +1581,47 @@ public class PayoutRequest {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/dto/request/PayoutRequestPayload.java
+---
+
+package com.doaibu.rebikeapi.dto.request;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Data;
+import java.util.List;
+
+@Data
+@Builder
+public class PayoutRequestPayload {
+    private List<PayoutDetail> payouts;
+
+    @Data
+    @Builder
+    public static class PayoutDetail {
+        @JsonProperty("beneficiary_name")
+        private String beneficiaryName;
+
+        @JsonProperty("beneficiary_account")
+        private String beneficiaryAccount;
+
+        @JsonProperty("beneficiary_bank")
+        private String beneficiaryBank;
+
+        @JsonProperty("beneficiary_email")
+        private String beneficiaryEmail;
+
+        private String amount;
+
+        private String notes;
+
+        @JsonProperty("reference_no")
+        private String referenceNo;
+    }
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/dto/request/PickupPointRequest.java
 ---
 
@@ -1481,8 +1795,8 @@ public class TransactionRequest {
     private String bikeID;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String pickupPointId;
 }
-
 
 
 ---
@@ -1645,6 +1959,7 @@ public class BikeDetailResponse {
     private BigDecimal weekendPricePerDay;
     private BikeStatus status;
     private Set<UsagePolicyResponse> usagePolicies;
+    private PartnerInfo partner;
 
     @Data
     @Builder
@@ -1653,6 +1968,13 @@ public class BikeDetailResponse {
         private String policyName;
         private String description;
         private boolean isPermitted;
+    }
+
+    @Data
+    @Builder
+    public static class PartnerInfo {
+        private String locationName;
+        private boolean isVerified;
     }
 }
 
@@ -1801,6 +2123,7 @@ public class PartnerDetailResponse {
     private String bankName;
     private String bankAccountName;
     private String bankAccountNumber;
+    private boolean isVerified;
 }
 
 
@@ -1987,12 +2310,14 @@ import com.doaibu.rebikeapi.constant.BikeStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Set;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "mst_bike")
 public class Bike {
@@ -2048,6 +2373,19 @@ public class Bike {
 
     @Version
     private Long version;
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bike bike = (Bike) o;
+        return id != null && Objects.equals(id, bike.id);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(id);
+    }
 }
 
 
@@ -2119,20 +2457,27 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String orderId;
 
-    @Column(name = "transaction_id", nullable = false)
-    private String transactionId;
-
-    @Column(name = "payment_type", nullable = false)
-    private String paymentType;
-    
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private PaymentStatus status;
+
+    @Column(name = "payment_type")
+    private String paymentType;
 
     @Column(nullable = false)
     private BigDecimal amount;
+
+    @Column(name = "va_number")
+    private String vaNumber;
+
+    @Column(name = "bank")
+    private String bank;
+
+    @Column(name = "snap_url")
+    private String snapUrl;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -2141,8 +2486,18 @@ public class Payment {
     private LocalDateTime updatedAt;
 
     @OneToOne
-    @JoinColumn(name = "transaction_id_ref", nullable = false)
+    @JoinColumn(name = "transaction_id", nullable = false)
     private Transaction transaction;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
 
 
@@ -2260,6 +2615,33 @@ public class Role {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/entity/SystemConfiguration.java
+---
+
+package com.doaibu.rebikeapi.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "system_configuration")
+public class SystemConfiguration {
+    @Id
+    private String configKey;
+    private String configValue;
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/entity/Transaction.java
 ---
 
@@ -2315,6 +2697,9 @@ public class Transaction {
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
 
+    @OneToOne(mappedBy = "transaction", cascade = CascadeType.ALL)
+    private Payment payment;
+
     @Column(name = "payment_proof_url", nullable = true)
     private String paymentProofUrl;
 }
@@ -2330,12 +2715,14 @@ package com.doaibu.rebikeapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
 import java.util.Set;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "mst_usage_policy")
 public class UsagePolicy {
@@ -2354,8 +2741,20 @@ public class UsagePolicy {
 
     @ManyToMany(mappedBy = "usagePolicies")
     private Set<Bike> bikes;
-}
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UsagePolicy that = (UsagePolicy) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(id);
+    }
+}
 
 
 ---
@@ -2371,13 +2770,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 @Table(name = "mst_user")
 public class User implements UserDetails {
@@ -2482,6 +2883,19 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() { return isEnabled; }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id != null && Objects.equals(id, user.id);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(id);
+    }
 }
 
 
@@ -2613,13 +3027,17 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/repository/BikeRepository.jav
 package com.doaibu.rebikeapi.repository;
 
 import com.doaibu.rebikeapi.entity.Bike;
-
+import com.doaibu.rebikeapi.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BikeRepository extends JpaRepository<Bike, String> {
+    Page<Bike> findByPartner(User partner, Pageable pageable);
 
+    Page<Bike> findByPartner_PartnerDetail_IsVerified(boolean isVerified, Pageable pageable);
 }
 
 
@@ -2633,6 +3051,8 @@ package com.doaibu.rebikeapi.repository;
 import com.doaibu.rebikeapi.entity.Partner;
 import com.doaibu.rebikeapi.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -2720,6 +3140,19 @@ public interface RoleRepository extends JpaRepository<Role, String> {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/repository/SystemConfigurationRepository.java
+---
+
+package com.doaibu.rebikeapi.repository;
+
+import com.doaibu.rebikeapi.entity.SystemConfiguration;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SystemConfigurationRepository extends JpaRepository<SystemConfiguration, String> {
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/repository/TransactionRepository.java
 ---
 
@@ -2744,6 +3177,21 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     BigDecimal sumTotalCostByBookingStatus(BookingStatus status);
 }
 
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/repository/UsagePolicyRepository.java
+---
+
+package com.doaibu.rebikeapi.repository;
+
+import com.doaibu.rebikeapi.entity.UsagePolicy;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UsagePolicyRepository extends JpaRepository<UsagePolicy, String> {
+}
 
 
 ---
@@ -2894,18 +3342,17 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/security/JwtUtil.java
 
 package com.doaibu.rebikeapi.security;
 
-import com.doaibu.rebikeapi.config.JwtProperties;
+import com.doaibu.rebikeapi.config.JwtConfig;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.doaibu.rebikeapi.entity.User; // Import User entity
+import com.doaibu.rebikeapi.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -2913,7 +3360,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final JwtProperties jwtProperties;
+    private final JwtConfig jwtConfig;
 
     public String generateToken(User user) {
         return JWT.create()
@@ -2921,13 +3368,13 @@ public class JwtUtil {
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .withClaim("firstName", user.getFirstName())
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + jwtProperties.getExpirationMs()))
-                .sign(Algorithm.HMAC256(jwtProperties.getSecretKey()));
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExpirationMs()))
+                .sign(Algorithm.HMAC256(jwtConfig.getSecretKey()));
     }
 
     public boolean validateToken(String token) {
         try {
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwtProperties.getSecretKey())).build();
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwtConfig.getSecretKey())).build();
             verifier.verify(token);
             return true;
         } catch (JWTVerificationException e) {
@@ -3028,6 +3475,51 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/AdminSettingServiceImpl.java
+---
+
+package com.doaibu.rebikeapi.service.impl;
+
+import com.doaibu.rebikeapi.entity.SystemConfiguration;
+import com.doaibu.rebikeapi.exception.CustomException;
+import com.doaibu.rebikeapi.repository.SystemConfigurationRepository;
+import com.doaibu.rebikeapi.service.AdminSettingService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+
+@Service
+@RequiredArgsConstructor
+public class AdminSettingServiceImpl implements AdminSettingService {
+
+    private final SystemConfigurationRepository systemConfigRepository;
+    private static final String FEE_KEY = "platform_fee_percentage";
+
+    @Override
+    public BigDecimal getPlatformFeePercentage() {
+        return new BigDecimal(systemConfigRepository.findById(FEE_KEY)
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Platform fee setting not found."))
+                .getConfigValue());
+    }
+
+    @Override
+    public void updatePlatformFeePercentage(BigDecimal newFee) {
+        if (newFee.compareTo(BigDecimal.ZERO) < 0 || newFee.compareTo(new BigDecimal("100")) > 0) {
+            throw new CustomException.BadRequestException("Fee percentage must be between 0 and 100.");
+        }
+        BigDecimal feeValue = newFee.divide(new BigDecimal("100"));
+
+        SystemConfiguration feeConfig = systemConfigRepository.findById(FEE_KEY)
+                .orElse(SystemConfiguration.builder().configKey(FEE_KEY).build());
+
+        feeConfig.setConfigValue(feeValue.toPlainString());
+        systemConfigRepository.save(feeConfig);
+    }
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/BikeServiceImpl.java
 ---
 
@@ -3037,6 +3529,7 @@ import com.doaibu.rebikeapi.constant.BikeStatus;
 import com.doaibu.rebikeapi.dto.request.BikeRequest;
 import com.doaibu.rebikeapi.dto.response.BikeDetailResponse;
 import com.doaibu.rebikeapi.dto.response.BikeResponse;
+import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
 import com.doaibu.rebikeapi.entity.Bike;
 import com.doaibu.rebikeapi.entity.User;
 import com.doaibu.rebikeapi.exception.CustomException;
@@ -3046,6 +3539,8 @@ import com.doaibu.rebikeapi.service.BikeService;
 import com.doaibu.rebikeapi.util.TokenHolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -3066,19 +3561,51 @@ public class BikeServiceImpl implements BikeService {
         User partner = userRepository.findByUsername(tokenHolder.getUsername())
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
 
+        if (partner.getPartnerDetail() == null || !partner.getPartnerDetail().isVerified()) {
+            throw new CustomException.AuthorizationException("Akun mitra Anda belum terverifikasi. Silakan hubungi admin.");
+        }
+
         Bike bike = mapToBike(request);
         bike.setPartner(partner);
         bike.setStatus(BikeStatus.AVAILABLE);
         bikeRepository.save(bike);
-
         return mapToBikeResponse(bike);
     }
 
     @Override
-    public List<BikeResponse> getAllBikes() {
-        return bikeRepository.findAll().stream()
+    public PagedResponse<BikeResponse> getAllBikes(Pageable pageable) {
+//        String username = tokenHolder.getUsername();
+//        User partner = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
+//
+//        Page<Bike> bikePage = bikeRepository.findByPartner_PartnerDetail_IsVerified(true, pageable);
+//
+//        List<BikeResponse> bikeResponses = bikePage.getContent().stream()
+//                .map(this::mapToBikeResponse)
+//                .collect(Collectors.toList());
+//
+//        return PagedResponse.<BikeResponse>builder()
+//                .data(bikeResponses)
+//                .page(bikePage.getNumber())
+//                .size(bikePage.getSize())
+//                .totalElements(bikePage.getTotalElements())
+//                .totalPages(bikePage.getTotalPages())
+//                .build();
+
+        Page<Bike> bikePage = bikeRepository.findAll(pageable);
+
+        List<BikeResponse> bikeResponses = bikePage.getContent().stream()
                 .map(this::mapToBikeResponse)
                 .collect(Collectors.toList());
+
+        return PagedResponse.<BikeResponse>builder()
+                .data(bikeResponses)
+                .page(bikePage.getNumber())
+                .size(bikePage.getSize())
+                .totalElements(bikePage.getTotalElements())
+                .totalPages(bikePage.getTotalPages())
+                .build();
+
     }
 
     @Override
@@ -3105,7 +3632,24 @@ public class BikeServiceImpl implements BikeService {
         bike.setWeekdayPricePerDay(request.getWeekdayPricePerDay());
         bike.setWeekendPricePerDay(request.getWeekendPricePerDay());
         bikeRepository.save(bike);
+        return mapToBikeResponse(bike);
+    }
 
+    @Override
+    @Transactional
+    public BikeResponse updateBikeStatus(String bikeId, BikeStatus status) {
+        User partner = userRepository.findByUsername(tokenHolder.getUsername())
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found"));
+
+        Bike bike = bikeRepository.findById(bikeId)
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found"));
+
+        if (!Objects.equals(bike.getPartner().getId(), partner.getId())) {
+            throw new CustomException.AuthorizationException("You are not authorized to modify this bike");
+        }
+
+        bike.setStatus(status);
+        bikeRepository.save(bike);
         return mapToBikeResponse(bike);
     }
 
@@ -3130,24 +3674,6 @@ public class BikeServiceImpl implements BikeService {
                 .weekdayPricePerDay(request.getWeekdayPricePerDay())
                 .weekendPricePerDay(request.getWeekendPricePerDay())
                 .build();
-    }
-
-    @Override
-    @Transactional
-    public BikeResponse updateBikeStatus(String bikeId, BikeStatus status) {
-        User partner = userRepository.findByUsername(tokenHolder.getUsername())
-                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found"));
-
-        Bike bike = bikeRepository.findById(bikeId)
-                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found"));
-
-        if (!Objects.equals(bike.getPartner().getId(), partner.getId())) {
-            throw new CustomException.AuthorizationException("You are not authorized to modify this bike");
-        }
-
-        bike.setStatus(status);
-        bikeRepository.save(bike);
-        return mapToBikeResponse(bike);
     }
 
     private BikeResponse mapToBikeResponse(Bike bike) {
@@ -3182,9 +3708,58 @@ public class BikeServiceImpl implements BikeService {
                                         .isPermitted(policy.isPermitted())
                                         .build())
                                 .collect(Collectors.toSet()))
+                .partner(BikeDetailResponse.PartnerInfo.builder()
+                        .locationName(bike.getPartner().getPartnerDetail().getLocationName())
+                        .isVerified(bike.getPartner().getPartnerDetail().isVerified())
+                        .build())
                 .build();
     }
 }
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/CloudinaryServiceImpl.java
+---
+
+package com.doaibu.rebikeapi.service.impl;
+
+import com.cloudinary.Cloudinary;
+import com.doaibu.rebikeapi.service.CloudinaryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+public class CloudinaryServiceImpl implements CloudinaryService {
+
+    private final Cloudinary cloudinary;
+
+    @Override
+    public String uploadFile(MultipartFile file, String folder) {
+        try {
+            Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(),
+                    Map.of("folder", folder));
+            return (String) result.get("secure_url");
+        } catch (IOException e) {
+            throw new RuntimeException("Upload to Cloudinary failed", e);
+        }
+    }
+
+    @Override
+    public void deleteByPublicId(String publicId) {
+        try {
+            cloudinary.uploader().destroy(publicId, Map.of());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete file from Cloudinary", e);
+        }
+    }
+}
+
+
 
 
 ---
@@ -3227,41 +3802,75 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/MidtransServiceI
 
 package com.doaibu.rebikeapi.service.impl;
 
-import com.doaibu.rebikeapi.entity.Payment;
-import com.doaibu.rebikeapi.repository.PaymentRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.doaibu.rebikeapi.config.MidtransConfig;
+import com.doaibu.rebikeapi.constant.PaymentStatus;
 import com.doaibu.rebikeapi.dto.request.CreatePaymentRequest;
 import com.doaibu.rebikeapi.dto.response.MidtransChargeResponse;
+import com.doaibu.rebikeapi.entity.Payment;
+import com.doaibu.rebikeapi.entity.Transaction;
+import com.doaibu.rebikeapi.exception.CustomException;
+import com.doaibu.rebikeapi.repository.PaymentRepository;
+import com.doaibu.rebikeapi.config.MidtransConfig;
+import com.doaibu.rebikeapi.repository.TransactionRepository;
 import com.doaibu.rebikeapi.service.MidtransService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class MidtransServiceImpl implements MidtransService {
 
     private final PaymentRepository paymentRepository;
-
     private final MidtransConfig config;
     private final RestTemplate restTemplate;
+    private final TransactionRepository transactionRepository;
 
     public MidtransChargeResponse createTransaction(CreatePaymentRequest request) {
-        String base64Key = Base64.getEncoder().encodeToString((config.getServerKey() + ":").getBytes());
+        /** For integration with FE
+         String base64Key = Base64.getEncoder().encodeToString((config.getServerKey() + ":").getBytes());
+         HttpHeaders headers = new HttpHeaders();
+         headers.setContentType(MediaType.APPLICATION_JSON);
+         headers.set("Authorization", "Basic " + base64Key);
 
+         Map<String, Object> payload = new HashMap<>();
+
+         payload.put("payment_type", "bank_transfer");
+
+         Map<String, Object> transactionDetails = Map.of(
+         "order_id", request.getOrderId(),
+         "gross_amount", request.getGrossAmount()
+         );
+         Map<String, Object> customerDetails = Map.of(
+         "name", request.getCustomerName(),
+         "email", request.getCustomerEmail()
+         );
+
+         payload.put("transaction_details", transactionDetails);
+         payload.put("customer_details", customerDetails);
+
+         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+         ResponseEntity<MidtransChargeResponse> response = restTemplate.exchange(
+         config.getApiUrl(),
+         HttpMethod.POST,
+         entity,
+         MidtransChargeResponse.class
+         );
+
+         return response.getBody();*/
+
+        String base64Key = Base64.getEncoder().encodeToString((config.getServerKey() + ":").getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Basic " + base64Key);
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put("payment_type", "bank_transfer");
 
         Map<String, Object> transactionDetails = Map.of(
                 "order_id", request.getOrderId(),
@@ -3269,18 +3878,18 @@ public class MidtransServiceImpl implements MidtransService {
         );
 
         Map<String, Object> customerDetails = Map.of(
-                "first_name", request.getCustomerName(),
+                "name", request.getCustomerName(),
                 "email", request.getCustomerEmail()
         );
 
         Map<String, Object> bankTransfer = Map.of("bank", request.getBank());
 
+        payload.put("payment_type", "bank_transfer");
         payload.put("transaction_details", transactionDetails);
         payload.put("customer_details", customerDetails);
         payload.put("bank_transfer", bankTransfer);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
-
         ResponseEntity<MidtransChargeResponse> response = restTemplate.exchange(
                 config.getApiUrl(),
                 HttpMethod.POST,
@@ -3288,25 +3897,40 @@ public class MidtransServiceImpl implements MidtransService {
                 MidtransChargeResponse.class
         );
 
-        System.out.println(response.getBody());
         return response.getBody();
     }
 
     @Override
-    public void handleNotification(Map<String, Object> payload) {
+    public void handleWebhook(Map<String, Object> payload) {
         String orderId = (String) payload.get("order_id");
-        String transactionStatus = (String) payload.get("transaction_status");
+        String paymentType = (String) payload.get("payment_type");
+        String trxStatus = (String) payload.get("transaction_status");
+        BigDecimal amount = new BigDecimal((String) payload.get("gross_amount"));
 
         Payment payment = paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Payment not found."));
 
-        payment.setStatus(transactionStatus);
+        PaymentStatus status = null;
+        if ("settlement".equals(trxStatus)) {
+            status = PaymentStatus.PAID;
+        } else if ("expired".equals(trxStatus)) {
+            status = PaymentStatus.EXPIRED;
+        } else if ("cancelled".equals(trxStatus)) {
+            status = PaymentStatus.CANCELLED;
+        }
+
+        payment.setOrderId(orderId);
+        payment.setPaymentType(paymentType);
+        payment.setStatus(status);
+        payment.setAmount(amount);
         payment.setUpdatedAt(LocalDateTime.now());
-
         paymentRepository.save(payment);
+
+        Transaction transaction = payment.getTransaction();
+        transaction.setPaymentStatus(status);
+        transactionRepository.save(transaction);
     }
 }
-
 
 
 ---
@@ -3376,6 +4000,7 @@ public class PartnerServiceImpl implements PartnerService {
                         .bankName(partner.getBankName())
                         .bankAccountName(partner.getBankAccountName())
                         .bankAccountNumber(partner.getBankAccountNumber())
+                        .isVerified(partner.isVerified())
                         .build();
             } else {
                 throw new CustomException.ResourceNotFoundException("Partner not found for the authenticated user.");
@@ -3429,6 +4054,7 @@ import com.doaibu.rebikeapi.entity.Transaction;
 import com.doaibu.rebikeapi.entity.User;
 import com.doaibu.rebikeapi.exception.CustomException;
 import com.doaibu.rebikeapi.repository.PayoutRepository;
+import com.doaibu.rebikeapi.repository.SystemConfigurationRepository;
 import com.doaibu.rebikeapi.repository.TransactionRepository;
 import com.doaibu.rebikeapi.repository.UserRepository;
 import com.doaibu.rebikeapi.service.PayoutService;
@@ -3450,30 +4076,60 @@ public class PayoutServiceImpl implements PayoutService {
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
     private final TokenHolder tokenHolder;
+    private final SystemConfigurationRepository systemConfigRepository;
+
+    @Override
+    public List<PayoutResponse> getAllPayouts() {
+        return payoutRepository.findAll().stream()
+                .map(this::mapToPayoutResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PayoutResponse> getPayoutsForPartner() {
+        User partnerUser = userRepository.findByUsername(tokenHolder.getUsername())
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
+
+        return payoutRepository.findByPartnerOrderByRequestedAtDesc(partnerUser).stream()
+                .map(this::mapToPayoutResponse)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
     public PayoutResponse requestPayout(PayoutRequest request) {
         User partnerUser = userRepository.findByUsername(tokenHolder.getUsername())
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-        
-                Partner partnerDetails = partnerUser.getPartnerDetail();
+        Partner partnerDetails = partnerUser.getPartnerDetail();
+
+        if (!partnerDetails.isVerified()) {
+            throw new CustomException.AuthorizationException("Akun Anda harus terverifikasi untuk dapat mengajukan pencairan dana.");
+        }
 
         if (partnerDetails.getBankName() == null || partnerDetails.getBankAccountNumber() == null) {
             throw new CustomException.BadRequestException("Bank information is incomplete. Please complete it in your profile.");
         }
+
+        BigDecimal platformFeePercentage = new BigDecimal(
+                systemConfigRepository.findById("platform_fee_percentage")
+                        .orElseThrow(() -> new IllegalStateException("Platform fee not configured."))
+                        .getConfigValue()
+        );
 
         BigDecimal totalRevenue = transactionRepository.findByBike_Partner(partnerUser).stream()
                 .filter(t -> t.getBookingStatus() == BookingStatus.COMPLETED)
                 .map(Transaction::getTotalCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        BigDecimal totalFee = totalRevenue.multiply(platformFeePercentage);
+        BigDecimal netRevenue = totalRevenue.subtract(totalFee);
+
         BigDecimal totalPaidOut = payoutRepository.findByPartnerOrderByRequestedAtDesc(partnerUser).stream()
                 .filter(p -> p.getStatus() == PayoutStatus.APPROVED)
                 .map(Payout::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal availableBalance = totalRevenue.subtract(totalPaidOut);
+        BigDecimal availableBalance = netRevenue.subtract(totalPaidOut);
 
         if (request.getAmount().compareTo(availableBalance) > 0) {
             throw new CustomException.BadRequestException("The withdrawal amount exceeds the available balance. Balance is IDR " + availableBalance);
@@ -3497,7 +4153,7 @@ public class PayoutServiceImpl implements PayoutService {
                 .build();
 
         payoutRepository.save(payout);
-        return mapToResponse(payout);
+        return mapToPayoutResponse(payout);
     }
 
     @Override
@@ -3505,35 +4161,23 @@ public class PayoutServiceImpl implements PayoutService {
     public void processPayout(String payoutId, ProcessPayoutRequest request) {
         Payout payout = payoutRepository.findById(payoutId)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Payout request not found."));
-
         if (payout.getStatus() != PayoutStatus.PENDING) {
             throw new CustomException.BadRequestException("This payout has already been processed.");
         }
 
-        payout.setStatus(request.getStatus());
-        payout.setNotes(request.getNotes());
+        if (request.getStatus() == PayoutStatus.APPROVED) {
+            payout.setStatus(PayoutStatus.APPROVED);
+            payout.setNotes(request.getNotes() != null ? request.getNotes() : "Approved manually by admin.");
+        } else {
+            payout.setStatus(PayoutStatus.REJECTED);
+            payout.setNotes(request.getNotes());
+        }
+
         payout.setProcessedAt(LocalDateTime.now());
         payoutRepository.save(payout);
     }
 
-    @Override
-    public List<PayoutResponse> getPayoutsForPartner() {
-        User partnerUser = userRepository.findByUsername(tokenHolder.getUsername())
-                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-        
-                return payoutRepository.findByPartnerOrderByRequestedAtDesc(partnerUser).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<PayoutResponse> getAllPayouts() {
-        return payoutRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    private PayoutResponse mapToResponse(Payout payout) {
+    private PayoutResponse mapToPayoutResponse(Payout payout) {
         return PayoutResponse.builder()
                 .id(payout.getId())
                 .partnerName(payout.getPartner().getFirstName())
@@ -3573,13 +4217,6 @@ public class PickupPointServiceImpl implements PickupPointService {
     private final PickupPointRepository pickupPointRepository;
 
     @Override
-    public List<PickupPointResponse> getAllPickupPoints() {
-        return pickupPointRepository.findAll().stream()
-                .map(this::mapToPickupPointResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public PickupPointResponse createPickupPoint(PickupPointRequest request) {
         PickupPoint pickupPoint = PickupPoint.builder()
                 .locationName(request.getLocationName())
@@ -3588,6 +4225,13 @@ public class PickupPointServiceImpl implements PickupPointService {
 
         pickupPointRepository.save(pickupPoint);
         return mapToPickupPointResponse(pickupPoint);
+    }
+
+    @Override
+    public List<PickupPointResponse> getAllPickupPoints() {
+        return pickupPointRepository.findAll().stream()
+                .map(this::mapToPickupPointResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -3678,10 +4322,12 @@ import com.doaibu.rebikeapi.dto.request.TransactionRequest;
 import com.doaibu.rebikeapi.dto.response.*;
 import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
 import com.doaibu.rebikeapi.entity.Bike;
+import com.doaibu.rebikeapi.entity.Payment;
 import com.doaibu.rebikeapi.entity.Transaction;
 import com.doaibu.rebikeapi.entity.User;
 import com.doaibu.rebikeapi.exception.CustomException;
 import com.doaibu.rebikeapi.repository.BikeRepository;
+import com.doaibu.rebikeapi.repository.PaymentRepository;
 import com.doaibu.rebikeapi.repository.TransactionRepository;
 import com.doaibu.rebikeapi.repository.UserRepository;
 import com.doaibu.rebikeapi.service.MidtransService;
@@ -3693,11 +4339,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -3707,6 +4358,7 @@ import java.util.stream.Collectors;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final PaymentRepository paymentRepository;
     private final MidtransService midtransService;
     private final BikeRepository bikeRepository;
     private final UserRepository userRepository;
@@ -3718,10 +4370,8 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             User customer = userRepository.findByUsername(tokenHolder.getUsername())
                     .orElseThrow(() -> new CustomException.ResourceNotFoundException("Customer not found."));
-
-            Bike bike = bikeRepository.findById(request.getBikeID().toString())
+            Bike bike = bikeRepository.findById(request.getBikeID())
                     .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found."));
-
             if (bike.getStatus() != BikeStatus.AVAILABLE) {
                 throw new CustomException.BadRequestException("Bike is not available for booking.");
             }
@@ -3737,33 +4387,72 @@ public class TransactionServiceImpl implements TransactionService {
                     .baseCost(baseCost)
                     .additionalCosts(BigDecimal.ZERO)
                     .totalCost(baseCost)
-                    .paymentStatus(PaymentStatus.UNPAID)
                     .bookingStatus(BookingStatus.PENDING)
-                    .paymentProofUrl(null)
+                    .paymentStatus(PaymentStatus.PENDING)
                     .build();
 
             transactionRepository.save(transaction);
 
+            String orderId = "INV-RBK-" + transaction.getId();
+
             CreatePaymentRequest payRequest = CreatePaymentRequest.builder()
-                    .orderId(transaction.getId())
-                    .grossAmount(baseCost)
+                    .orderId(orderId)
+                    .grossAmount(transaction.getTotalCost())
                     .customerName(customer.getFirstName() + " " + customer.getLastName())
                     .customerEmail(customer.getEmail())
-                    .bank("BRI")
+                    .bank("BRI") // remove for integration with fe
                     .build();
 
+            MidtransChargeResponse response = midtransService.createTransaction(payRequest);
 
-            return midtransService.createTransaction(payRequest);
+            String bank = null;
+            String vaNumber = null;
+
+            if (response.getVaNumbers() instanceof List<?> vaList && !vaList.isEmpty()) {
+                Object vaObj = vaList.get(0);
+                if (vaObj instanceof Map<?, ?> map) {
+                    bank = (String) map.get("bank");
+                    vaNumber = (String) map.get("va_number");
+                }
+            }
+
+            Payment payment = Payment.builder()
+                    .orderId(orderId)
+                    .status(PaymentStatus.PENDING)
+                    .paymentType(response.getPaymentType())
+                    .amount(baseCost)
+                    .bank(bank)
+                    .vaNumber(vaNumber)
+                    .snapUrl(response.getRedirectUrl())
+                    .transaction(transaction)
+                    .build();
+
+            paymentRepository.save(payment);
+            return response;
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new CustomException.ConflictException("Sorry, this bike has just been reserved by someone else.");
         }
     }
 
     @Override
+    public PagedResponse<TransactionDetailResponse> getAllTransactions(Pageable pageable) {
+        Page<Transaction> transactionPage = transactionRepository.findAll(pageable);
+        List<TransactionDetailResponse> transactionResponses = transactionPage.stream()
+                .map(this::mapToTransactionDetailedResponse)
+                .collect(Collectors.toList());
+        return PagedResponse.<TransactionDetailResponse>builder()
+                .data(transactionResponses)
+                .page(transactionPage.getNumber())
+                .size(transactionPage.getSize())
+                .totalElements(transactionPage.getTotalElements())
+                .totalPages(transactionPage.getTotalPages())
+                .build();
+    }
+
+    @Override
     public List<TransactionResponse> getTransactionHistory() {
         User customer = userRepository.findByUsername(tokenHolder.getUsername())
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Customer not found."));
-
         return transactionRepository.findByCustomer(customer).stream()
                 .map(this::mapToTransactionResponse)
                 .collect(Collectors.toList());
@@ -3773,18 +4462,16 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionDetailResponse getTransactionDetails(String transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Transaction not found."));
-
         return mapToTransactionDetailedResponse(transaction);
     }
 
-    @Transactional
     @Override
-    public void uploadPaymentProof(String transactionId, String paymentProofUrl) {
-        Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Transaction not found."));
-
-        transaction.setPaymentStatus(PaymentStatus.PENDING_CONFIRMATION);
-        transactionRepository.save(transaction);
+    public List<TransactionDetailResponse> getTransactionsForPartner() {
+        User partner = userRepository.findByUsername(tokenHolder.getUsername())
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
+        return transactionRepository.findByBike_Partner(partner).stream()
+                .map(this::mapToTransactionDetailedResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -3792,15 +4479,23 @@ public class TransactionServiceImpl implements TransactionService {
     public void verifyPayment(String transactionId, boolean isValid, String reason) {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Transaction not found."));
-
         if (isValid) {
             transaction.setPaymentStatus(PaymentStatus.PAID);
             transaction.setBookingStatus(BookingStatus.CONFIRMED);
         } else {
-            transaction.setPaymentStatus(PaymentStatus.REFUNDED);
+            transaction.setPaymentStatus(PaymentStatus.EXPIRED);
             transaction.setBookingStatus(BookingStatus.CANCELLED);
         }
 
+        transactionRepository.save(transaction);
+    }
+
+    @Transactional
+    @Override
+    public void uploadPaymentProof(String transactionId, String paymentProofUrl) {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Transaction not found."));
+        transaction.setPaymentStatus(PaymentStatus.PENDING);
         transactionRepository.save(transaction);
     }
 
@@ -3809,10 +4504,8 @@ public class TransactionServiceImpl implements TransactionService {
     public void confirmTransaction(String transactionId, BookingStatus status) {
         User partner = userRepository.findByUsername(tokenHolder.getUsername())
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Transaction not found."));
-
         if (!Objects.equals(transaction.getBike().getPartner().getId(), partner.getId())) {
             throw new CustomException.AuthorizationException("You are not authorized to modify this transaction.");
         }
@@ -3833,52 +4526,21 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDetailResponse> getTransactionsForPartner() {
-        User partner = userRepository.findByUsername(tokenHolder.getUsername())
-                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-
-        return transactionRepository.findByBike_Partner(partner).stream()
-                .map(this::mapToTransactionDetailedResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public PagedResponse<TransactionDetailResponse> getAllTransactions(Pageable pageable) {
-        Page<Transaction> transactionPage = transactionRepository.findAll(pageable);
-
-        List<TransactionDetailResponse> transactionResponses = transactionPage.stream()
-                .map(this::mapToTransactionDetailedResponse)
-                .collect(Collectors.toList());
-
-        return PagedResponse.<TransactionDetailResponse>builder()
-                .data(transactionResponses)
-                .page(transactionPage.getNumber())
-                .size(transactionPage.getSize())
-                .totalElements(transactionPage.getTotalElements())
-                .totalPages(transactionPage.getTotalPages())
-                .build();
-    }
-
-    @Override
     public FinancialSummaryResponse getFinancialSummaryForPartner() {
         User partner = userRepository.findByUsername(tokenHolder.getUsername())
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-
         List<Transaction> transactions = transactionRepository.findByBike_Partner(partner);
 
         BigDecimal totalRevenue = transactions.stream()
                 .filter(t -> t.getBookingStatus() == BookingStatus.COMPLETED)
                 .map(Transaction::getTotalCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         int totalCompleted = (int) transactions.stream()
                 .filter(t -> t.getBookingStatus() == BookingStatus.COMPLETED)
                 .count();
-
         int totalPending = (int) transactions.stream()
                 .filter(t -> t.getBookingStatus() == BookingStatus.PENDING)
                 .count();
-
         return FinancialSummaryResponse.builder()
                 .totalRevenue(totalRevenue)
                 .totalCompletedTransactions(totalCompleted)
@@ -3893,19 +4555,22 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactions = transactionRepository.findByBike_Partner(partner);
 
         Map<Month, BigDecimal> monthlyRevenue = transactions.stream()
-                .filter(t -> t.getBookingStatus() == BookingStatus.COMPLETED)
+                .filter(t -> t.getBookingStatus() == BookingStatus.COMPLETED && t.getStartDate().getYear() == LocalDate.now().getYear())
                 .collect(Collectors.groupingBy(
                         t -> t.getStartDate().getMonth(),
                         Collectors.mapping(Transaction::getTotalCost, Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))
                 ));
 
-        List<String> labels = Arrays.asList("Jan", "Feb", "Mar", "Apr", "Mei", "Jun");
-        List<BigDecimal> data = labels.stream()
-                .map(monthStr -> {
-                    Month month = Month.valueOf(monthStr.toUpperCase());
-                    return monthlyRevenue.getOrDefault(month, BigDecimal.ZERO);
-                })
-                .collect(Collectors.toList());
+        List<String> labels = new ArrayList<>();
+        List<BigDecimal> data = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+
+        for (int i = 5; i >= 0; i--) {
+            Month month = currentDate.minusMonths(i).getMonth();
+            String monthLabel = month.getDisplayName(TextStyle.SHORT, new Locale("id", "ID"));
+            labels.add(monthLabel);
+            data.add(monthlyRevenue.getOrDefault(month, BigDecimal.ZERO));
+        }
 
         return RevenueTrendResponse.builder()
                 .labels(labels)
@@ -4018,6 +4683,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
@@ -4040,9 +4706,28 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public RegisterResponse registerCustomer(RegisterCustomerRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new CustomException.ConflictException("Email sudah terdaftar.");
+        if (request.getEmail() == null || request.getEmail().isBlank() ||
+                request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new CustomException.BadRequestException("Email and password are required.");
         }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            User user = userRepository.findByEmail(request.getEmail());
+            Set<Role> roles = user.getRoles();
+            Set<UserRole> roleNames = roles.stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toSet());
+
+            if (roleNames.contains(UserRole.CUSTOMER)) {
+                throw new CustomException.ConflictException("Email already in use as customer.");
+            }
+
+            roles.add(roleService.getOrCreate(UserRole.CUSTOMER));
+            user.setRoles(roles);
+            userRepository.save(user);
+            return mapToRegisterResponse(user);
+        }
+
         Set<Role> customerRole = new HashSet<>();
         customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
 
@@ -4054,9 +4739,41 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public RegisterResponse registerPartner(RegisterPartnerRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new CustomException.ConflictException("Email sudah terdaftar.");
+        if (request.getEmail() == null || request.getEmail().isBlank() ||
+                request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new CustomException.BadRequestException("Email and password are required.");
         }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            User user = userRepository.findByEmail(request.getEmail());
+            Set<Role> roles = user.getRoles();
+            Set<UserRole> roleNames = roles.stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toSet());
+
+            System.out.println(roleNames);
+
+            if (roleNames.contains(UserRole.PARTNER)) {
+                throw new CustomException.ConflictException("Email already in use as partner");
+            }
+
+            roles.add(roleService.getOrCreate(UserRole.PARTNER));
+            user.setRoles(roles);
+
+            Partner partner = Partner.builder()
+                    .user(user)
+                    .locationName(request.getLocationName())
+                    .bankAccountName(request.getBankAccountName())
+                    .bankAccountNumber(request.getBankAccountNumber())
+                    .bankName(request.getBankName())
+                    .isVerified(false)
+                    .build();
+
+            user.setPartnerDetail(partner);
+            userRepository.save(user);
+            return mapToRegisterResponse(user);
+        }
+
         Set<Role> partnerRole = new HashSet<>();
         partnerRole.add(roleService.getOrCreate(UserRole.PARTNER));
 
@@ -4066,8 +4783,8 @@ public class UserServiceImpl implements UserService {
                 .user(user)
                 .isVerified(false)
                 .build();
-        user.setPartnerDetail(partner);
 
+        user.setPartnerDetail(partner);
         userRepository.save(user);
         return mapToRegisterResponse(user);
     }
@@ -4142,7 +4859,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public PagedResponse<AdminPartnerResponse> getAllPartners(Pageable pageable) {
         Set<Role> roles = new HashSet<>();
         roles.add(roleService.getOrCreate(UserRole.PARTNER));
@@ -4176,11 +4892,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void verifyPartner(String partnerId, boolean isVerified) {
+    public void verifyPartner(String partnerId) {
         Partner partner = partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
 
-        partner.setVerified(isVerified);
+        partner.setVerified(!partner.isVerified());
         partnerRepository.save(partner);
     }
 
@@ -4285,6 +5001,7 @@ public class UserServiceImpl implements UserService {
         String emailText = "Gunakan kode OTP ini untuk verifikasi email Rebike Anda.\n\n"
                 + "Kode OTP: " + otp + "\n\n"
                 + "PENTING: Kode ini hanya berlaku selama 10 menit. Jangan berikan kode ini kepada siapapun.";
+
         emailService.sendEmail(user.getEmail(), "Verifikasi Email Rebike (Berlaku 10 Menit)", emailText);
     }
 
@@ -4351,6 +5068,20 @@ public interface AdminDashboardService {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/AdminSettingService.java
+---
+
+package com.doaibu.rebikeapi.service;
+
+import java.math.BigDecimal;
+
+public interface AdminSettingService {
+    BigDecimal getPlatformFeePercentage();
+    void updatePlatformFeePercentage(BigDecimal newFee);
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/BikeService.java
 ---
 
@@ -4360,21 +5091,39 @@ import com.doaibu.rebikeapi.constant.BikeStatus;
 import com.doaibu.rebikeapi.dto.request.BikeRequest;
 import com.doaibu.rebikeapi.dto.response.BikeDetailResponse;
 import com.doaibu.rebikeapi.dto.response.BikeResponse;
+import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface BikeService {
     BikeResponse addBike(BikeRequest request);
 
-    List<BikeResponse> getAllBikes();
+    PagedResponse<BikeResponse> getAllBikes(Pageable pageable);
 
     BikeDetailResponse getBikeById(String id);
 
     BikeResponse updateBike(String id, BikeRequest request);
 
-    void deleteBike(String id);
-
     BikeResponse updateBikeStatus(String bikeId, BikeStatus status);
+
+    void deleteBike(String id);
+}
+
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/CloudinaryService.java
+---
+
+package com.doaibu.rebikeapi.service;
+
+import org.springframework.web.multipart.MultipartFile;
+
+public interface CloudinaryService {
+    String uploadFile(MultipartFile file, String folder);
+
+    void deleteByPublicId(String publicId);
 }
 
 
@@ -4404,7 +5153,7 @@ import com.doaibu.rebikeapi.dto.response.MidtransChargeResponse;
 public interface MidtransService {
     MidtransChargeResponse createTransaction(CreatePaymentRequest request);
 
-    void handleNotification(Map<String, Object> payload);
+    void handleWebhook(Map<String, Object> payload);
 }
 
 
@@ -4442,10 +5191,13 @@ import com.doaibu.rebikeapi.dto.response.PayoutResponse;
 import java.util.List;
 
 public interface PayoutService {
-    PayoutResponse requestPayout(PayoutRequest request);
-    void processPayout(String payoutId, ProcessPayoutRequest request);
-    List<PayoutResponse> getPayoutsForPartner();
     List<PayoutResponse> getAllPayouts();
+
+    List<PayoutResponse> getPayoutsForPartner();
+
+    PayoutResponse requestPayout(PayoutRequest request);
+
+    void processPayout(String payoutId, ProcessPayoutRequest request);
 }
 
 
@@ -4461,10 +5213,10 @@ import com.doaibu.rebikeapi.dto.response.PickupPointResponse;
 import java.util.List;
 
 public interface PickupPointService {
+    PickupPointResponse createPickupPoint(PickupPointRequest request);
+
     List<PickupPointResponse> getAllPickupPoints();
 
-    PickupPointResponse createPickupPoint(PickupPointRequest request);
-    
     PickupPointResponse updatePickupPoint(String id, PickupPointRequest request);
 
     void deletePickupPoint(String id);
@@ -4516,13 +5268,11 @@ public interface TransactionService {
 
     TransactionDetailResponse getTransactionDetails(String transactionId);
 
+    List<TransactionDetailResponse> getTransactionsForPartner();
+
     void verifyPayment(String transactionId, boolean isValid, String reason);
 
     void uploadPaymentProof(String transactionId, String paymentProofUrl);
-
-
-    List<TransactionDetailResponse> getTransactionsForPartner();
-
 
     void confirmTransaction(String transactionId, BookingStatus status);
 
@@ -4562,7 +5312,7 @@ public interface UserService {
 
     AdminPartnerResponse getPartnerById(String partnerId);
 
-    void verifyPartner(String partnerId, boolean isVerified);
+    void verifyPartner(String partnerId);
 
     void processForgotPassword(String email, String feBaseUrl);
 
@@ -4619,9 +5369,12 @@ public class TokenHolder {
     private final JwtUtil jwtUtil;
 
     public String getUsername() {
-        String token = request.getHeader("Authorization").substring(7);
-
-        return jwtUtil.extractUsername(token);
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return jwtUtil.extractUsername(token);
+        }
+        return null;
     }
 }
 

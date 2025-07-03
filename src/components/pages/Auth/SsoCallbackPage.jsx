@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "@/store/auth/authSlice";
+
 import { jwtDecode } from "jwt-decode";
 
 export default function SsoCallbackPage() {
@@ -22,7 +22,7 @@ export default function SsoCallbackPage() {
       };
       localStorage.setItem("user", JSON.stringify(user));
 
-      dispatch(loginSuccess({ token, user }));
+      
 
       if (user.roles.includes("ROLE_ADMIN")) {
         navigate("/admin/dashboard", { replace: true });

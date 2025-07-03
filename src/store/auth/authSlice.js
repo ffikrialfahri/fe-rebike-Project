@@ -1,5 +1,7 @@
-
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '../../api/axios';
+import { jwtDecode } from 'jwt-decode';
+import toast from 'react-hot-toast';
 
 const initialState = {
     token: localStorage.getItem('token') || null,
@@ -11,24 +13,126 @@ const initialState = {
     verifySuccess: false,
 };
 
+// Async Thunks
+export const loginUser = createAsyncThunk(
+    'auth/loginUser',
+    async ({ credentials, onSuccess }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post('/auth/login', credentials);
+            const token = response.data.data.token;
+            localStorage.setItem('token', token);
+            const decodedUser = jwtDecode(token);
+
+            const roles = decodedUser.roles || (decodedUser.role ? [decodedUser.role] : []);
+            const user = {
+                username: decodedUser.sub,
+                roles: roles,
+                firstName: decodedUser.firstName
+            };
+            localStorage.setItem('user', JSON.stringify(user));
+
+            toast.success(`Selamat datang, ${user.firstName || user.username}!`);
+            if (onSuccess) {
+                onSuccess(user);
+            }
+            return { token, user };
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Login gagal. Periksa kembali email dan password Anda.';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const registerUser = createAsyncThunk(
+    'auth/registerUser',
+    async ({ userData, onComplete }, { rejectWithValue }) => {
+        try {
+            await axiosInstance.post('/auth/register/partner', userData);
+            toast.success('Registrasi berhasil! Silakan periksa email Anda untuk verifikasi.');
+            if (onComplete) {
+                onComplete();
+            }
+            return true;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Registrasi gagal. Coba lagi.';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const forgotPassword = createAsyncThunk(
+    'auth/forgotPassword',
+    async ({ email, onComplete }, { rejectWithValue }) => {
+        try {
+            await axiosInstance.post('/auth/forgot-password', { email });
+            toast.success("Jika email terdaftar, link reset password telah dikirim.");
+            if (onComplete) {
+                onComplete();
+            }
+            return true;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Gagal mengirim permintaan reset password.';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk(
+    'auth/resetPassword',
+    async ({ token, newPassword, onComplete }, { rejectWithValue }) => {
+        try {
+            // Asumsi BE memiliki endpoint ini, jika tidak, perlu disesuaikan dengan OTP
+            await axiosInstance.post('/auth/reset-password', { token, newPassword });
+            toast.success("Password berhasil direset! Silakan login.");
+            if (onComplete) {
+                onComplete();
+            }
+            return true;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Gagal mereset password.';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const verifyEmail = createAsyncThunk(
+    'auth/verifyEmail',
+    async ({ email, otp }, { rejectWithValue }) => {
+        try {
+            await axiosInstance.post('/auth/verify-email', { email, otp });
+            toast.success('Email berhasil diverifikasi.');
+            return true;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Verifikasi OTP gagal.';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const resendOtp = createAsyncThunk(
+    'auth/resendOtp',
+    async ({ email }, { rejectWithValue }) => {
+        try {
+            await axiosInstance.post('/auth/resend-otp', { email });
+            toast.success('OTP baru telah dikirim.');
+            return true;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Gagal mengirim ulang OTP.';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        loginRequest: (state) => {
-            state.loading = true;
-            state.error = null;
-        },
-        loginSuccess: (state, action) => {
-            state.loading = false;
-            state.isAuthenticated = true;
-            state.token = action.payload.token;
-            state.user = action.payload.user;
-        },
-        loginFailure: (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        },
         logout: (state) => {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
@@ -37,60 +141,85 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.error = null;
         },
-        registerRequest: (state) => { /*...*/ },
-        registerSuccess: (state) => { /*...*/ },
-        registerFailure: (state, action) => { /*...*/ },
-        
-        // --- TAMBAHKAN REDUCERS BARU DI SINI ---
-        forgotPasswordRequest: (state) => {
-            state.mutationLoading = true;
-            state.error = null;
-        },
-        forgotPasswordSuccess: (state) => {
-            state.mutationLoading = false;
-        },
-        forgotPasswordFailure: (state, action) => {
-            state.mutationLoading = false;
-            state.error = action.payload;
-        },
-
-        resetPasswordRequest: (state) => {
-            state.mutationLoading = true;
-            state.error = null;
-        },
-        resetPasswordSuccess: (state) => {
-            state.mutationLoading = false;
-        },
-        resetPasswordFailure: (state, action) => {
-            state.mutationLoading = false;
-            state.error = action.payload;
-        },
-
-        // --- Reducers lain yang sudah ada ---
-        verifyEmailRequest: (state) => { state.mutationLoading = true; state.error = null; },
-        verifyEmailSuccess: (state) => { state.mutationLoading = false; state.verifySuccess = true; },
-        verifyEmailFailure: (state, action) => { state.mutationLoading = false; state.error = action.payload; },
-        
-        resendOtpRequest: (state) => { state.mutationLoading = true; state.error = null; },
-        resendOtpSuccess: (state) => { state.mutationLoading = false; },
-        resendOtpFailure: (state, action) => { state.mutationLoading = false; state.error = action.payload; },
-
         resetAuthStatus: (state) => {
             state.verifySuccess = false;
             state.error = null;
         },
     },
+    extraReducers: (builder) => {
+        builder
+            .addCase(loginUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.isAuthenticated = true;
+                state.token = action.payload.token;
+                state.user = action.payload.user;
+            })
+            .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(registerUser.pending, (state) => {
+                state.mutationLoading = true;
+                state.error = null;
+            })
+            .addCase(registerUser.fulfilled, (state) => {
+                state.mutationLoading = false;
+            })
+            .addCase(registerUser.rejected, (state, action) => {
+                state.mutationLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(forgotPassword.pending, (state) => {
+                state.mutationLoading = true;
+                state.error = null;
+            })
+            .addCase(forgotPassword.fulfilled, (state) => {
+                state.mutationLoading = false;
+            })
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.mutationLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(resetPassword.pending, (state) => {
+                state.mutationLoading = true;
+                state.error = null;
+            })
+            .addCase(resetPassword.fulfilled, (state) => {
+                state.mutationLoading = false;
+            })
+            .addCase(resetPassword.rejected, (state, action) => {
+                state.mutationLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(verifyEmail.pending, (state) => {
+                state.mutationLoading = true;
+                state.error = null;
+            })
+            .addCase(verifyEmail.fulfilled, (state) => {
+                state.mutationLoading = false;
+                state.verifySuccess = true;
+            })
+            .addCase(verifyEmail.rejected, (state, action) => {
+                state.mutationLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(resendOtp.pending, (state) => {
+                state.mutationLoading = true;
+                state.error = null;
+            })
+            .addCase(resendOtp.fulfilled, (state) => {
+                state.mutationLoading = false;
+            })
+            .addCase(resendOtp.rejected, (state, action) => {
+                state.mutationLoading = false;
+                state.error = action.payload;
+            });
+    },
 });
 
-// --- PERBARUI EKSPOR DI SINI ---
-export const {
-    loginRequest, loginSuccess, loginFailure, logout,
-    registerRequest, registerSuccess, registerFailure,
-    forgotPasswordRequest, forgotPasswordSuccess, forgotPasswordFailure, // <-- Tambahkan ini
-    resetPasswordRequest, resetPasswordSuccess, resetPasswordFailure,   // <-- Tambahkan ini
-    verifyEmailRequest, verifyEmailSuccess, verifyEmailFailure,
-    resendOtpRequest, resendOtpSuccess, resendOtpFailure,
-    resetAuthStatus
-} = authSlice.actions;
-
+export const { logout, resetAuthStatus } = authSlice.actions;
 export default authSlice.reducer;

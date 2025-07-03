@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { forgotPasswordRequest } from "@/store/auth/authSlice";
+import { forgotPassword } from "@/store/auth/authSlice";
 
 export default function ForgotPasswordPage() {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     if (!email) return;
     dispatch(
-      forgotPasswordRequest({ email, onComplete: () => setIsSubmitted(true) })
+      forgotPassword({ email, onComplete: () => setIsSubmitted(true) })
     );
   };
 

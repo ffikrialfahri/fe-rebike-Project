@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loginRequest } from "@/store/auth/authSlice";
+import { loginUser } from "@/store/auth/authSlice";
 import Logo3 from "@/assets/logo3.png";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -67,7 +67,7 @@ export default function LoginPage({ isOpen, onClose }) {
 
   const handleLoginSubmit = (data) => {
     dispatch(
-      loginRequest({
+      loginUser({
         credentials: { email: data.email, password: data.password },
         onSuccess: (user) => {
           if (user && user.roles) {

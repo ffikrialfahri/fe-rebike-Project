@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { resetPasswordRequest } from "@/store/auth/authSlice";
+import { resetPassword } from "@/store/auth/authSlice";
 import toast from "react-hot-toast";
 
 export default function ResetPasswordPage() {
@@ -20,7 +20,7 @@ export default function ResetPasswordPage() {
       return;
     }
     dispatch(
-      resetPasswordRequest({
+      resetPassword({
         token,
         newPassword,
         onComplete: () => navigate("/login"),

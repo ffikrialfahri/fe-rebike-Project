@@ -15,23 +15,26 @@ import toast from 'react-hot-toast';
 
 // --- PERBAIKI BAGIAN INI ---
 function* handleLogin(action) {
+    const { credentials, onSuccess } = action.payload;
     try {
-        const response = yield call(api.post, '/auth/login', action.payload.credentials);
+        const response = yield call(api.post, '/auth/login', credentials);
         const token = response.data.data.token;
 
-        // Simpan token dan info user ke localStorage
         localStorage.setItem('token', token);
         const decodedUser = jwtDecode(token);
         const user = {
             username: decodedUser.sub,
             roles: decodedUser.roles,
-            firstName: decodedUser.firstName // Ambil firstName dari token jika ada
+            firstName: decodedUser.firstName
         };
         localStorage.setItem('user', JSON.stringify(user));
 
-        // Dispatch success dengan data token dan user
         yield put(loginSuccess({ token, user }));
         toast.success(`Selamat datang, ${user.firstName || user.username}!`);
+
+        if (onSuccess) {
+            yield call(onSuccess, user);
+        }
 
     } catch (error) {
         const errorMessage = error.response?.data?.message || 'Login gagal. Periksa kembali email dan password Anda.';

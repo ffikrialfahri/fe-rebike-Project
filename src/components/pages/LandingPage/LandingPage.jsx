@@ -214,7 +214,7 @@ export default function LandingPage() {
             dan kelola usaha Anda dengan lebih mudah.
           </p>
           <Link
-            to="/login"
+            to="/register"
             className="bg-white text-brand-primary hover:bg-slate-100 font-bold py-3 px-8 rounded-lg transition text-lg shadow-md"
           >
             Daftar Sebagai Mitra

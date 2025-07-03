@@ -51,18 +51,19 @@ export default function LoginPage({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    if (isOpen && isAuthenticated && user?.roles?.includes("ROLE_PARTNER")) {
-      navigate("/mitra/dashboard", { replace: true });
-      onClose();
-    }
-  }, [isAuthenticated, user, navigate, onClose, isOpen]);
-
 
   // Handler untuk submit form, sekarang menggunakan Redux
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    dispatch(loginRequest({ credentials: { email, password } }));
+    dispatch(
+      loginRequest({
+        credentials: { email, password },
+        onSuccess: () => {
+          navigate("/mitra", { replace: true });
+          onClose(); // Tutup modal setelah berhasil login
+        },
+      })
+    );
   };
 
   if (!isOpen) return null;
@@ -77,10 +78,19 @@ export default function LoginPage({ isOpen, onClose }) {
         className="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Kolom Kiri (Logo) */}
-        <div className="hidden md:flex w-2/5 p-8 items-center justify-center bg-white rounded-l-lg">
-          <img src={Logo3} alt="Rebike Logo" className="w-full max-w-[200px]" />
-        </div>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 text-2xl font-bold"
+        >
+          &times;
+        </button>
+        {/* Kolom Kiri (Gambar Latar) */}
+        <div
+          className="hidden md:flex w-2/5 p-8 items-center justify-center bg-cover bg-center rounded-l-lg"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop')",
+          }}
+        ></div>
 
         {/* Kolom Kanan (Form Login) */}
         <div className="w-full md:w-3/5 p-8 flex flex-col justify-center">

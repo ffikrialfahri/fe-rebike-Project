@@ -13,7 +13,6 @@ const initialState = {
     verifySuccess: false,
 };
 
-// Async Thunks
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async ({ credentials, onSuccess }, { rejectWithValue }) => {

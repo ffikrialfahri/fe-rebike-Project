@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate, Link, Navigate } from "react-router-dom"; // 'Navigate' ditambahkan di sini
+import { useLocation, useNavigate, Link, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import {
@@ -11,6 +11,7 @@ import CountdownTimer from "@/components/ui/CountdownTimer";
 
 export default function VerifyEmailPage() {
   const [otp, setOtp] = useState("");
+  const [isOtpExpired, setIsOtpExpired] = useState(false); // State baru
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,6 +43,8 @@ export default function VerifyEmailPage() {
 
   const handleResend = () => {
     dispatch(resendOtp({ email }));
+    setOtp(""); // Kosongkan OTP setelah resend
+    setIsOtpExpired(false); // Reset status expired
     toast.success("OTP baru telah dikirim ke email Anda.");
   };
 
@@ -54,38 +57,54 @@ export default function VerifyEmailPage() {
         <p className="text-center text-slate-500 mb-6">
           Kami telah mengirimkan kode OTP 6 digit ke <strong>{email}</strong>.
         </p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="otp"
-              className="block text-sm font-medium text-slate-700 mb-1"
+        {!isOtpExpired ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="otp"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
+                Kode OTP
+              </label>
+              <input
+                type="text"
+                id="otp"
+                maxLength="6"
+                className="w-full px-4 py-2 text-center text-2xl tracking-[.5em] border border-slate-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+              />
+            </div>
+            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+            <button
+              type="submit"
+              disabled={mutationLoading}
+              className="w-full bg-teal-600 text-white py-2.5 rounded-lg hover:bg-teal-700 transition font-semibold disabled:bg-slate-400"
             >
-              Kode OTP
-            </label>
-            <input
-              type="text"
-              id="otp"
-              maxLength="6"
-              className="w-full px-4 py-2 text-center text-2xl tracking-[.5em] border border-slate-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
+              {mutationLoading ? "Memverifikasi..." : "Verifikasi"}
+            </button>
+          </form>
+        ) : (
+          <div className="text-center space-y-4">
+            <p className="text-red-500">Waktu OTP telah habis.</p>
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={mutationLoading}
+              className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-semibold disabled:bg-slate-400"
+            >
+              {mutationLoading ? "Mengirim Ulang..." : "Kirim Ulang OTP"}
+            </button>
           </div>
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <button
-            type="submit"
-            disabled={mutationLoading}
-            className="w-full bg-teal-600 text-white py-2.5 rounded-lg hover:bg-teal-700 transition font-semibold disabled:bg-slate-400"
-          >
-            {mutationLoading ? "Memverifikasi..." : "Verifikasi"}
-          </button>
-        </form>
-        <CountdownTimer
-          initialSeconds={60}
-          onTimeout={() => toast.info("Waktu habis, silakan kirim ulang OTP.")}
-          onResend={handleResend}
-        />
+        )}
+        {!isOtpExpired && (
+          <CountdownTimer
+            initialSeconds={60}
+            onTimeout={() => setIsOtpExpired(true)}
+            onResend={handleResend}
+          />
+        )}
       </div>
     </section>
   );

@@ -9,10 +9,9 @@ const axiosInstance = axios.create({
   },
 });
 
-// Tambahkan interceptor untuk token jika diperlukan
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // Sesuaikan dengan cara Anda menyimpan token
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

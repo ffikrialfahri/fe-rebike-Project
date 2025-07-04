@@ -1,12 +1,85 @@
+import { useState, useEffect } from "react";
+import Card from "../../components/ui/Card";
 import StatCard from "../../components/ui/StatCard";
 import ChartComponent from "../../components/ui/ChartComponent";
-import Card from "../../components/ui/Card";
-import { mitraChartData, chartOptions } from "../../lib/chart-config";
+import axios from "../../api/axios";
+import { formatRupiah } from "../../lib/navigation";
 
 export default function MitraDashboard() {
+  const [summary, setSummary] = useState(null);
+  const [bikes, setBikes] = useState(0);
+  const [transactions, setTransactions] = useState([]);
+  const [revenueTrend, setRevenueTrend] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [
+          summaryRes,
+          bikesRes,
+          transactionsRes,
+          revenueTrendRes,
+        ] = await Promise.all([
+          axios.get("/partner/financial-summary"),
+          axios.get("/partner/bikes"),
+          axios.get("/partner/transactions"),
+          axios.get("/partner/dashboard/revenue-trend"),
+        ]);
+
+        setSummary(summaryRes.data.data);
+        setBikes(bikesRes.data.data.totalElements);
+        setTransactions(transactionsRes.data.data);
+        setRevenueTrend(revenueTrendRes.data.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <p>Loading dashboard data...</p>;
+  }
+
+  if (error) {
+    return <p>Error loading dashboard data: {error.message}</p>;
+  }
+  
+  if (!summary) {
+    return <p>Data summary tidak tersedia.</p>;
+  }
+
+  const chartData = {
+    labels: Object.keys(revenueTrend.monthlyRevenue || {}),
+    datasets: [
+      {
+        label: "Pendapatan Bulanan",
+        data: Object.values(revenueTrend.monthlyRevenue || {}),
+        borderColor: "rgb(75, 192, 192)",
+        backgroundColor: 'rgba(75, 192, 192, 0.2)', 
+        tension: 0.1,
+        fill: true,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+  
   return (
     <>
-      {/* Header Dashboard */}
       <div className="flex items-center gap-2 mb-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -22,20 +95,79 @@ export default function MitraDashboard() {
             d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
           />
         </svg>
-        <h1 className="text-3xl font-bold text-slate-800">Dashbord</h1>
+        <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Kolom Kiri - Area Grafik Besar */}
         
-        {/* Kolom Kanan - Grid untuk StatCard */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
-          {/* StatCard: Order */}
+        <Card className="lg:col-span-2 min-h-[300px] p-4 flex flex-col">
+          <h3 className="text-xl font-semibold text-slate-700 mb-4">
+            Pendapatan Bulanan
+          </h3>
+          <div className="flex-grow">
+            <ChartComponent type="line" data={chartData} options={chartOptions} />
+          </div>
+        </Card>
+
+        <div className="flex flex-col gap-6">
+          <div className="flex-grow grid grid-cols-2 gap-6 items-center text-center ">
+            <StatCard
+              title="Order"
+              value={transactions.length}
+              valueColor="text-blue-600"
+              contentAlign="left"
+              valueAlign="center"
+            />
+            <StatCard
+              title="Product"
+              value={bikes}
+              valueColor="text-green-600"
+              contentAlign="left"
+              valueAlign="center"
+            />
+          </div>
+          <div className="flex-grow">
+            <StatCard
+              title={"Income"}
+              value={formatRupiah(summary.totalRevenue)}
+              valueColor="text-purple-600"
+              className="h-full"
+              contentAlign="left"
+            />
+          </div>
         </div>
       </div>
 
       <div className="mt-6">
-
+        <Card className="min-h-[400px] p-4">
+          <h3 className="text-xl font-semibold text-slate-700 mb-4">
+            Aktivitas Terbaru
+          </h3>
+          {transactions.length > 0 ? (
+            <ul className="space-y-3">
+              {transactions.slice(0, 5).map((transaction) => ( // Hanya tampilkan 5 terbaru
+                <li
+                  key={transaction.transactionID}
+                  className="p-3 bg-gray-50 rounded-md shadow-sm flex justify-between items-center"
+                >
+                  <div>
+                    <p className="font-medium text-slate-800">
+                      Booking ID: {transaction.transactionID.substring(0, 8)}...
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      Status: {transaction.bookingStatus}
+                    </p>
+                  </div>
+                  <span className="font-semibold text-lg text-indigo-600">
+                    {formatRupiah(transaction.totalPrice)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-slate-500">Belum ada aktivitas booking terbaru.</p>
+          )}
+        </Card>
       </div>
     </>
   );

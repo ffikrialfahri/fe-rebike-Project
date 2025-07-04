@@ -8,9 +8,9 @@ export const mitraNavItems = {
     navigate: [
         { name: 'Dasbor', path: '/mitra/dashboard', icon: LayoutDashboard },
         { name: 'Transaksi', path: '/mitra/transaction', icon: Package },
-        { name: 'Armada', path: '/mitra/armada', icon: Car },
-        { name: 'Laporan', path: '/mitra/laporan', icon: AreaChart },
-        { name: 'Riwayat', path: '/mitra/history', icon: History },
+        { name: 'Manajement Product', path: '/mitra/armada', icon: Car },
+        { name: 'Report & Finance', path: '/mitra/laporan', icon: AreaChart },
+        { name: 'History', path: '/mitra/history', icon: History },
     ],
     account: [
       { name: "Pengaturan Akun", path: "/mitra/profil", icon: Settings }
@@ -18,6 +18,14 @@ export const mitraNavItems = {
     subscriptions: [
       { name: "Billing", path: "/mitra/billing", icon: Receipt }
     ],
+};
+
+export const formatRupiah = (amount) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(amount);
 };
 
 export const adminNavItems = {

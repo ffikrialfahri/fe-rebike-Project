@@ -9,7 +9,6 @@ const initialState = {
     error: null,
 };
 
-// Async Thunks
 export const fetchPartners = createAsyncThunk(
     'admin/fetchPartners',
     async (_, { rejectWithValue }) => {
@@ -28,7 +27,6 @@ const adminSlice = createSlice({
     name: 'admin',
     initialState,
     reducers: {
-        // Add other reducers for direct state manipulation if needed
     },
     extraReducers: (builder) => {
         builder

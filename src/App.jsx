@@ -59,7 +59,7 @@ function App() {
         >
           <Route index element={<Navigate to="/mitra/dashboard" replace />} />
           <Route path="dashboard" element={<MitraDashboard />} />
-          <Route path="pesanan" element={<TransactionMitra />} />
+          <Route path="transaction" element={<TransactionMitra />} />
           <Route path="armada" element={<ArmadaManagement />} />
           <Route path="laporan" element={<LaporanMitra />} />
           <Route path="profil" element={<ProfilMitra />} />
@@ -70,9 +70,7 @@ function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute requiredRole="ROLE_ADMIN">
-              <AdminPanel />
-            </ProtectedRoute>
+            <AdminPanel />
           }
         >
           <Route index element={<Navigate to="/admin/dashboard" replace />} />

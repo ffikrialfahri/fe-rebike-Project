@@ -1,95 +1,182 @@
+import React, { useState, useEffect } from "react";
+import axios from "../../api/axios";
 import Card from "../../components/ui/Card";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchBikes } from "../../store/mitra/mitraSlice";
+import BikeFormModal from "../../components/modals/BikeFormModal";
+import { formatRupiah } from "../../lib/navigation";
 
 export default function ArmadaManagement() {
-  const dispatch = useDispatch();
-  const { bikes, loading, error } = useSelector((state) => state.mitra);
+  const [bikes, setBikes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("ALL");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentBike, setCurrentBike] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchBikes());
-  }, [dispatch]);
+    fetchBikes();
+  }, [searchQuery, filterStatus]);
+
+  const fetchBikes = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/partner/bikes");
+      let fetchedBikes = response.data.data.data;
+
+      if (filterStatus !== "ALL") {
+        fetchedBikes = fetchedBikes.filter(bike => bike.status === filterStatus);
+      }
+
+      if (searchQuery) {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        fetchedBikes = fetchedBikes.filter(
+          bike =>
+            bike.name.toLowerCase().includes(lowerCaseQuery) ||
+            bike.plateNumber.toLowerCase().includes(lowerCaseQuery)
+        );
+      }
+      setBikes(fetchedBikes);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleFilterChange = (e) => {
+    setFilterStatus(e.target.value);
+  };
+
+  const handleAddBike = () => {
+    setCurrentBike(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditBike = (bike) => {
+    setCurrentBike(bike);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteBike = async (bikeId) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus motor ini?")) {
+      try {
+        await axios.delete(`/partner/bikes/${bikeId}`);
+        fetchBikes();
+      } catch (err) {
+        alert("Gagal menghapus motor: " + err.message);
+      }
+    }
+  };
+
+  const handleSaveBike = async (bikeData) => {
+    try {
+      if (currentBike) {
+        await axios.put(`/partner/bikes/${currentBike.bikeID}`, bikeData);
+      } else {
+        await axios.post("/partner/bikes", bikeData);
+      }
+      fetchBikes();
+    } catch (err) {
+      alert("Gagal menyimpan motor: " + err.message);
+    }
+  };
+
+  if (loading) {
+    return <p>Memuat data armada...</p>;
+  }
+
+  if (error) {
+    return <p>Error memuat data armada: {error.message}</p>;
+  }
 
   return (
     <>
-      {/* Header Manajemen Product */}
       <div className="flex items-center gap-2 mb-6">
-        {/* SVG Icon untuk jam/dashboard, sesuai desain Figma */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-8 h-8 text-slate-700" // Ukuran dan warna icon
+          className="w-8 h-8 text-slate-700"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3 0a1.5 1.5 0 0 1-3 0m12 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3 0a1.5 1.5 0 0 1-3 0M3 15h18M6.75 6.75v.75m-3 3v.75m3 3v.75m3 3v.75m3 3v.75m3 3v.75m-3-12h.008v.008H12v-.008Zm3 0h.008v.008H15v-.008Z"
           />
         </svg>
-        <h1 className="text-3xl font-bold text-slate-800">Manajemen Product</h1>
+        <h1 className="text-3xl font-bold text-slate-800">Manajemen Armada</h1>
       </div>
 
-      {/* Kontainer untuk Bagian Atas (Mungkin Form Tambah/Edit) */}
-      <Card className="mb-6 min-h-[200px] flex items-center justify-center bg-slate-100"> {/* min-h untuk placeholder visual, bg-slate-100 untuk warna abu-abu */}
-        {/* Placeholder untuk bagian atas, sesuai desain Figma */}
-        <p className="text-slate-500">Area untuk Form Tambah/Edit Produk</p>
-        {/* Konten Anda yang sudah ada untuk tombol "Tambah Motor Baru" */}
-        {/* <button className="bg-brand-primary text-white px-4 py-2 rounded-lg text-sm mb-4 hover:bg-teal-700 transition shadow-sm">
-          + Tambah Motor Baru
-        </button> */}
+      <Card className="mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <input
+            type="text"
+            placeholder="Cari nama motor atau plat..."
+            className="p-2 border border-gray-300 rounded-md w-full md:w-1/3"
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+          <select
+            className="p-2 border border-gray-300 rounded-md"
+            value={filterStatus}
+            onChange={handleFilterChange}
+          >
+            <option value="ALL">Semua Status</option>
+            <option value="AVAILABLE">Tersedia</option>
+            <option value="RENTED">Disewa</option>
+            <option value="INACTIVE">Perbaikan</option>
+          </select>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            onClick={handleAddBike}
+          >
+            Tambah Motor Baru
+          </button>
+        </div>
       </Card>
 
-      {/* Kontainer untuk Bagian Bawah (Tabel Produk) */}
-      <Card className="min-h-[400px] flex items-center justify-center bg-slate-100"> {/* min-h untuk placeholder visual, bg-slate-100 untuk warna abu-abu */}
-        {/* Placeholder untuk bagian bawah, sesuai desain Figma */}
-        <p className="text-slate-500">Area untuk Tabel Manajemen Produk</p>
-        {/* Konten tabel Anda yang sudah ada */}
-        {/* {loading && <p>Loading armada...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-
-        {!loading && !error && (
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50">
+      <Card>
+        <h3 className="text-xl font-semibold text-slate-700 mb-4">Daftar Motor</h3>
+        {bikes.length === 0 ? (
+          <p className="text-slate-500">Tidak ada motor yang ditemukan.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead>
                 <tr>
-                  <th className="p-3">Motor</th>
-                  <th className="p-3">Plat No.</th>
-                  <th className="p-3">Harga/hari</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Aksi</th>
+                  <th className="py-2 px-4 border-b text-left">Nama Motor</th>
+                  <th className="py-2 px-4 border-b text-left">Plat Nomor</th>
+                  <th className="py-2 px-4 border-b text-left">Harga Harian (Weekday)</th>
+                  <th className="py-2 px-4 border-b text-left">Harga Harian (Weekend)</th>
+                  <th className="py-2 px-4 border-b text-left">Status</th>
+                  <th className="py-2 px-4 border-b text-left">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {bikes.map((bike) => (
-                  <tr
-                    key={bike.bikeID}
-                    className="border-b border-slate-100 last:border-b-0"
-                  >
-                    <td className="p-3 font-medium">{bike.name}</td>
-                    <td className="p-3">{bike.plateNumber || "N/A"}</td>
-                    <td className="p-3">
-                      Rp {bike.weekdayPricePerDay.toLocaleString("id-ID")}
-                    </td>
-                    <td className="p-3">
-                      <span
-                        className={
-                          bike.status === "AVAILABLE"
-                            ? "text-green-600 font-medium"
-                            : "text-red-600 font-medium"
-                        }
+                  <tr key={bike.bikeID}>
+                    <td className="py-2 px-4 border-b">{bike.name}</td>
+                    <td className="py-2 px-4 border-b">{bike.plateNumber}</td>
+                    <td className="py-2 px-4 border-b">{formatRupiah(bike.weekdayPricePerDay)}</td>
+                    <td className="py-2 px-4 border-b">{formatRupiah(bike.weekendPricePerDay)}</td>
+                    <td className="py-2 px-4 border-b">{bike.status}</td>
+                    <td className="py-2 px-4 border-b">
+                      <button
+                        className="bg-yellow-500 text-white px-3 py-1 rounded-md text-sm mr-2"
+                        onClick={() => handleEditBike(bike)}
                       >
-                        {bike.status}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      <button className="text-blue-600 hover:text-blue-800 text-xs font-semibold">
                         Edit
                       </button>
-                      <button className="text-red-600 hover:text-red-800 ml-2 text-xs font-semibold">
+                      <button
+                        className="bg-red-500 text-white px-3 py-1 rounded-md text-sm"
+                        onClick={() => handleDeleteBike(bike.bikeID)}
+                      >
                         Hapus
                       </button>
                     </td>
@@ -98,8 +185,15 @@ export default function ArmadaManagement() {
               </tbody>
             </table>
           </div>
-        )} */}
+        )}
       </Card>
+
+      <BikeFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveBike}
+        bikeData={currentBike}
+      />
     </>
   );
 }

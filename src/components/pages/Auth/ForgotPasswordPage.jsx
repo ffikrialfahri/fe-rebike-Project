@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword } from "@/store/auth/authSlice";
+import { MailCheck, KeyRound } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const dispatch = useDispatch();
@@ -21,6 +22,9 @@ export default function ForgotPasswordPage() {
     return (
       <section className="min-h-screen flex items-center justify-center bg-panel-bg">
         <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+          <div className="flex justify-center mb-4">
+            <MailCheck className="w-16 h-16 text-teal-500" />
+          </div>
           <h2 className="text-2xl font-bold text-center mb-2 text-teal-600">
             Periksa Email Anda
           </h2>
@@ -29,8 +33,8 @@ export default function ForgotPasswordPage() {
             password. Silakan periksa kotak masuk (dan folder spam) Anda.
           </p>
           <div className="mt-6 text-center">
-            <Link to="/login" className="text-sm text-teal-600 hover:underline">
-              Kembali ke Login
+            <Link to="/" className="text-sm text-teal-600 hover:underline">
+              Kembali ke Beranda
             </Link>
           </div>
         </div>
@@ -41,9 +45,12 @@ export default function ForgotPasswordPage() {
   return (
     <section className="min-h-screen flex items-center justify-center bg-panel-bg">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-extrabold text-center mb-1 text-teal-600 font-poppins">
-          Lupa Password
-        </h2>
+        <div className="flex justify-center items-center gap-3 mb-1">
+          <KeyRound className="w-8 h-8 text-teal-600" />
+          <h2 className="text-3xl font-extrabold text-center text-teal-600 font-poppins">
+            Lupa Password
+          </h2>
+        </div>
         <p className="text-center text-slate-500 mb-6">
           Masukkan email Anda untuk menerima link reset password.
         </p>
@@ -77,10 +84,10 @@ export default function ForgotPasswordPage() {
           </button>
           <div className="mt-6 text-center">
             <Link
-              to="/login"
+              to="/"
               className="text-sm text-slate-500 hover:text-teal-600 transition"
             >
-              Kembali ke Login
+              Kembali ke Beranda
             </Link>
           </div>
         </form>

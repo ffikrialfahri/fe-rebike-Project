@@ -8,6 +8,7 @@ import {
   resetAuthStatus,
 } from "@/store/auth/authSlice";
 import CountdownTimer from "@/components/ui/CountdownTimer";
+import { MailCheck } from 'lucide-react';
 
 export default function VerifyEmailPage() {
   const [otp, setOtp] = useState("");
@@ -51,9 +52,12 @@ export default function VerifyEmailPage() {
   return (
     <section className="min-h-screen flex items-center justify-center bg-panel-bg">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-extrabold text-center mb-2 text-teal-600">
-          Verifikasi Email Anda
-        </h2>
+        <div className="flex justify-center items-center gap-3 mb-2">
+          <MailCheck className="w-8 h-8 text-teal-600" />
+          <h2 className="text-3xl font-extrabold text-center text-teal-600">
+            Verifikasi Email Anda
+          </h2>
+        </div>
         <p className="text-center text-slate-500 mb-6">
           Kami telah mengirimkan kode OTP 6 digit ke <strong>{email}</strong>.
         </p>

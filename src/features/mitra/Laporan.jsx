@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "../../api/axios";
 import Card from "../../components/ui/Card";
 import StatCard from "../../components/ui/StatCard";
 import { formatRupiah } from "../../lib/navigation";
+import { FileText, ClipboardList } from 'lucide-react';
 
 export default function Laporan() {
-  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState("ALL_TIME");
@@ -28,11 +28,7 @@ export default function Laporan() {
     { label: "Pilih Tanggal Manual", value: "CUSTOM" },
   ];
 
-  useEffect(() => {
-    fetchAndCalculateFinancialData();
-  }, [selectedPeriod, customStartDate, customEndDate]);
-
-  const fetchAndCalculateFinancialData = async () => {
+  const fetchAndCalculateFinancialData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get("/partner/transactions");
@@ -96,7 +92,15 @@ export default function Laporan() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPeriod, customStartDate, customEndDate, COMMISSION_RATE, setLoading, setFinancialSummary, setError]);
+
+  useEffect(() => {
+    fetchAndCalculateFinancialData();
+  }, [fetchAndCalculateFinancialData]);
+
+
+
+
 
   const handlePeriodChange = (e) => {
     setSelectedPeriod(e.target.value);
@@ -116,29 +120,39 @@ export default function Laporan() {
 
   return (
     <>
-      <div className="flex items-center gap-2 mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-8 h-8 text-slate-700"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M2.25 18.75a60.023 60.023 0 0 0 18 0M21.75 12a60.023 60.023 0 0 0-18 0M2.25 5.25a60.023 60.023 0 0 0 18 0M12 4.5v15" 
-          />
-        </svg>
-        <h1 className="text-3xl font-bold text-slate-800">Laporan & Keuangan</h1>
+      <div className="flex items-center gap-4 mb-10 pt-10">
+        <FileText className="w-8 h-8 text-slate-700" />
+        <h1 className="text-3xl font-bold text-slate-800">Report & Finance</h1>
       </div>
 
-      <Card className="mb-6">
-        <h3 className="text-xl font-semibold text-slate-700 mb-4">Area Untuk Laporan Detail</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"> {/* Added mb-6 for spacing */}
+        <StatCard
+          title="Pendapatan Kotor"
+          value={formatRupiah(financialSummary.grossRevenue)}
+          valueColor="text-green-600"
+        />
+        <StatCard
+          title="Komisi (10%)"
+          value={formatRupiah(financialSummary.commission)}
+          valueColor="text-orange-600"
+        />
+        <StatCard
+          title="Pendapatan Bersih"
+          value={formatRupiah(financialSummary.netRevenue)}
+          valueColor="text-blue-600"
+        />
+        <StatCard
+          title="Transaksi Sukses"
+          value={financialSummary.successfulTransactions}
+          valueColor="text-purple-600"
+        />
+      </div>
+
+      <Card className="mb-6 p-6 bg-white shadow-md rounded-lg"> {/* Added p-6 bg-white shadow-md rounded-lg */}
+        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-4">Area Untuk Laporan Detail</h3>
         <div className="flex flex-col md:flex-row items-center gap-4">
           <select
-            className="p-2 border border-gray-300 rounded-md"
+            className="p-2 border border-gray-300 rounded-md w-48"
             value={selectedPeriod}
             onChange={handlePeriodChange}
           >
@@ -173,30 +187,13 @@ export default function Laporan() {
             </div>
           )}
         </div>
+        <div className="text-slate-500 text-center py-12">
+          <div className="flex flex-col items-center justify-center py-10">
+            <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
+            <p>Tidak ada data laporan yang ditemukan.</p>
+          </div>
+        </div>
       </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Pendapatan Kotor"
-          value={formatRupiah(financialSummary.grossRevenue)}
-          valueColor="text-green-600"
-        />
-        <StatCard
-          title="Komisi (10%)"
-          value={formatRupiah(financialSummary.commission)}
-          valueColor="text-orange-600"
-        />
-        <StatCard
-          title="Pendapatan Bersih"
-          value={formatRupiah(financialSummary.netRevenue)}
-          valueColor="text-blue-600"
-        />
-        <StatCard
-          title="Transaksi Sukses"
-          value={financialSummary.successfulTransactions}
-          valueColor="text-purple-600"
-        />
-      </div>
     </>
   );
 }

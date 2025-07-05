@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import Card from "../../components/ui/Card";
+import { UserCog } from 'lucide-react';
 
 export default function ProfileSetting() {
   const [profileData, setProfileData] = useState({
@@ -82,26 +83,13 @@ export default function ProfileSetting() {
 
   return (
     <>
-      <div className="flex items-center gap-2 mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-8 h-8 text-slate-700"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 18H7.5m-3-6h15m-1.5 0a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0" 
-          />
-        </svg>
+      <div className="flex items-center gap-2 mb-10 pt-10">
+        <UserCog className="w-8 h-8 text-slate-700" />
         <h1 className="text-3xl font-bold text-slate-800">Pengaturan Profil</h1>
       </div>
 
-      <Card className="mb-6">
-        <h3 className="text-xl font-semibold text-slate-700 mb-4">Informasi Profil</h3>
+      <Card className="mb-6 p-6 bg-white shadow-md rounded-lg">
+        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Informasi Profil</h3>
         <form onSubmit={handleUpdateProfile} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Nama Lokasi</label>
@@ -110,21 +98,21 @@ export default function ProfileSetting() {
               name="locationName"
               value={profileData.locationName}
               onChange={handleProfileChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
           >
             Perbarui Profil
           </button>
         </form>
       </Card>
 
-      <Card>
-        <h3 className="text-xl font-semibold text-slate-700 mb-4">Informasi Bank</h3>
+      <Card className="p-6 bg-white shadow-md rounded-lg">
+        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Informasi Bank</h3>
         <form onSubmit={handleUpdateBankInfo} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Nama Bank</label>
@@ -133,7 +121,7 @@ export default function ProfileSetting() {
               name="bankName"
               value={bankData.bankName}
               onChange={handleBankChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
@@ -144,7 +132,7 @@ export default function ProfileSetting() {
               name="bankAccountName"
               value={bankData.bankAccountName}
               onChange={handleBankChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
@@ -155,13 +143,13 @@ export default function ProfileSetting() {
               name="bankAccountNumber"
               value={bankData.bankAccountNumber}
               onChange={handleBankChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
           >
             Perbarui Informasi Bank
           </button>

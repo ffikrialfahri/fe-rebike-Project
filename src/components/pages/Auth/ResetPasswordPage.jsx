@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { resetPassword } from "@/store/auth/authSlice";
 import toast from "react-hot-toast";
+import { KeyRound } from 'lucide-react';
 
 export default function ResetPasswordPage() {
   const { token } = useParams();
@@ -31,9 +32,12 @@ export default function ResetPasswordPage() {
   return (
     <section className="min-h-screen flex items-center justify-center bg-panel-bg">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-extrabold text-center mb-1 text-teal-600 font-poppins">
-          Atur Ulang Password
-        </h2>
+        <div className="flex justify-center items-center gap-3 mb-1">
+          <KeyRound className="w-8 h-8 text-teal-600" />
+          <h2 className="text-3xl font-extrabold text-center text-teal-600 font-poppins">
+            Atur Ulang Password
+          </h2>
+        </div>
         <p className="text-center text-slate-500 mb-6">
           Masukkan password baru Anda.
         </p>

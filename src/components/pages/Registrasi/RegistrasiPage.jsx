@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
+
 import { registerUser } from "@/store/auth/authSlice";
 import RegisterLayout from "@/components/layout/RegisterLayout";
 import LoginPage from "@/components/pages/Login/LoginPage";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { UserPlus } from 'lucide-react';
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("Nama depan tidak boleh kosong"),
@@ -73,7 +74,7 @@ export default function RegisterPage() {
   });
 
   const onSubmit = (data) => {
-    const { agreeTerms, ...userData } = data;
+    const { ...userData } = data;
     const completeUserData = {
       firstName: userData.firstName,
       lastName: userData.lastName,
@@ -121,7 +122,10 @@ export default function RegisterPage() {
                 Login di sini
               </button>
             </div>
-            <h2 className="text-3xl font-bold mb-2">Registrasi</h2>
+            <div className="flex items-center gap-3 mb-2">
+              <UserPlus className="w-8 h-8 text-brand-primary" />
+              <h2 className="text-3xl font-bold">Registrasi</h2>
+            </div>
             <p className="text-slate-500 mb-6">
               Daftar Sekarang dan Biarkan Kami yang Mencari Pelanggan untuk Anda.
             </p>

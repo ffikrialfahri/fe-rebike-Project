@@ -4,10 +4,10 @@ import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/store/auth/authSlice";
-import Logo3 from "@/assets/logo3.png";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { LogIn } from 'lucide-react';
 
 const loginSchema = yup.object().shape({
   email: yup.string().email("Format email tidak valid").required("Email tidak boleh kosong"),
@@ -111,9 +111,12 @@ export default function LoginPage({ isOpen, onClose }) {
         ></div>
 
         <div className="w-full md:w-3/5 p-8 flex flex-col justify-center">
-          <h2 className="text-3xl font-bold mb-2 text-slate-800">
-            Welcome to <span className="text-orange-500">ReBike</span>
-          </h2>
+          <div className="flex items-center gap-3 mb-2">
+            <LogIn className="w-8 h-8 text-orange-500" />
+            <h2 className="text-3xl font-bold text-slate-800">
+              Welcome to <span className="text-orange-500">ReBike</span>
+            </h2>
+          </div>
           <p className="text-slate-600 mb-6">
             Kelola bisnismu dengan lebih mudah dengan e-panel
           </p>
@@ -138,6 +141,16 @@ export default function LoginPage({ isOpen, onClose }) {
               error={errors.password}
             />
 
+            <div className="text-right mb-4">
+              <Link
+                to="/forgot-password"
+                className="text-teal-600 hover:underline text-sm"
+                onClick={onClose}
+              >
+                Lupa Password?
+              </Link>
+            </div>
+
             {reduxError && (
               <p className="text-red-500 text-sm mb-4 text-center animate-pulse">
                 {reduxError}
@@ -153,7 +166,7 @@ export default function LoginPage({ isOpen, onClose }) {
           </form>
 
           <p className="text-center text-slate-600 text-sm mt-6">
-            Don't have an Account?{" "}
+            Belum punya akun?{" "}
             <Link
               to="/register"
               className="text-teal-600 hover:underline"

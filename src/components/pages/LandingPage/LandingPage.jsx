@@ -4,6 +4,18 @@ import { HashLink } from "react-router-hash-link"; // Import HashLink
 import LandingLayout from "@/components/layout/LandingLayout";
 import Card from "@/components/ui/Card";
 import LoginPage from '@/components/pages/Login/LoginPage';
+import {
+  MapPin,
+  Bike,
+  ShieldCheck,
+  Zap,
+  BadgeDollarSign,
+  Search,
+  CreditCard,
+  Map,
+  Play,
+  Smartphone
+} from 'lucide-react';
 
 // Pastikan path aset Anda benar
 import Logo2 from "@/assets/Logo2.png";
@@ -14,11 +26,7 @@ export default function LandingPage() {
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
 
-  const ICON_LOCATIONS = (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" className="w-6 h-6">
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
-    </svg>
-  );
+  const ICON_LOCATIONS = <MapPin className="w-6 h-6" />;
 
   return (
     // Teruskan `onLoginClick` ke LandingLayout
@@ -61,14 +69,14 @@ export default function LandingPage() {
             </p>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <Card className="flex flex-col items-center p-6 text-center transition hover:shadow-xl bg-white">
-                <span className="text-4xl mb-4">🛵</span>
+                <Bike className="w-12 h-12 text-teal-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Pilihan Lengkap</h3>
                 <p className="text-slate-500">
                   Ratusan motor dari berbagai tipe siap menemani petualangan Anda.
                 </p>
               </Card>
               <Card className="flex flex-col items-center p-6 text-center transition hover:shadow-xl bg-white">
-                <span className="text-4xl mb-4">✅</span>
+                <ShieldCheck className="w-12 h-12 text-teal-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">
                   Mitra Terverifikasi
                 </h3>
@@ -78,14 +86,14 @@ export default function LandingPage() {
                 </p>
               </Card>
               <Card className="flex flex-col items-center p-6 text-center transition hover:shadow-xl bg-white">
-                <span className="text-4xl mb-4">⚡</span>
+                <Zap className="w-12 h-12 text-teal-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Pesan Instan</h3>
                 <p className="text-slate-500">
                   Proses booking dan pembayaran cepat, semua dalam satu aplikasi.
                 </p>
               </Card>
               <Card className="flex flex-col items-center p-6 text-center transition hover:shadow-xl bg-white">
-                <span className="text-4xl mb-4">💰</span>
+                <BadgeDollarSign className="w-12 h-12 text-teal-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Harga Transparan</h3>
                 <p className="text-slate-500">
                   Tak ada biaya tersembunyi. Harga yang Anda lihat adalah harga
@@ -109,7 +117,7 @@ export default function LandingPage() {
               <div className="w-16 h-16 rounded-full bg-teal-100 text-brand-primary flex items-center justify-center text-3xl font-bold mb-4">
                 1
               </div>
-              <span className="step-icon">🔍</span>
+              <Search className="w-12 h-12 text-teal-500 mb-4" />
               <h3 className="text-xl font-semibold mb-2">Cari & Pilih</h3>
               <p className="text-slate-500">
                 Pilih lokasi dan tanggal, lalu temukan motor yang paling sesuai
@@ -124,7 +132,7 @@ export default function LandingPage() {
               <div className="w-16 h-16 rounded-full bg-teal-100 text-brand-primary flex items-center justify-center text-3xl font-bold mb-4">
                 2
               </div>
-              <span className="step-icon">💳</span>
+              <CreditCard className="w-12 h-12 text-teal-500 mb-4" />
               <h3 className="text-xl font-semibold mb-2">Booking & Bayar</h3>
               <p className="text-slate-500">
                 Lakukan pemesanan dan selesaikan pembayaran dengan aman melalui
@@ -139,7 +147,7 @@ export default function LandingPage() {
               <div className="w-16 h-16 rounded-full bg-teal-100 text-brand-primary flex items-center justify-center text-3xl font-bold mb-4">
                 3
               </div>
-              <span className="step-icon">🗺️</span>
+              <Map className="w-12 h-12 text-teal-500 mb-4" />
               <h3 className="text-xl font-semibold mb-2">Ambil & Jelajah</h3>
               <p className="text-slate-500">
                 Ambil motor di lokasi yang telah ditentukan dan nikmati
@@ -162,28 +170,28 @@ export default function LandingPage() {
               href="https://maps.app.goo.gl/MMCQzdoikSSYcXXu5"
               className="flex items-center gap-2 bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-700 transition shadow-md"
             >
-              <span className="text-xl">{ICON_LOCATIONS}</span>
+              {ICON_LOCATIONS}
               Alun-Alun Kota Malang
             </a>
             <a
               href="https://maps.app.goo.gl/bL7G1Q17LiF1T3Lr8"
               className="flex items-center gap-2 bg-teal-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-teal-700 transition shadow-md"
             >
-              <span className="text-xl">{ICON_LOCATIONS}</span>
+              {ICON_LOCATIONS}
               Stasiun Malang Kota Lama
             </a>
             <a
               href="https://maps.app.goo.gl/rvawmjBVLuaGZ9Ps9"
               className="flex items-center gap-2 bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-700 transition shadow-md"
             >
-              <span className="text-xl">{ICON_LOCATIONS}</span>
+              {ICON_LOCATIONS}
               Stasiun Blimbing
             </a>
             <a
               href="https://maps.app.goo.gl/M2DriUebLBwnm9a2A"
               className="flex items-center gap-2 bg-teal-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-teal-700 transition shadow-md"
             >
-              <span className="text-xl">{ICON_LOCATIONS}</span>
+              {ICON_LOCATIONS}
               Universitas Brawijaya
             </a>
 
@@ -191,14 +199,14 @@ export default function LandingPage() {
               href="https://maps.app.goo.gl/iqkJSpY5Y5cSHxen9"
               className="flex items-center gap-2 bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-700 transition shadow-md"
             >
-              <span className="text-xl">{ICON_LOCATIONS}</span>
+              {ICON_LOCATIONS}
               Mall Dinoyo City
             </a>
             <a
               href="https://maps.app.goo.gl/MrBm7H8ecFni8Vep8"
               className="flex items-center gap-2 bg-teal-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-teal-700 transition shadow-md"
             >
-              <span className="text-xl">{ICON_LOCATIONS}</span>
+              {ICON_LOCATIONS}
               Universitas Muhammadiyah
             </a>
           </div>
@@ -247,7 +255,7 @@ export default function LandingPage() {
                     href="#"
                     className="bg-slate-800 text-white py-3 px-6 rounded-lg flex items-center gap-3 hover:bg-slate-900 transition"
                   >
-                    <span>▶</span>
+                    <Play className="w-6 h-6" />
                     <div>
                       <p className="text-xs">GET IT ON</p>
                       <p className="text-lg font-semibold">Google Play</p>
@@ -257,7 +265,7 @@ export default function LandingPage() {
                     href="#"
                     className="bg-slate-800 text-white py-3 px-6 rounded-lg flex items-center gap-3 hover:bg-slate-900 transition"
                   >
-                    <span></span>
+                    <Smartphone className="w-6 h-6" />
                     <div>
                       <p className="text-xs">Download on the</p>
                       <p className="text-lg font-semibold">App Store</p>

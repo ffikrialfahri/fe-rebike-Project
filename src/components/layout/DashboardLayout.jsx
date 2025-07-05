@@ -1,12 +1,12 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logout } from "../../store/auth/authSlice";
 import { useState } from "react";
 import LogoutConfirmationModal from "../ui/LogoutConfirmationModal";
 
 const Sidebar = ({ navItems, panelType }) => {
-  const { user } = useSelector((state) => state.auth);
-  const baseUrl = user?.roles?.includes("ROLE_PARTNER") ? "/mitra" : "/admin";
+  
+  
 
   const renderNavSection = (title, items ) => {
     if (!items || items.length === 0) return null;

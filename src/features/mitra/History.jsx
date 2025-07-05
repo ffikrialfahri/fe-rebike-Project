@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import Card from "../../components/ui/Card";
 import { formatRupiah } from "../../lib/navigation";
+import { History, ClipboardList } from 'lucide-react';
 
-export default function History() {
+export default function HistoryPage() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("ALL"); // ALL, PRODUCT, ORDER, FINANCIAL
+  const [selectedType, setSelectedType] = useState("ALL");
 
-  const categories = [
+  const logTypes = [
     { name: "Semua", value: "ALL" },
     { name: "Produk", value: "PRODUCT" },
     { name: "Pesanan", value: "ORDER" },
@@ -18,7 +19,7 @@ export default function History() {
 
   useEffect(() => {
     fetchAndProcessActivities();
-  }, []); // Fetch all data once
+  }, [selectedType]);
 
   const fetchAndProcessActivities = async () => {
     setLoading(true);
@@ -35,18 +36,16 @@ export default function History() {
 
       let processedActivities = [];
 
-      // Process Product Activities (simplified: just list existing bikes as product activities)
       allBikes.forEach((bike) => {
         processedActivities.push({
           id: `bike-${bike.bikeID}`,
           type: "PRODUCT",
-          timestamp: new Date().toISOString(), // Placeholder, as no creation date is available
+          timestamp: new Date().toISOString(),
           description: `Motor ${bike.name} (Plat: ${bike.plateNumber}) berstatus ${bike.status}.`,
           details: bike,
         });
       });
 
-      // Process Order Activities
       allTransactions.forEach((transaction) => {
         processedActivities.push({
           id: `trans-${transaction.transactionID}`,
@@ -79,9 +78,9 @@ export default function History() {
     }
   };
 
-  const filteredActivities = activeCategory === "ALL"
+  const filteredActivities = selectedType === "ALL"
     ? activities
-    : activities.filter((activity) => activity.type === activeCategory);
+    : activities.filter((activity) => activity.type === selectedType);
 
   if (loading) {
     return <p>Memuat riwayat aktivitas...</p>;
@@ -93,45 +92,36 @@ export default function History() {
 
   return (
     <>
-      <div className="flex items-center gap-2 mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-8 h-8 text-slate-700"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
+      <div className="flex items-center gap-4 mb-10 pt-10">
+        <History className="w-8 h-8 text-slate-700" />
         <h1 className="text-3xl font-bold text-slate-800">Riwayat Aktivitas</h1>
       </div>
 
-      <Card className="mb-6">
-        <div className="flex border-b border-gray-200">
-          {categories.map((category) => (
-            <button
-              key={category.value}
-              className={`py-2 px-4 -mb-px text-sm font-medium focus:outline-none ${activeCategory === category.value
-                  ? "border-b-2 border-blue-500 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"}
-              `}
-              onClick={() => setActiveCategory(category.value)}
-            >
-              {category.name}
-            </button>
+      <div className="flex items-center mb-5 pt-5">
+        <label htmlFor="type-filter" className="mr-2 text-slate-600 text-xl font-bold">Filter Tipe:</label>
+        <select
+          id="type-filter"
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48"
+        >
+          {logTypes.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.name}
+            </option>
           ))}
+        </select>
+      </div>
+      <Card className="mb-6 p-6 bg-white shadow-md rounded-lg">
+        <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
+          <h2 className="text-xl font-semibold text-slate-700">Feed Log</h2>
         </div>
-      </Card>
 
-      <Card>
-        <h3 className="text-xl font-semibold text-slate-700 mb-4">Feed Log</h3>
         {filteredActivities.length === 0 ? (
-          <p className="text-slate-500">Tidak ada aktivitas yang ditemukan untuk kategori ini.</p>
+          <div className="flex flex-col items-center justify-center py-10 text-slate-500">
+            <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
+            <p>Tidak ada aktivitas yang ditemukan untuk kategori ini.</p>
+          </div>
         ) : (
           <div className="space-y-4">
             {filteredActivities.map((activity) => (

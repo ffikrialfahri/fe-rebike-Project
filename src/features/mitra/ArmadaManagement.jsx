@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "../../api/axios";
 import Card from "../../components/ui/Card";
 import BikeFormModal from "../../components/modals/BikeFormModal";
 import { formatRupiah } from "../../lib/navigation";
+import { Bike, ClipboardList } from 'lucide-react';
 
 export default function ArmadaManagement() {
   const [bikes, setBikes] = useState([]);
@@ -13,11 +14,7 @@ export default function ArmadaManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentBike, setCurrentBike] = useState(null);
 
-  useEffect(() => {
-    fetchBikes();
-  }, [searchQuery, filterStatus]);
-
-  const fetchBikes = async () => {
+  const fetchBikes = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get("/partner/bikes");
@@ -41,7 +38,11 @@ export default function ArmadaManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus, searchQuery, setBikes, setLoading, setError]);
+
+  useEffect(() => {
+    fetchBikes();
+  }, [fetchBikes]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -95,25 +96,12 @@ export default function ArmadaManagement() {
 
   return (
     <>
-      <div className="flex items-center gap-2 mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-8 h-8 text-slate-700"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3 0a1.5 1.5 0 0 1-3 0m12 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3 0a1.5 1.5 0 0 1-3 0M3 15h18M6.75 6.75v.75m-3 3v.75m3 3v.75m3 3v.75m3 3v.75m3 3v.75m-3-12h.008v.008H12v-.008Zm3 0h.008v.008H15v-.008Z"
-          />
-        </svg>
+      <div className="flex items-center gap-5 mb-10 pt-10">
+        <Bike className="w-8 h-8 text-slate-700" />
         <h1 className="text-3xl font-bold text-slate-800">Manajemen Armada</h1>
       </div>
 
-      <Card className="mb-6">
+      <Card className="mb-6 p-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <input
             type="text"
@@ -123,7 +111,7 @@ export default function ArmadaManagement() {
             onChange={handleSearchChange}
           />
           <select
-            className="p-2 border border-gray-300 rounded-md"
+            className="p-2 border border-gray-300 rounded-md w-full md:w-auto"
             value={filterStatus}
             onChange={handleFilterChange}
           >
@@ -133,7 +121,7 @@ export default function ArmadaManagement() {
             <option value="INACTIVE">Perbaikan</option>
           </select>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full md:w-auto"
             onClick={handleAddBike}
           >
             Tambah Motor Baru
@@ -144,18 +132,21 @@ export default function ArmadaManagement() {
       <Card>
         <h3 className="text-xl font-semibold text-slate-700 mb-4">Daftar Motor</h3>
         {bikes.length === 0 ? (
-          <p className="text-slate-500">Tidak ada motor yang ditemukan.</p>
+          <div className="flex flex-col items-center justify-center py-10 text-slate-500">
+            <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
+            <p>Tidak ada motor yang ditemukan.</p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white">
               <thead>
                 <tr>
-                  <th className="py-2 px-4 border-b text-left">Nama Motor</th>
-                  <th className="py-2 px-4 border-b text-left">Plat Nomor</th>
-                  <th className="py-2 px-4 border-b text-left">Harga Harian (Weekday)</th>
-                  <th className="py-2 px-4 border-b text-left">Harga Harian (Weekend)</th>
-                  <th className="py-2 px-4 border-b text-left">Status</th>
-                  <th className="py-2 px-4 border-b text-left">Aksi</th>
+                  <th className="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left">Nama Motor</th>
+                  <th className="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left">Plat Nomor</th>
+                  <th className="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left">Harga Harian (Weekday)</th>
+                  <th className="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left">Harga Harian (Weekend)</th>
+                  <th className="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left">Status</th>
+                  <th className="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left">Aksi</th>
                 </tr>
               </thead>
               <tbody>

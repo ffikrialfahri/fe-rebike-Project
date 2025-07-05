@@ -10,11 +10,13 @@ Directory Structure:
         │                   ├── config
         │                   │   ├── CloudinaryConfig.java
         │                   │   ├── DataInitializer.java
+        │                   │   ├── FirebaseConfig.java
         │                   │   ├── JwtConfig.java
         │                   │   ├── MidtransConfig.java
         │                   │   ├── OpenApiConfig.java
         │                   │   ├── PasswordEncoderConfig.java
-        │                   │   └── SecurityConfig.java
+        │                   │   ├── SecurityConfig.java
+        │                   │   └── WebSocketConfig.java
         │                   ├── constant
         │                   │   ├── BikeStatus.java
         │                   │   ├── BookingStatus.java
@@ -26,6 +28,7 @@ Directory Structure:
         │                   │   ├── AdminController.java
         │                   │   ├── AdminSettingController.java
         │                   │   ├── AuthController.java
+        │                   │   ├── ChatController.java
         │                   │   ├── CustomerController.java
         │                   │   ├── PartnerController.java
         │                   │   ├── PublicController.java
@@ -51,6 +54,8 @@ Directory Structure:
         │                   │   │   ├── ResetPasswordWithOtpRequest.java
         │                   │   │   ├── TransactionRequest.java
         │                   │   │   ├── UpdateBikeStatusRequest.java
+        │                   │   │   ├── UpdateFcmTokenRequest.java
+        │                   │   │   ├── UpdateUserProfileRequest.java
         │                   │   │   ├── VerifyOtpRequest.java
         │                   │   │   ├── VerifyPartnerRequest.java
         │                   │   │   └── VerifyPaymentRequest.java
@@ -61,8 +66,10 @@ Directory Structure:
         │                   │       ├── AdminPartnerResponse.java
         │                   │       ├── BikeDetailResponse.java
         │                   │       ├── BikeResponse.java
+        │                   │       ├── BusinessRecommendationResponse.java
         │                   │       ├── DashboardSummaryResponse.java
         │                   │       ├── FinancialSummaryResponse.java
+        │                   │       ├── FlaggedTransactionResponse.java
         │                   │       ├── LoginResponse.java
         │                   │       ├── MidtransChargeResponse.java
         │                   │       ├── PartnerDetailResponse.java
@@ -75,6 +82,7 @@ Directory Structure:
         │                   │       └── UserResponse.java
         │                   ├── entity
         │                   │   ├── Bike.java
+        │                   │   ├── ChatMessage.java
         │                   │   ├── Partner.java
         │                   │   ├── Payment.java
         │                   │   ├── Payout.java
@@ -89,6 +97,7 @@ Directory Structure:
         │                   │   └── GlobalExceptionHandler.java
         │                   ├── repository
         │                   │   ├── BikeRepository.java
+        │                   │   ├── ChatMessageRepository.java
         │                   │   ├── PartnerRepository.java
         │                   │   ├── PaymentRepository.java
         │                   │   ├── PayoutRepository.java
@@ -106,27 +115,39 @@ Directory Structure:
         │                   │   ├── impl
         │                   │   │   ├── AdminDashboardServiceImpl.java
         │                   │   │   ├── AdminSettingServiceImpl.java
+        │                   │   │   ├── AIAssistantServiceImpl.java
+        │                   │   │   ├── AuthServiceImpl.java
         │                   │   │   ├── BikeServiceImpl.java
+        │                   │   │   ├── BusinessInsightServiceImpl.java
         │                   │   │   ├── CloudinaryServiceImpl.java
         │                   │   │   ├── EmailServiceImpl.java
+        │                   │   │   ├── FraudDetectionServiceImpl.java
         │                   │   │   ├── MidtransServiceImpl.java
+        │                   │   │   ├── NotificationServiceImpl.java
         │                   │   │   ├── PartnerServiceImpl.java
         │                   │   │   ├── PayoutServiceImpl.java
         │                   │   │   ├── PickupPointServiceImpl.java
         │                   │   │   ├── RoleServiceImpl.java
+        │                   │   │   ├── ScheduledTasksServiceImpl.java
         │                   │   │   ├── TransactionServiceImpl.java
         │                   │   │   ├── UserDetailsServiceImpl.java
         │                   │   │   └── UserServiceImpl.java
         │                   │   ├── AdminDashboardService.java
         │                   │   ├── AdminSettingService.java
+        │                   │   ├── AIAssistantService.java
+        │                   │   ├── AuthService.java
         │                   │   ├── BikeService.java
+        │                   │   ├── BusinessInsightService.java
         │                   │   ├── CloudinaryService.java
         │                   │   ├── EmailService.java
+        │                   │   ├── FraudDetectionService.java
         │                   │   ├── MidtransService.java
+        │                   │   ├── NotificationService.java
         │                   │   ├── PartnerService.java
         │                   │   ├── PayoutService.java
         │                   │   ├── PickupPointService.java
         │                   │   ├── RoleService.java
+        │                   │   ├── ScheduledTasksService.java
         │                   │   ├── TransactionService.java
         │                   │   └── UserService.java
         │                   ├── util
@@ -198,6 +219,7 @@ import com.doaibu.rebikeapi.repository.UserRepository;
 import com.doaibu.rebikeapi.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -206,6 +228,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
+@Profile("dev")
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
@@ -215,6 +238,8 @@ public class DataInitializer implements CommandLineRunner {
     private final BikeRepository bikeRepository;
     private final UsagePolicyRepository usagePolicyRepository;
 
+    private final String defaultPhotoUrl = "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png";
+
     @Override
     public void run(String... args) throws Exception {
         createInitialUsers();
@@ -223,15 +248,15 @@ public class DataInitializer implements CommandLineRunner {
 
     private void createInitialUsers() {
         if (!userRepository.existsByEmail("admin@example.com")) {
-            String rawPassword = "password";
+            String rawPassword = "passadmin";
             Set<Role> adminRole = new HashSet<>();
             adminRole.add(roleService.getOrCreate(UserRole.ADMIN));
 
             User adminUser = User.builder()
                     .firstName("Admin").lastName("Rebike").username("admin")
                     .email("admin@example.com").password(passwordEncoder.encode(rawPassword))
-                    .phoneNumber("081234567890").roles(adminRole).createdAt(LocalDateTime.now())
-                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .phoneNumber("081234567890").roles(adminRole).photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now()).isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
             userRepository.save(adminUser);
@@ -246,8 +271,8 @@ public class DataInitializer implements CommandLineRunner {
             User partnerUser = User.builder()
                     .firstName("Mitra").lastName("Satu").username("mitra1")
                     .email("mitra1@example.com").password(passwordEncoder.encode(rawPassword))
-                    .phoneNumber("089876543210").roles(partnerRole).createdAt(LocalDateTime.now())
-                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .phoneNumber("089876543210").roles(partnerRole).photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now()).isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
             Partner partner = Partner.builder()
@@ -260,15 +285,15 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (!userRepository.existsByEmail("mitra2@example.com")) {
-            String rawPassword = generateRandomPassword();
+            String rawPassword = "passmitra2";
             Set<Role> partnerRole = new HashSet<>();
             partnerRole.add(roleService.getOrCreate(UserRole.PARTNER));
 
             User partnerUser = User.builder()
                     .firstName("Imam").lastName("Baehaqi").username("iambaehaqi")
                     .email("mitra2@example.com").password(passwordEncoder.encode(rawPassword))
-                    .phoneNumber("081222333444").roles(partnerRole).createdAt(LocalDateTime.now())
-                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .phoneNumber("081222333444").roles(partnerRole).photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now()).isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
             Partner partner = Partner.builder()
@@ -281,15 +306,15 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (!userRepository.existsByEmail("customer1@example.com")) {
-            String rawPassword = generateRandomPassword();
+            String rawPassword = "passcustomer1";
             Set<Role> customerRole = new HashSet<>();
             customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
 
             User customerUser = User.builder()
                     .firstName("Budi").lastName("Santoso").username("budi")
                     .email("customer1@example.com").password(passwordEncoder.encode(rawPassword))
-                    .phoneNumber("085611112222").roles(customerRole).createdAt(LocalDateTime.now())
-                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .phoneNumber("085611112222").roles(customerRole).photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now()).isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
             userRepository.save(customerUser);
@@ -297,15 +322,15 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (!userRepository.existsByEmail("customer2@example.com")) {
-            String rawPassword = generateRandomPassword();
+            String rawPassword = "passcustomer2";
             Set<Role> customerRole = new HashSet<>();
             customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
 
             User customerUser = User.builder()
                     .firstName("Citra").lastName("Lestari").username("citra")
                     .email("customer2@example.com").password(passwordEncoder.encode(rawPassword))
-                    .phoneNumber("085733334444").roles(customerRole).createdAt(LocalDateTime.now())
-                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .phoneNumber("085733334444").roles(customerRole).photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now()).isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
             userRepository.save(customerUser);
@@ -313,15 +338,15 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (!userRepository.existsByEmail("customer3@example.com")) {
-            String rawPassword = generateRandomPassword();
+            String rawPassword = "passcustomer3";
             Set<Role> customerRole = new HashSet<>();
             customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
 
             User customerUser = User.builder()
                     .firstName("Dewi").lastName("Anggraini").username("dewi")
                     .email("customer3@example.com").password(passwordEncoder.encode(rawPassword))
-                    .phoneNumber("081355556666").roles(customerRole).createdAt(LocalDateTime.now())
-                    .isAccountNonExpired(true).isAccountNonLocked(true)
+                    .phoneNumber("081355556666").roles(customerRole).photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now()).isAccountNonExpired(true).isAccountNonLocked(true)
                     .isCredentialsNonExpired(true).isEnabled(true).isEmailVerified(true)
                     .build();
             userRepository.save(customerUser);
@@ -334,13 +359,16 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        User mitra1 = userRepository.findByEmail("mitra1@example.com");
-        User mitra2 = userRepository.findByEmail("mitra2@example.com");
+        Optional<User> mitra1Optional = userRepository.findByEmail("mitra1@example.com");
+        Optional<User> mitra2Optional = userRepository.findByEmail("mitra2@example.com");
 
-        if (mitra1 == null || mitra2 == null) {
+        if (mitra1Optional.isEmpty() || mitra2Optional.isEmpty()) {
             System.out.println("[Rebike Initializer] Skipping bike creation: Mitra not found.");
             return;
         }
+
+        User mitra1 = mitra1Optional.get();
+        User mitra2 = mitra2Optional.get();
 
         Set<UsagePolicy> allPolicies = new HashSet<>(usagePolicyRepository.findAll());
         List<Bike> bikesToCreate = new ArrayList<>();
@@ -411,6 +439,48 @@ public class DataInitializer implements CommandLineRunner {
 
     private String generateRandomPassword() {
         return UUID.randomUUID().toString().substring(0, 8);
+    }
+}
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/config/FirebaseConfig.java
+---
+
+package com.doaibu.rebikeapi.config;
+
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+@Configuration
+public class FirebaseConfig {
+
+    @Bean
+    public FirebaseApp firebaseApp() throws IOException {
+        InputStream serviceAccount = new ClassPathResource("serviceAccountKey.json").getInputStream();
+
+        FirebaseOptions options = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .build();
+
+        if (FirebaseApp.getApps().isEmpty()) {
+            return FirebaseApp.initializeApp(options);
+        } else {
+            return FirebaseApp.getInstance();
+        }
+    }
+
+    @Bean
+    public FirebaseMessaging firebaseMessaging(FirebaseApp firebaseApp) {
+        return FirebaseMessaging.getInstance(firebaseApp);
     }
 }
 
@@ -592,7 +662,6 @@ public class SecurityConfig {
                             .requestMatchers(Endpoint.AUTH + "/**", "/login/oauth2/**", "/oauth2/**").permitAll()
                             .requestMatchers(Endpoint.API + "/callback/**").permitAll()
                             .requestMatchers(HttpMethod.GET, Endpoint.PUBLIC + "/**").permitAll()
-                            .requestMatchers(HttpMethod.POST, Endpoint.PUBLIC + "/**").permitAll()
 
                             .requestMatchers(Endpoint.USER + "/**").hasAnyRole("PARTNER", "ADMIN", "CUSTOMER")
                             .requestMatchers(Endpoint.PARTNER + "/**").hasRole("PARTNER")
@@ -613,7 +682,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
         configuration.setAllowCredentials(true);
@@ -631,6 +700,35 @@ public class SecurityConfig {
     }
 }
 
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/config/WebSocketConfig.java
+---
+
+package com.doaibu.rebikeapi.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws").withSockJS();
+    }
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/topic", "/queue");
+    }
+}
 
 
 ---
@@ -738,10 +836,10 @@ package com.doaibu.rebikeapi.controller;
 import com.doaibu.rebikeapi.constant.Endpoint;
 import com.doaibu.rebikeapi.dto.request.PickupPointRequest;
 import com.doaibu.rebikeapi.dto.request.ProcessPayoutRequest;
-import com.doaibu.rebikeapi.dto.request.VerifyPartnerRequest;
 import com.doaibu.rebikeapi.dto.request.VerifyPaymentRequest;
 import com.doaibu.rebikeapi.dto.response.*;
 import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
+import com.doaibu.rebikeapi.exception.CustomException;
 import com.doaibu.rebikeapi.service.*;
 import com.doaibu.rebikeapi.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
@@ -754,6 +852,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(Endpoint.ADMIN)
@@ -765,6 +864,8 @@ public class AdminController {
     private final PickupPointService pickupPointService;
     private final PayoutService payoutService;
     private final AdminDashboardService adminDashboardService;
+    private final FraudDetectionService fraudDetectionService;
+    private final BusinessInsightService businessInsightService;
 
     @GetMapping("/partners")
     public ResponseEntity<?> getAllPartners(@RequestParam(required = false, defaultValue = "0") int page,
@@ -790,12 +891,16 @@ public class AdminController {
                 response);
     }
 
-    @PostMapping("/partners/{partnerId}/verify")
-    public ResponseEntity<?> verifyPartner(@PathVariable String partnerId) {
-        userService.verifyPartner(partnerId);
+    @PatchMapping("/partners/{partnerId}/verify")
+    public ResponseEntity<?> verifyPartner(@PathVariable String partnerId, @RequestBody Map<String, Boolean> payload) {
+        Boolean isVerified = payload.get("isVerified");
+        if (isVerified == null) {
+            throw new CustomException.BadRequestException("Field 'isVerified' with a boolean value is required.");
+        }
+        userService.verifyPartner(partnerId, isVerified);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "Partner verified successfully.",
+                "Partner verification status updated successfully.",
                 null);
     }
 
@@ -817,7 +922,6 @@ public class AdminController {
                 "Payment verification processed.",
                 null);
     }
-
 
     @PostMapping("/pickup-points")
     public ResponseEntity<?> createPickupPoint(@RequestBody PickupPointRequest request) {
@@ -873,8 +977,24 @@ public class AdminController {
                 response);
     }
 
-}
+    @GetMapping("/fraud-alerts")
+    public ResponseEntity<?> getFraudAlerts() {
+        List<FlaggedTransactionResponse> response = fraudDetectionService.getFlaggedTransactions();
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Fraud alerts retrieved successfully.",
+                response);
+    }
 
+    @GetMapping("/recommendations")
+    public ResponseEntity<?> getBusinessRecommendations() {
+        List<BusinessRecommendationResponse> response = businessInsightService.generateRecommendations();
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Business recommendations retrieved successfully.",
+                response);
+    }
+}
 
 
 ---
@@ -926,13 +1046,11 @@ import com.doaibu.rebikeapi.constant.Endpoint;
 import com.doaibu.rebikeapi.dto.request.*;
 import com.doaibu.rebikeapi.dto.response.LoginResponse;
 import com.doaibu.rebikeapi.dto.response.RegisterResponse;
-import com.doaibu.rebikeapi.service.UserService;
+import com.doaibu.rebikeapi.service.AuthService;
 import com.doaibu.rebikeapi.util.ResponseUtil;
-import com.doaibu.rebikeapi.dto.request.VerifyOtpRequest;
-
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -945,11 +1063,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
+
+    @Value("${app.frontend-base-url}")
+    private String feBaseUrl;
 
     @PostMapping("/register/customer")
     public ResponseEntity<?> registerCustomer(@Valid @RequestBody RegisterCustomerRequest request) {
-        RegisterResponse response = userService.registerCustomer(request);
+        RegisterResponse response = authService.registerCustomer(request);
         return ResponseUtil.response(
                 HttpStatus.CREATED,
                 "User registered as a Customer successfully.",
@@ -958,7 +1079,7 @@ public class AuthController {
 
     @PostMapping("/register/partner")
     public ResponseEntity<?> registerPartner(@Valid @RequestBody RegisterPartnerRequest request) {
-        RegisterResponse response = userService.registerPartner(request);
+        RegisterResponse response = authService.registerPartner(request);
         return ResponseUtil.response(
                 HttpStatus.CREATED,
                 "User registered as a Partner successfully.",
@@ -967,7 +1088,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = userService.login(request);
+        LoginResponse response = authService.login(request);
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "Login successfully.",
@@ -975,13 +1096,8 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request,
-                                            HttpServletRequest servletRequest) {
-        String feBaseUrl = servletRequest.getHeader("Origin");
-        if (feBaseUrl == null) {
-            feBaseUrl = "http://localhost:5173";
-        }
-        userService.processForgotPassword(request.getEmail(), feBaseUrl);
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.processForgotPassword(request.getEmail(), feBaseUrl);
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "Password reset link has been sent to your email.",
@@ -990,7 +1106,7 @@ public class AuthController {
 
     @PostMapping("/reset-password-with-otp")
     public ResponseEntity<?> resetPasswordWithOtp(@Valid @RequestBody ResetPasswordWithOtpRequest request) {
-        userService.resetPasswordWithOtp(request);
+        authService.resetPasswordWithOtp(request);
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "Password changed successfully.",
@@ -999,7 +1115,7 @@ public class AuthController {
 
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@Valid @RequestBody VerifyOtpRequest request) {
-        userService.verifyEmailOtp(request.getEmail(), request.getOtp());
+        authService.verifyEmailOtp(request.getEmail(), request.getOtp());
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "Email verified successfully.",
@@ -1008,13 +1124,91 @@ public class AuthController {
 
     @PostMapping("/resend-otp")
     public ResponseEntity<?> resendOtp(@Valid @RequestBody ResendOtpRequest request) {
-        userService.resendVerificationOtp(request.getEmail());
+        authService.resendVerificationOtp(request.getEmail());
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "OTP code resent successfully.",
                 null);
     }
+}
 
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/controller/ChatController.java
+---
+
+package com.doaibu.rebikeapi.controller;
+
+import com.doaibu.rebikeapi.entity.ChatMessage;
+import com.doaibu.rebikeapi.entity.User;
+import com.doaibu.rebikeapi.repository.ChatMessageRepository;
+import com.doaibu.rebikeapi.repository.UserRepository;
+import com.doaibu.rebikeapi.service.CloudinaryService;
+import com.doaibu.rebikeapi.service.NotificationService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+
+@Controller
+@RequiredArgsConstructor
+public class ChatController {
+
+    private final SimpMessagingTemplate messagingTemplate;
+    private final ChatMessageRepository chatMessageRepository;
+    private final CloudinaryService cloudinaryService;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
+
+    @MessageMapping("/chat.sendMessage")
+    public void sendMessage(@Payload ChatMessage chatMessage) {
+        chatMessage.setTimestamp(LocalDateTime.now());
+        chatMessageRepository.save(chatMessage);
+
+        String destination = "/queue/messages/" + chatMessage.getRecipient().getId();
+        messagingTemplate.convertAndSend(destination, chatMessage);
+
+        try {
+            Optional<User> recipientOptional = userRepository.findById(chatMessage.getRecipient().getId());
+
+            if (recipientOptional.isPresent()) {
+                User recipient = recipientOptional.get();
+                String fcmToken = recipient.getFcmToken();
+
+                if (fcmToken != null && !fcmToken.isEmpty()) {
+                    String senderName = chatMessage.getSender().getFirstName();
+                    String messageContent = chatMessage.getType() == ChatMessage.MessageType.TEXT
+                            ? chatMessage.getContent()
+                            : "Mengirim gambar...";
+
+                    notificationService.sendNotification(
+                            fcmToken,
+                            "Pesan baru dari " + senderName,
+                            messageContent,
+                            Map.of("senderId", chatMessage.getSender().getId(), "screen", "ChatScreen")
+                    );
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Gagal mengirim push notification untuk chat: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/api/v1/chat/upload-image")
+    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+        String fileUrl = cloudinaryService.uploadFile(file, "chat_images");
+        Map<String, String> response = Map.of("url", fileUrl);
+        return ResponseEntity.ok(response);
+    }
 }
 
 
@@ -1073,17 +1267,17 @@ public class CustomerController {
                 response);
     }
 
-    @PostMapping("/transactions/{transactionId}/payment")
-    public ResponseEntity<?> uploadPaymentProof(@PathVariable String transactionId,
-                                                @RequestParam("paymentProof") MultipartFile paymentProof) {
-        String paymentProofUrl = "http://example.com/payment_proofs/" + transactionId + "_"
-                + paymentProof.getOriginalFilename();
-        transactionService.uploadPaymentProof(transactionId, paymentProofUrl);
-        return ResponseUtil.response(
-                HttpStatus.OK,
-                "Payment proof uploaded successfully",
-                null);
-    }
+//    @PostMapping("/transactions/{transactionId}/payment")
+//    public ResponseEntity<?> uploadPaymentProof(@PathVariable String transactionId,
+//                                                @RequestParam("paymentProof") MultipartFile paymentProof) {
+//        String paymentProofUrl = "http://example.com/payment_proofs/" + transactionId + "_"
+//                + paymentProof.getOriginalFilename();
+//        transactionService.uploadPaymentProof(transactionId, paymentProofUrl);
+//        return ResponseUtil.response(
+//                HttpStatus.OK,
+//                "Payment proof uploaded successfully",
+//                null);
+//    }
 }
 
 
@@ -1110,6 +1304,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -1133,8 +1328,8 @@ public class PartnerController {
     }
 
     @PostMapping("/bikes")
-    public ResponseEntity<?> addBike(@RequestBody BikeRequest bikeRequest) {
-        BikeResponse response = bikeService.addBike(bikeRequest);
+    public ResponseEntity<?> addBike(@RequestBody BikeRequest bikeRequest, @RequestParam MultipartFile file) {
+        BikeResponse response = bikeService.addBike(bikeRequest, file);
         return ResponseUtil.response(
                 HttpStatus.CREATED,
                 "Bike added successfully",
@@ -1142,17 +1337,17 @@ public class PartnerController {
     }
 
     @GetMapping("/bikes")
-    public ResponseEntity<?> getAllBikes(@RequestParam(required = false, defaultValue = "0") int page,
+    public ResponseEntity<?> getAllMyBikes(@RequestParam(required = false, defaultValue = "0") int page,
                                          @RequestParam(required = false, defaultValue = "10") int size,
                                          @RequestParam(required = false, defaultValue = "name") String sortBy,
                                          @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection.equalsIgnoreCase("asc") ?
                 Sort.Direction.ASC : Sort.Direction.DESC, sortBy));
 
-        PagedResponse<BikeResponse> response = bikeService.getAllBikes(pageable);
+        PagedResponse<BikeResponse> response = bikeService.getAllMyBikes(pageable);
         return ResponseUtil.response(
                 HttpStatus.OK,
-                "All bikes retrieved successfully",
+                "All my bikes retrieved successfully",
                 response);
     }
 
@@ -1282,9 +1477,7 @@ import com.doaibu.rebikeapi.dto.response.BikeDetailResponse;
 import com.doaibu.rebikeapi.dto.response.BikeResponse;
 import com.doaibu.rebikeapi.dto.response.PickupPointResponse;
 import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
-import com.doaibu.rebikeapi.exception.CustomException;
 import com.doaibu.rebikeapi.service.BikeService;
-import com.doaibu.rebikeapi.service.CloudinaryService;
 import com.doaibu.rebikeapi.service.MidtransService;
 import com.doaibu.rebikeapi.service.PickupPointService;
 import com.doaibu.rebikeapi.util.ResponseUtil;
@@ -1295,7 +1488,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -1347,25 +1539,6 @@ public class PublicController {
         midtransService.handleWebhook(payload);
         return ResponseEntity.ok("Notification sent successfully");
     }
-
-    private final CloudinaryService cloudinaryService;
-
-    private static final long MAX_FILE_SIZE = 2 * 1024 * 1024;
-
-    @PostMapping("/bike-photo")
-    public ResponseEntity<String> uploadBikePhoto(@RequestParam MultipartFile file) {
-        if (file.getSize() > MAX_FILE_SIZE) {
-            throw new CustomException.BadRequestException("File size exceeds 2MB limit.");
-        }
-
-        String fileName = file.getOriginalFilename();
-        if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
-            throw new CustomException.BadRequestException("Only JPG/PNG files are allowed.");
-        }
-
-        String url = cloudinaryService.uploadFile(file, "bikes");
-        return ResponseEntity.ok(url);
-    }
 }
 
 
@@ -1378,6 +1551,8 @@ package com.doaibu.rebikeapi.controller;
 
 import com.doaibu.rebikeapi.constant.Endpoint;
 import com.doaibu.rebikeapi.dto.request.ChangePasswordRequest;
+import com.doaibu.rebikeapi.dto.request.UpdateFcmTokenRequest;
+import com.doaibu.rebikeapi.dto.request.UpdateUserProfileRequest;
 import com.doaibu.rebikeapi.service.UserService;
 import com.doaibu.rebikeapi.util.ResponseUtil;
 import com.doaibu.rebikeapi.util.TokenHolder;
@@ -1385,10 +1560,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(Endpoint.USER)
@@ -1398,7 +1571,7 @@ public class UserController {
     private final UserService userService;
     private final TokenHolder tokenHolder;
 
-    @PostMapping("/change-password")
+    @PatchMapping("/password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         String username = tokenHolder.getUsername();
         userService.changePassword(username, request);
@@ -1406,6 +1579,21 @@ public class UserController {
                 HttpStatus.OK,
                 "Password changed successfully",
                 null);
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateUserProfileRequest request, MultipartFile file) {
+        userService.updateProfile(request, file);
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Profile updated successfully",
+                null);
+    }
+
+    @PutMapping("/fcm-token")
+    public ResponseEntity<Void> updateFcmToken(@RequestBody UpdateFcmTokenRequest request) {
+        userService.updateFcmToken(request);
+        return ResponseEntity.ok().build();
     }
 }
 
@@ -1662,15 +1850,31 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/dto/request/RegisterCustomerR
 
 package com.doaibu.rebikeapi.dto.request;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
 public class RegisterCustomerRequest {
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
+
+    @NotBlank(message = "Username tidak boleh kosong")
     private String username;
+
+    @NotBlank(message = "Email tidak boleh kosong")
+    @Email(message = "Format email tidak valid")
     private String email;
+
+    @NotBlank(message = "Password tidak boleh kosong")
+    @Size(min = 8, message = "Password minimal 8 karakter")
     private String password;
+
+    @NotBlank(message = "Nomor telepon tidak boleh kosong")
     private String phoneNumber;
 }
 
@@ -1689,8 +1893,10 @@ import lombok.Getter;
 
 @Getter
 public class RegisterPartnerRequest {
-
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
 
     @NotBlank(message = "Username tidak boleh kosong")
@@ -1788,13 +1994,13 @@ package com.doaibu.rebikeapi.dto.request;
 
 import lombok.Getter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 public class TransactionRequest {
     private String bikeID;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private String pickupPointId;
 }
 
@@ -1810,10 +2016,41 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class UpdateBikeStatusRequest {
     private BikeStatus status;
 }
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/dto/request/UpdateFcmTokenRequest.java
+---
+
+package com.doaibu.rebikeapi.dto.request;
+
+import lombok.Data;
+
+@Data
+public class UpdateFcmTokenRequest {
+    private String fcmToken;
+}
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/dto/request/UpdateUserProfileRequest.java
+---
+
+package com.doaibu.rebikeapi.dto.request;
+
+import lombok.Getter;
+
+@Getter
+public class UpdateUserProfileRequest {
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String phoneNumber;
+}
+
 
 
 ---
@@ -1918,9 +2155,11 @@ package com.doaibu.rebikeapi.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
 public class AdminPartnerResponse {
     private String id;
     private String name;
@@ -1928,6 +2167,15 @@ public class AdminPartnerResponse {
     private String locationName;
     private int totalBikes;
     private boolean isVerified;
+
+    public AdminPartnerResponse(String id, String name, String email, String locationName, Integer totalBikes, boolean isVerified) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.locationName = locationName;
+        this.totalBikes = (totalBikes != null) ? totalBikes : 0;
+        this.isVerified = isVerified;
+    }
 }
 
 
@@ -2004,6 +2252,24 @@ public class BikeResponse {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/dto/response/BusinessRecommendationResponse.java
+---
+
+package com.doaibu.rebikeapi.dto.response;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class BusinessRecommendationResponse {
+    private String recommendation;
+    private String reason;
+    private String severity;
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/dto/response/DashboardSummaryResponse.java
 ---
 
@@ -2052,6 +2318,30 @@ public class FinancialSummaryResponse {
     private BigDecimal totalRevenue;
     private Integer totalCompletedTransactions;
     private Integer totalPendingTransactions;
+}
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/dto/response/FlaggedTransactionResponse.java
+---
+
+package com.doaibu.rebikeapi.dto.response;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+public class FlaggedTransactionResponse {
+    private String transactionId;
+    private String customerName;
+    private String bikeName;
+    private LocalDateTime transactionDate;
+    private BigDecimal totalCost;
+    private String reason;
 }
 
 
@@ -2221,18 +2511,23 @@ package com.doaibu.rebikeapi.dto.response;
 import com.doaibu.rebikeapi.constant.BookingStatus;
 import com.doaibu.rebikeapi.constant.PaymentStatus;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionDetailResponse {
     private String transactionID;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private BigDecimal baseCost;
     private BigDecimal totalCost;
     private PaymentStatus paymentStatus;
@@ -2256,14 +2551,14 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class TransactionResponse {
     private String transactionID;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private BigDecimal baseCost;
     private BigDecimal totalCost;
     private PaymentStatus paymentStatus;
@@ -2385,6 +2680,53 @@ public class Bike {
     @Override
     public final int hashCode() {
         return Objects.hash(id);
+    }
+}
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/entity/ChatMessage.java
+---
+
+package com.doaibu.rebikeapi.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "chat_messages")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ChatMessage {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+    @ManyToOne
+    @JoinColumn(name = "recipient_id")
+    private User recipient;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
+    private LocalDateTime timestamp;
+
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
+
+    public enum MessageType {
+        TEXT,
+        IMAGE
     }
 }
 
@@ -2653,7 +2995,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -2675,10 +3017,10 @@ public class Transaction {
     private User customer;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "base_cost", nullable = false)
     private BigDecimal baseCost;
@@ -2702,6 +3044,32 @@ public class Transaction {
 
     @Column(name = "payment_proof_url", nullable = true)
     private String paymentProofUrl;
+
+    @Column(name = "booking_date")
+    private LocalDateTime bookingDate;
+
+    @Column(name = "is_flagged_as_potential_fraud")
+    private boolean isFlaggedAsPotentialFraud = false;
+
+    @Column(name = "fraud_flag_reason")
+    private String fraudFlagReason;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
 
 
@@ -2804,17 +3172,14 @@ public class User implements UserDetails {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
+    @Column(name = "photo_url")
+    private String photoUrl;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "created_by")
-    private String createdBy;
-
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @Column(name = "updated_by")
-    private String updatedBy;
 
     @Column(name = "is_account_non_expired")
     private boolean isAccountNonExpired;
@@ -2842,6 +3207,9 @@ public class User implements UserDetails {
 
     @Column(name = "reset_password_token_expiry")
     private LocalDateTime resetPasswordTokenExpiry;
+
+    @Column(name = "fcm_token")
+    private String fcmToken;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "trx_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -2952,7 +3320,6 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/exception/GlobalExceptionHand
 
 package com.doaibu.rebikeapi.exception;
 
-import com.doaibu.rebikeapi.dto.response.other.CommonResponse;
 import com.doaibu.rebikeapi.util.ResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -3012,9 +3379,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAll(Exception ex) {
         ex.printStackTrace();
+
         return ResponseUtil.response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                ex.getMessage(),
+                "An unexpected internal server error occurred.",
                 null);
     }
 }
@@ -3036,10 +3404,34 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BikeRepository extends JpaRepository<Bike, String> {
     Page<Bike> findByPartner(User partner, Pageable pageable);
-
-    Page<Bike> findByPartner_PartnerDetail_IsVerified(boolean isVerified, Pageable pageable);
 }
 
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/repository/ChatMessageRepository.java
+---
+
+package com.doaibu.rebikeapi.repository;
+
+import com.doaibu.rebikeapi.entity.ChatMessage;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface ChatMessageRepository extends JpaRepository<ChatMessage, String> {
+
+    @Query("SELECT cm FROM ChatMessage cm WHERE " +
+            "(cm.sender.id = :userA_id AND cm.recipient.id = :userB_id) OR " +
+            "(cm.sender.id = :userB_id AND cm.recipient.id = :userA_id) " +
+            "ORDER BY cm.timestamp ASC")
+    List<ChatMessage> findConversationBetweenUsers(@Param("userA_id") String userA_id,
+                                                   @Param("userB_id") String userB_id);
+}
 
 
 ---
@@ -3087,6 +3479,7 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/repository/PayoutRepository.j
 
 package com.doaibu.rebikeapi.repository;
 
+import com.doaibu.rebikeapi.constant.PayoutStatus;
 import com.doaibu.rebikeapi.entity.Payout;
 import com.doaibu.rebikeapi.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -3097,6 +3490,7 @@ import java.util.List;
 @Repository
 public interface PayoutRepository extends JpaRepository<Payout, String> {
     List<Payout> findByPartnerOrderByRequestedAtDesc(User partner);
+    List<Payout> findAllByStatus(PayoutStatus status);
 }
 
 
@@ -3166,15 +3560,23 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
     List<Transaction> findByCustomer(User customer);
+
     List<Transaction> findByBike_Partner(User partner);
 
     @Query("SELECT SUM(t.totalCost) FROM Transaction t WHERE t.bookingStatus = :status")
     BigDecimal sumTotalCostByBookingStatus(BookingStatus status);
+
+    List<Transaction> findAllByBookingStatusAndStartDateBetween(BookingStatus bookingStatus, LocalDateTime start, LocalDateTime end);
+
+    List<Transaction> findAllByIsFlaggedAsPotentialFraud(boolean isFlagged);
+
+    List<Transaction> findAllByCreatedAtAfter(LocalDateTime dateTime);
 }
 
 
@@ -3200,6 +3602,8 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/repository/UserRepository.jav
 
 package com.doaibu.rebikeapi.repository;
 
+import com.doaibu.rebikeapi.constant.UserRole;
+import com.doaibu.rebikeapi.dto.response.AdminPartnerResponse;
 import com.doaibu.rebikeapi.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -3210,6 +3614,7 @@ import org.springframework.data.domain.Pageable;
 import com.doaibu.rebikeapi.entity.Role;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -3217,13 +3622,23 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByUsername(String username);
 
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     Boolean existsByEmail(String email);
 
-    Page<User> findByRolesIn(Set<Role> roles, Pageable pageable);
+    Boolean existsByUsername(String username);
 
-    Optional<User> findByResetPasswordToken(String token);
+    @Query("SELECT new com.doaibu.rebikeapi.dto.response.AdminPartnerResponse(" +
+            "u.id, " +
+            "CONCAT(u.firstName, ' ', u.lastName), " +
+            "u.email, " +
+            "p.locationName, " +
+            "size(u.ownedBikes), " +
+            "p.isVerified) " +
+            "FROM User u JOIN u.partnerDetail p WHERE :role MEMBER OF u.roles")
+    Page<AdminPartnerResponse> findAllPartnersWithBikeCount(@Param("role") Role role, Pageable pageable);
+
+    List<User> findAllByRoles_Name(UserRole name);
 
     long countByRolesContaining(Role partnerRole);
 
@@ -3243,7 +3658,7 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/security/CustomOAuth2Authenti
 package com.doaibu.rebikeapi.security;
 
 import com.doaibu.rebikeapi.entity.User;
-import com.doaibu.rebikeapi.service.UserService;
+import com.doaibu.rebikeapi.service.AuthService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -3260,7 +3675,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final UserService userService;
+    private final AuthService authService;
     private final JwtUtil jwtUtil;
 
     @Override
@@ -3269,7 +3684,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
         String email = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("name");
 
-        User user = userService.processOAuthPostLogin(email, name);
+        User user = authService.processOAuthPostLogin(email, name);
         String token = jwtUtil.generateToken(user);
 
         String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/auth/sso-callback")
@@ -3367,6 +3782,10 @@ public class JwtUtil {
                 .withSubject(user.getUsername())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .withClaim("firstName", user.getFirstName())
+                .withClaim("lastName", user.getLastName())
+                .withClaim("email", user.getEmail())
+                .withClaim("phoneNumber", user.getPhoneNumber())
+                .withClaim("photoUrl", user.getPhotoUrl())
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExpirationMs()))
                 .sign(Algorithm.HMAC256(jwtConfig.getSecretKey()));
@@ -3520,6 +3939,424 @@ public class AdminSettingServiceImpl implements AdminSettingService {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/AIAssistantServiceImpl.java
+---
+
+package com.doaibu.rebikeapi.service.impl;
+
+import com.doaibu.rebikeapi.constant.BookingStatus;
+import com.doaibu.rebikeapi.constant.PayoutStatus;
+import com.doaibu.rebikeapi.dto.request.ProcessPayoutRequest;
+import com.doaibu.rebikeapi.entity.Payout;
+import com.doaibu.rebikeapi.entity.Transaction;
+import com.doaibu.rebikeapi.entity.User;
+import com.doaibu.rebikeapi.repository.PayoutRepository;
+import com.doaibu.rebikeapi.repository.SystemConfigurationRepository;
+import com.doaibu.rebikeapi.repository.TransactionRepository;
+import com.doaibu.rebikeapi.service.PayoutService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import com.doaibu.rebikeapi.service.AIAssistantService;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AIAssistantServiceImpl implements AIAssistantService{
+
+    private final PayoutRepository payoutRepository;
+    private final TransactionRepository transactionRepository;
+    private final SystemConfigurationRepository systemConfigRepository;
+    private final PayoutService payoutService;
+
+    @Override
+    @Scheduled(cron = "0 */15 * * * *")
+    public void autoProcessPendingPayouts() {
+        log.info("[AI Assistant] Running job: Auto Process Pending Payouts...");
+        List<Payout> pendingPayouts = payoutRepository.findAllByStatus(PayoutStatus.PENDING);
+
+        if (pendingPayouts.isEmpty()) {
+            log.info("[AI Assistant] No pending payouts to process.");
+            return;
+        }
+
+        log.info("[AI Assistant] Found {} pending payout(s).", pendingPayouts.size());
+
+        for (Payout payout : pendingPayouts) {
+            try {
+                User partner = payout.getPartner();
+                BigDecimal requestedAmount = payout.getAmount();
+
+                BigDecimal availableBalance = calculateAvailableBalance(partner);
+
+                if (requestedAmount.compareTo(availableBalance) <= 0) {
+                    ProcessPayoutRequest processRequest = new ProcessPayoutRequest();
+                    processRequest.setStatus(PayoutStatus.APPROVED);
+                    processRequest.setNotes("Auto-approved by AI Assistant. Balance sufficient.");
+                    payoutService.processPayout(payout.getId(), processRequest);
+                    log.info("[AI Assistant] Auto-approved payout ID: {} for partner: {}", payout.getId(), partner.getUsername());
+                } else {
+                    ProcessPayoutRequest processRequest = new ProcessPayoutRequest();
+                    processRequest.setStatus(PayoutStatus.REJECTED);
+                    processRequest.setNotes("Auto-rejected by AI Assistant. Insufficient balance. Available: " + availableBalance);
+                    payoutService.processPayout(payout.getId(), processRequest);
+                    log.info("[AI Assistant] Auto-rejected payout ID: {} for partner: {}. Reason: Insufficient balance.", payout.getId(), partner.getUsername());
+                }
+            } catch (Exception e) {
+                log.error("[AI Assistant] Error processing payout ID: {}. Error: {}", payout.getId(), e.getMessage());
+            }
+        }
+    }
+
+    private BigDecimal calculateAvailableBalance(User partner) {
+        BigDecimal totalRevenue = transactionRepository.findByBike_Partner(partner).stream()
+                .filter(t -> t.getBookingStatus() == BookingStatus.COMPLETED)
+                .map(Transaction::getTotalCost)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal platformFeePercentage = new BigDecimal(
+                systemConfigRepository.findById("platform_fee_percentage")
+                        .orElseThrow(() -> new IllegalStateException("Platform fee not configured."))
+                        .getConfigValue()
+        );
+
+        BigDecimal totalFee = totalRevenue.multiply(platformFeePercentage);
+        BigDecimal netRevenue = totalRevenue.subtract(totalFee);
+
+        List<Payout> partnerPayouts = payoutRepository.findByPartnerOrderByRequestedAtDesc(partner);
+        BigDecimal totalPaidOutOrPending = partnerPayouts.stream()
+                .filter(p -> p.getStatus() == PayoutStatus.APPROVED || p.getStatus() == PayoutStatus.PROCESSING || p.getStatus() == PayoutStatus.PENDING)
+                .map(Payout::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return netRevenue.subtract(totalPaidOutOrPending);
+    }
+}
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/AuthServiceImpl.java
+---
+
+package com.doaibu.rebikeapi.service.impl;
+
+import com.doaibu.rebikeapi.constant.UserRole;
+import com.doaibu.rebikeapi.dto.request.*;
+import com.doaibu.rebikeapi.dto.response.LoginResponse;
+import com.doaibu.rebikeapi.dto.response.RegisterResponse;
+import com.doaibu.rebikeapi.entity.Partner;
+import com.doaibu.rebikeapi.entity.Role;
+import com.doaibu.rebikeapi.entity.User;
+import com.doaibu.rebikeapi.exception.CustomException;
+import com.doaibu.rebikeapi.repository.UserRepository;
+import com.doaibu.rebikeapi.security.JwtUtil;
+import com.doaibu.rebikeapi.service.*;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.similarity.FuzzyScore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
+
+    private final UserRepository userRepository;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final JwtUtil jwtUtil;
+    private final NotificationService notificationService;
+    private final UserService userService;
+    private final Random random = new SecureRandom();
+
+    @Value("${app.user.default-photo-url}")
+    private String defaultPhotoUrl;
+
+    @Override
+    @Transactional
+    public RegisterResponse registerCustomer(RegisterCustomerRequest request) {
+        try {
+            if (request.getEmail() == null || request.getEmail().isBlank() ||
+                    request.getPassword() == null || request.getPassword().isBlank()) {
+                throw new CustomException.BadRequestException("Email and password are required.");
+            }
+
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new CustomException.ConflictException("Email already in use.");
+            }
+
+            if (userRepository.existsByUsername(request.getUsername())) {
+                throw new CustomException.ConflictException("Username already in use.");
+            }
+
+            Set<Role> customerRole = new HashSet<>();
+            customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
+            User user = buildUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getEmail(), request.getPassword(), request.getPhoneNumber(), customerRole);
+            User savedUser = userRepository.save(user);
+            return mapToRegisterResponse(savedUser);
+        } catch (CustomException.BadRequestException e) {
+            logger.error("Failed to send verification email for {}. Rolling back transaction.", request.getEmail());
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public RegisterResponse registerPartner(RegisterPartnerRequest request) {
+        User savedUser;
+        try {
+            if (request.getEmail() == null || request.getEmail().isBlank() ||
+                    request.getPassword() == null || request.getPassword().isBlank()) {
+                throw new CustomException.BadRequestException("Email and password are required.");
+            }
+
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new CustomException.ConflictException("Email already in use.");
+            }
+            if (userRepository.existsByUsername(request.getUsername())) {
+                throw new CustomException.ConflictException("Username already in use.");
+            }
+
+            Set<Role> partnerRole = new HashSet<>();
+            partnerRole.add(roleService.getOrCreate(UserRole.PARTNER));
+            User user = buildUser(
+                    request.getFirstName(), request.getLastName(), request.getUsername(),
+                    request.getEmail(), request.getPassword(), request.getPhoneNumber(),
+                    partnerRole
+            );
+            Partner partner = Partner.builder()
+                    .user(user)
+                    .isVerified(false)
+                    .locationName(request.getLocationName())
+                    .bankAccountName(request.getBankAccountName())
+                    .bankAccountNumber(request.getBankAccountNumber())
+                    .bankName(request.getBankName())
+                    .build();
+            user.setPartnerDetail(partner);
+            savedUser = userRepository.save(user);
+
+            Partner partnerDetail = savedUser.getPartnerDetail();
+            if (isPartnerDataTrustworthy(savedUser, partnerDetail)) {
+                userService.verifyPartner(savedUser.getId(), true);
+                logger.info("[AI Assistant] Auto-verified partner: {}", savedUser.getEmail());
+            }
+
+        } catch (CustomException.BadRequestException e) {
+            logger.error("Failed to send verification email for partner {}. Rolling back transaction.", request.getEmail());
+            throw e;
+        }
+
+        try {
+            List<User> admins = userRepository.findAllByRoles_Name(UserRole.ADMIN);
+            for (User admin : admins) {
+                if (admin.getFcmToken() != null && !admin.getFcmToken().isEmpty()) {
+                    String locationName = savedUser.getPartnerDetail() != null ?
+                            savedUser.getPartnerDetail().getLocationName() : "N/A";
+                    notificationService.sendNotification(
+                            admin.getFcmToken(),
+                            "🆕 Pendaftaran Mitra Baru",
+                            "Mitra '" + locationName + "' telah mendaftar dan menunggu verifikasi.",
+                            Map.of("partnerId", savedUser.getId(), "screen", "PartnerVerification")
+                    );
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Gagal mengirim notifikasi pendaftaran mitra ke admin: " + e.getMessage());
+        }
+
+        return mapToRegisterResponse(savedUser);
+    }
+
+    private boolean isPartnerDataTrustworthy(User user, Partner partner) {
+        if (user == null || partner == null) {
+            return false;
+        }
+
+        if (partner.getBankName() == null || partner.getBankAccountNumber() == null || partner.getBankAccountName() == null) {
+            return false;
+        }
+
+        FuzzyScore fuzzyScore = new FuzzyScore(Locale.ENGLISH);
+        String fullName = (user.getFirstName() + " " + user.getLastName()).toLowerCase();
+        String bankAccountName = partner.getBankAccountName().toLowerCase();
+
+        Integer score = fuzzyScore.fuzzyScore(fullName, bankAccountName);
+
+        if (score < 15) {
+            logger.warn("[AI Assistant] Partner verification check failed for {}. Reason: Name mismatch (Score: {})", user.getEmail(), score);
+            return false;
+        }
+
+        logger.info("[AI Assistant] Partner verification check passed for {}. Name match score: {}", user.getEmail(), score);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public void verifyEmailOtp(String email, String otp) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
+        if (user.isEmailVerified()) {
+            throw new CustomException.BadRequestException("Email has been verified.");
+        }
+        if (user.getOtpExpiryTime().isBefore(LocalDateTime.now())) {
+            throw new CustomException.BadRequestException("OTP code has expired.");
+        }
+        if (!passwordEncoder.matches(otp, user.getVerificationOtp())) {
+            throw new CustomException.BadRequestException("OTP code does not match.");
+        }
+
+        user.setEmailVerified(true);
+        user.setEnabled(true);
+        user.setVerificationOtp(null);
+        user.setOtpExpiryTime(null);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void resendVerificationOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
+        if (user.isEmailVerified()) {
+            throw new CustomException.BadRequestException("Email has been verified.");
+        }
+        String newOtp = generateOtp();
+        user.setVerificationOtp(passwordEncoder.encode(newOtp));
+        user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+        sendVerificationEmail(user, newOtp);
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException.AuthenticationException("Email or password is incorrect."));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException.AuthenticationException("Email or password is incorrect.");
+        }
+        if (!user.isEmailVerified()) {
+            throw new CustomException.AuthorizationException("Email is not verified. Please try again.");
+        }
+        if (!user.isEnabled()) {
+            throw new CustomException.AuthorizationException("Your account is disabled.");
+        }
+
+        String token = jwtUtil.generateToken(user);
+        return LoginResponse.builder()
+                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()))
+                .token(token)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void processForgotPassword(String email, String feBaseUrl) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            String otp = generateOtp();
+            user.setResetPasswordToken(passwordEncoder.encode(otp));
+            user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(10));
+            userRepository.save(user);
+
+            String emailText = "Anda menerima email ini karena ada permintaan untuk mereset password akun Rebike Anda.\n\n"
+                    + "Gunakan kode OTP ini untuk melanjutkan: \n\n"
+                    + "Kode OTP: " + otp + "\n\n"
+                    + "PENTING: Kode ini hanya berlaku selama 10 menit. Jika Anda tidak meminta ini, abaikan email ini.";
+
+            emailService.sendEmail(user.getEmail(), "Reset Password Rebike (Berlaku 10 Menit)", emailText);
+        });
+    }
+
+    @Override
+    @Transactional
+    public void resetPasswordWithOtp(ResetPasswordWithOtpRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
+        if (user.getResetPasswordToken() == null || user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new CustomException.BadRequestException("OTP code has expired.");
+        }
+        if (!passwordEncoder.matches(request.getOtp(), user.getResetPasswordToken())) {
+            throw new CustomException.BadRequestException("OTP code does not match.");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiry(null);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User processOAuthPostLogin(String email, String name) {
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            Set<Role> customerRole = new HashSet<>();
+            customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
+
+            User newUser = User.builder()
+                    .email(email).username(email).firstName(name)
+                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                    .roles(customerRole).createdAt(LocalDateTime.now())
+                    .isAccountNonExpired(true).isAccountNonLocked(true).isCredentialsNonExpired(true)
+                    .isEnabled(true).isEmailVerified(true)
+                    .build();
+
+            return userRepository.save(newUser);
+        });
+    }
+
+    private String generateOtp() {
+        return String.format("%06d", random.nextInt(999999));
+    }
+
+    private void sendVerificationEmail(User user, String otp) {
+        String emailText = "Gunakan kode OTP ini untuk verifikasi email Rebike Anda.\n\n"
+                + "Kode OTP: " + otp + "\n\n"
+                + "PENTING: Kode ini hanya berlaku selama 10 menit. Jangan berikan kode ini kepada siapapun.";
+        emailService.sendEmail(user.getEmail(), "Verifikasi Email Rebike (Berlaku 10 Menit)", emailText);
+    }
+
+    private User buildUser(String firstName, String lastName, String username, String email, String password, String phoneNumber, Set<Role> roles) {
+        String otp = generateOtp();
+        User user = User.builder()
+                .firstName(firstName).lastName(lastName)
+                .username(username).email(email)
+                .password(passwordEncoder.encode(password))
+                .phoneNumber(phoneNumber)
+                .photoUrl(defaultPhotoUrl)
+                .roles(roles).createdAt(LocalDateTime.now())
+                .isAccountNonExpired(true).isAccountNonLocked(true).isCredentialsNonExpired(true)
+                .isEnabled(false).isEmailVerified(false)
+                .verificationOtp(passwordEncoder.encode(otp))
+                .otpExpiryTime(LocalDateTime.now().plusMinutes(10))
+                .build();
+        sendVerificationEmail(user, otp);
+        return user;
+    }
+
+    private RegisterResponse mapToRegisterResponse(User user) {
+        return RegisterResponse.builder()
+                .userID(user.getId())
+                .email(user.getEmail())
+                .build();
+    }
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/BikeServiceImpl.java
 ---
 
@@ -3536,12 +4373,14 @@ import com.doaibu.rebikeapi.exception.CustomException;
 import com.doaibu.rebikeapi.repository.BikeRepository;
 import com.doaibu.rebikeapi.repository.UserRepository;
 import com.doaibu.rebikeapi.service.BikeService;
+import com.doaibu.rebikeapi.service.CloudinaryService;
 import com.doaibu.rebikeapi.util.TokenHolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -3553,51 +4392,45 @@ public class BikeServiceImpl implements BikeService {
 
     private final BikeRepository bikeRepository;
     private final UserRepository userRepository;
+    private final CloudinaryService cloudinaryService;
     private final TokenHolder tokenHolder;
+
+    private final long maxSize = 5 * 1024 * 1024;
 
     @Override
     @Transactional
-    public BikeResponse addBike(BikeRequest request) {
+    public BikeResponse addBike(BikeRequest request, MultipartFile file) {
         User partner = userRepository.findByUsername(tokenHolder.getUsername())
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
-
         if (partner.getPartnerDetail() == null || !partner.getPartnerDetail().isVerified()) {
-            throw new CustomException.AuthorizationException("Akun mitra Anda belum terverifikasi. Silakan hubungi admin.");
+            throw new CustomException.AuthorizationException("Your partner account is not verified. Please contact administrator.");
         }
+
+        if (file.getSize() > maxSize) {
+            throw new CustomException.BadRequestException("File size exceeds 5MB limit.");
+        }
+
+        String fileName = file.getOriginalFilename();
+        if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
+            throw new CustomException.BadRequestException("Only JPG/PNG files are allowed.");
+        }
+
+        String url = cloudinaryService.uploadFile(file, "bikes");
 
         Bike bike = mapToBike(request);
         bike.setPartner(partner);
         bike.setStatus(BikeStatus.AVAILABLE);
+        bike.setPhotoURL(url);
         bikeRepository.save(bike);
         return mapToBikeResponse(bike);
     }
 
     @Override
     public PagedResponse<BikeResponse> getAllBikes(Pageable pageable) {
-//        String username = tokenHolder.getUsername();
-//        User partner = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-//
-//        Page<Bike> bikePage = bikeRepository.findByPartner_PartnerDetail_IsVerified(true, pageable);
-//
-//        List<BikeResponse> bikeResponses = bikePage.getContent().stream()
-//                .map(this::mapToBikeResponse)
-//                .collect(Collectors.toList());
-//
-//        return PagedResponse.<BikeResponse>builder()
-//                .data(bikeResponses)
-//                .page(bikePage.getNumber())
-//                .size(bikePage.getSize())
-//                .totalElements(bikePage.getTotalElements())
-//                .totalPages(bikePage.getTotalPages())
-//                .build();
-
         Page<Bike> bikePage = bikeRepository.findAll(pageable);
-
         List<BikeResponse> bikeResponses = bikePage.getContent().stream()
                 .map(this::mapToBikeResponse)
                 .collect(Collectors.toList());
-
         return PagedResponse.<BikeResponse>builder()
                 .data(bikeResponses)
                 .page(bikePage.getNumber())
@@ -3605,22 +4438,47 @@ public class BikeServiceImpl implements BikeService {
                 .totalElements(bikePage.getTotalElements())
                 .totalPages(bikePage.getTotalPages())
                 .build();
+    }
 
+    @Override
+    public PagedResponse<BikeResponse> getAllMyBikes(Pageable pageable) {
+        User partner = userRepository.findByUsername(tokenHolder.getUsername())
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
+        if (!partner.getPartnerDetail().isVerified()) {
+            throw new CustomException.AuthorizationException("Your partner account is not verified. Please contact administrator.");
+        }
+
+        Page<Bike> bikePage = bikeRepository.findByPartner(partner, pageable);
+        List<BikeResponse> bikeResponses = bikePage.getContent().stream()
+                .map(this::mapToBikeResponse)
+                .collect(Collectors.toList());
+        return PagedResponse.<BikeResponse>builder()
+                .data(bikeResponses)
+                .page(bikePage.getNumber())
+                .size(bikePage.getSize())
+                .totalElements(bikePage.getTotalElements())
+                .totalPages(bikePage.getTotalPages())
+                .build();
     }
 
     @Override
     public BikeDetailResponse getBikeById(String id) {
         Bike bike = bikeRepository.findById(id)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found."));
-
         return mapToBikeDetailResponse(bike);
     }
 
     @Override
     @Transactional
     public BikeResponse updateBike(String id, BikeRequest request) {
+        User partner = userRepository.findByUsername(tokenHolder.getUsername())
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
         Bike bike = bikeRepository.findById(id)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found."));
+
+        if (!Objects.equals(bike.getPartner().getId(), partner.getId())) {
+            throw new CustomException.AuthorizationException("You are not authorized to modify this bike.");
+        }
 
         bike.setName(request.getName());
         bike.setPhotoURL(request.getPhotoURL());
@@ -3639,13 +4497,11 @@ public class BikeServiceImpl implements BikeService {
     @Transactional
     public BikeResponse updateBikeStatus(String bikeId, BikeStatus status) {
         User partner = userRepository.findByUsername(tokenHolder.getUsername())
-                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found"));
-
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
         Bike bike = bikeRepository.findById(bikeId)
-                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found"));
-
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found."));
         if (!Objects.equals(bike.getPartner().getId(), partner.getId())) {
-            throw new CustomException.AuthorizationException("You are not authorized to modify this bike");
+            throw new CustomException.AuthorizationException("You are not authorized to modify this bike.");
         }
 
         bike.setStatus(status);
@@ -3657,8 +4513,7 @@ public class BikeServiceImpl implements BikeService {
     @Transactional
     public void deleteBike(String id) {
         Bike bike = bikeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Bike not found"));
-
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found."));
         bikeRepository.delete(bike);
     }
 
@@ -3713,6 +4568,62 @@ public class BikeServiceImpl implements BikeService {
                         .isVerified(bike.getPartner().getPartnerDetail().isVerified())
                         .build())
                 .build();
+    }
+}
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/BusinessInsightServiceImpl.java
+---
+
+package com.doaibu.rebikeapi.service.impl;
+
+import com.doaibu.rebikeapi.dto.response.BusinessRecommendationResponse;
+import com.doaibu.rebikeapi.repository.UserRepository;
+import com.doaibu.rebikeapi.service.BusinessInsightService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class BusinessInsightServiceImpl implements BusinessInsightService {
+
+    private final UserRepository userRepository;
+
+    @Override
+    public List<BusinessRecommendationResponse> generateRecommendations() {
+        List<BusinessRecommendationResponse> recommendations = new ArrayList<>();
+
+        long thisMonthUsers = userRepository.countNewUsersBetween(
+                LocalDateTime.now().withDayOfMonth(1).toLocalDate().atStartOfDay(),
+                LocalDateTime.now()
+        );
+        long lastMonthUsers = userRepository.countNewUsersBetween(
+                LocalDateTime.now().minusMonths(1).withDayOfMonth(1).toLocalDate().atStartOfDay(),
+                LocalDateTime.now().withDayOfMonth(1).toLocalDate().atStartOfDay().minusNanos(1)
+        );
+
+        if (lastMonthUsers > 0 && ((double)thisMonthUsers / lastMonthUsers) < 0.85) { // Pertumbuhan < 85% (turun > 15%)
+            recommendations.add(BusinessRecommendationResponse.builder()
+                    .recommendation("Lakukan promosi untuk pengguna baru.")
+                    .reason("Pertumbuhan pengguna baru bulan ini melambat signifikan dibandingkan bulan lalu.")
+                    .severity("HIGH")
+                    .build());
+        }
+
+        if(recommendations.isEmpty()){
+            recommendations.add(BusinessRecommendationResponse.builder()
+                    .recommendation("Semua metrik terlihat baik.")
+                    .reason("Tidak ada anomali negatif yang terdeteksi pada metrik utama.")
+                    .severity("LOW")
+                    .build());
+        }
+
+        return recommendations;
     }
 }
 
@@ -3792,6 +4703,79 @@ public class EmailServiceImpl implements EmailService {
         } catch (Exception e) {
             throw new CustomException.BadRequestException("Failed to send verification email, please try again later.");
         }
+    }
+}
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/FraudDetectionServiceImpl.java
+---
+
+package com.doaibu.rebikeapi.service.impl;
+
+import com.doaibu.rebikeapi.dto.response.FlaggedTransactionResponse;
+import com.doaibu.rebikeapi.entity.Transaction;
+import com.doaibu.rebikeapi.repository.TransactionRepository;
+import com.doaibu.rebikeapi.service.FraudDetectionService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class FraudDetectionServiceImpl implements FraudDetectionService {
+
+    private final TransactionRepository transactionRepository;
+    private static final int RENTAL_FREQUENCY_THRESHOLD = 3;
+    private static final int RENTAL_FREQUENCY_HOURS = 24;
+
+    @Override
+    @Scheduled(cron = "0 0 */1 * * *")
+    public void detectAnomalies() {
+        log.info("[AI Assistant] Running job: Fraud Detection...");
+
+        LocalDateTime thresholdTime = LocalDateTime.now().minusHours(RENTAL_FREQUENCY_HOURS);
+
+        List<Transaction> recentTransactions = transactionRepository.findAllByCreatedAtAfter(thresholdTime);
+
+        Map<String, List<Transaction>> transactionsByUser = recentTransactions.stream()
+                .collect(Collectors.groupingBy(tx -> tx.getCustomer().getId()));
+
+        for (Map.Entry<String, List<Transaction>> entry : transactionsByUser.entrySet()) {
+            if (entry.getValue().size() > RENTAL_FREQUENCY_THRESHOLD) {
+                log.warn("[AI Assistant] Potential fraud detected for user ID: {}. Found {} rentals in the last {} hours.",
+                        entry.getKey(), entry.getValue().size(), RENTAL_FREQUENCY_HOURS);
+
+                for (Transaction tx : entry.getValue()) {
+                    tx.setFlaggedAsPotentialFraud(true);
+                    tx.setFraudFlagReason("Frequent rentals (" + entry.getValue().size() + "x in " + RENTAL_FREQUENCY_HOURS + "h) by user.");
+                    transactionRepository.save(tx);
+                }
+            }
+        }
+
+        log.info("[AI Assistant] Fraud Detection job finished.");
+    }
+
+    @Override
+    public List<FlaggedTransactionResponse> getFlaggedTransactions() {
+        return transactionRepository.findAllByIsFlaggedAsPotentialFraud(true).stream()
+                .map(tx -> FlaggedTransactionResponse.builder()
+                        .transactionId(tx.getId())
+                        .customerName(tx.getCustomer().getFirstName() + " " + tx.getCustomer().getLastName())
+                        .bikeName(tx.getBike().getName())
+                        .transactionDate(tx.getCreatedAt())
+                        .totalCost(tx.getTotalCost())
+                        .reason(tx.getFraudFlagReason())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
 
@@ -3934,6 +4918,51 @@ public class MidtransServiceImpl implements MidtransService {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/NotificationServiceImpl.java
+---
+
+package com.doaibu.rebikeapi.service.impl;
+
+import com.doaibu.rebikeapi.service.NotificationService;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+public class NotificationServiceImpl implements NotificationService {
+
+    private final FirebaseMessaging firebaseMessaging;
+
+    @Override
+    public void sendNotification(String token, String title, String body, Map<String, String> data) {
+        Notification notification = Notification.builder()
+                .setTitle(title)
+                .setBody(body)
+                .build();
+
+        Message message = Message.builder()
+                .setToken(token)
+                .setNotification(notification)
+                .putAllData(data)
+                .build();
+
+        try {
+            firebaseMessaging.send(message);
+            System.out.println("Successfully sent message to token: " + token);
+        } catch (FirebaseMessagingException e) {
+            System.err.println("Failed to send notification: " + e.getMessage());
+        }
+    }
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/PartnerServiceImpl.java
 ---
 
@@ -4062,6 +5091,7 @@ import com.doaibu.rebikeapi.util.TokenHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -4078,6 +5108,9 @@ public class PayoutServiceImpl implements PayoutService {
     private final TokenHolder tokenHolder;
     private final SystemConfigurationRepository systemConfigRepository;
 
+    @Value("${app.payout.min-amount}")
+    private BigDecimal minPayoutAmount;
+
     @Override
     public List<PayoutResponse> getAllPayouts() {
         return payoutRepository.findAll().stream()
@@ -4089,7 +5122,6 @@ public class PayoutServiceImpl implements PayoutService {
     public List<PayoutResponse> getPayoutsForPartner() {
         User partnerUser = userRepository.findByUsername(tokenHolder.getUsername())
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-
         return payoutRepository.findByPartnerOrderByRequestedAtDesc(partnerUser).stream()
                 .map(this::mapToPayoutResponse)
                 .collect(Collectors.toList());
@@ -4115,35 +5147,39 @@ public class PayoutServiceImpl implements PayoutService {
                         .orElseThrow(() -> new IllegalStateException("Platform fee not configured."))
                         .getConfigValue()
         );
-
         BigDecimal totalRevenue = transactionRepository.findByBike_Partner(partnerUser).stream()
                 .filter(t -> t.getBookingStatus() == BookingStatus.COMPLETED)
                 .map(Transaction::getTotalCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         BigDecimal totalFee = totalRevenue.multiply(platformFeePercentage);
         BigDecimal netRevenue = totalRevenue.subtract(totalFee);
 
-        BigDecimal totalPaidOut = payoutRepository.findByPartnerOrderByRequestedAtDesc(partnerUser).stream()
+        List<Payout> partnerPayouts = payoutRepository.findByPartnerOrderByRequestedAtDesc(partnerUser);
+
+        BigDecimal totalPaidOut = partnerPayouts.stream()
                 .filter(p -> p.getStatus() == PayoutStatus.APPROVED)
                 .map(Payout::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal availableBalance = netRevenue.subtract(totalPaidOut);
+        BigDecimal totalPendingOrProcessing = partnerPayouts.stream()
+                .filter(p -> p.getStatus() == PayoutStatus.PENDING || p.getStatus() == PayoutStatus.PROCESSING)
+                .map(Payout::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal availableBalance = netRevenue.subtract(totalPaidOut).subtract(totalPendingOrProcessing);
 
         if (request.getAmount().compareTo(availableBalance) > 0) {
             throw new CustomException.BadRequestException("The withdrawal amount exceeds the available balance. Balance is IDR " + availableBalance);
         }
 
-        if (request.getAmount().compareTo(BigDecimal.valueOf(10000)) < 0) {
-            throw new CustomException.BadRequestException("The minimum withdrawal amount is IDR 10.000");
+        if (request.getAmount().compareTo(minPayoutAmount) < 0) {
+            throw new CustomException.BadRequestException("The minimum withdrawal amount is IDR " + minPayoutAmount);
         }
 
         String bankDetails = String.format("%s - %s a/n %s",
                 partnerDetails.getBankName(),
                 partnerDetails.getBankAccountNumber(),
                 partnerDetails.getBankAccountName());
-
         Payout payout = Payout.builder()
                 .partner(partnerUser)
                 .amount(request.getAmount())
@@ -4151,7 +5187,6 @@ public class PayoutServiceImpl implements PayoutService {
                 .requestedAt(LocalDateTime.now())
                 .bankDetailsSnapshot(bankDetails)
                 .build();
-
         payoutRepository.save(payout);
         return mapToPayoutResponse(payout);
     }
@@ -4168,10 +5203,14 @@ public class PayoutServiceImpl implements PayoutService {
         if (request.getStatus() == PayoutStatus.APPROVED) {
             payout.setStatus(PayoutStatus.APPROVED);
             payout.setNotes(request.getNotes() != null ? request.getNotes() : "Approved manually by admin.");
-        } else {
+        } else if (request.getStatus() == PayoutStatus.REJECTED) {
             payout.setStatus(PayoutStatus.REJECTED);
             payout.setNotes(request.getNotes());
+        } else {
+            payout.setStatus(request.getStatus());
+            payout.setNotes(request.getNotes());
         }
+
 
         payout.setProcessedAt(LocalDateTime.now());
         payoutRepository.save(payout);
@@ -4309,6 +5348,65 @@ public class RoleServiceImpl implements RoleService {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/ScheduledTasksServiceImpl.java
+---
+
+package com.doaibu.rebikeapi.service.impl;
+
+import com.doaibu.rebikeapi.constant.BookingStatus;
+import com.doaibu.rebikeapi.entity.Transaction;
+import com.doaibu.rebikeapi.repository.TransactionRepository;
+import com.doaibu.rebikeapi.service.NotificationService;
+import com.doaibu.rebikeapi.service.ScheduledTasksService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class ScheduledTasksServiceImpl implements ScheduledTasksService {
+
+    private final TransactionRepository transactionRepository;
+    private final NotificationService notificationService;
+
+    @Override
+    @Scheduled(cron = "0 0 * * * *")
+    public void sendRentalReminders() {
+        log.info("Running scheduled task: sendRentalReminders");
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reminderWindowStart = now.plusHours(1);
+        LocalDateTime reminderWindowEnd = now.plusHours(2);
+
+        List<Transaction> upcomingTransactions = transactionRepository
+                .findAllByBookingStatusAndStartDateBetween(BookingStatus.CONFIRMED, reminderWindowStart, reminderWindowEnd);
+
+        for (Transaction tx : upcomingTransactions) {
+            try {
+                String fcmToken = tx.getCustomer().getFcmToken();
+                if (fcmToken != null && !fcmToken.isEmpty()) {
+                    notificationService.sendNotification(
+                            fcmToken,
+                            "⏰ Pengingat Jadwal Sewa",
+                            "Sewa " + tx.getBike().getName() + " Anda akan segera dimulai.",
+                            Map.of("transactionId", tx.getId(), "screen", "TransactionDetail")
+                    );
+                    log.info("Reminder sent for transaction ID: {}", tx.getId());
+                }
+            } catch (Exception e) {
+                log.error("Failed to send reminder for transaction ID: {}. Error: {}", tx.getId(), e.getMessage());
+            }
+        }
+    }
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/TransactionServiceImpl.java
 ---
 
@@ -4331,6 +5429,7 @@ import com.doaibu.rebikeapi.repository.PaymentRepository;
 import com.doaibu.rebikeapi.repository.TransactionRepository;
 import com.doaibu.rebikeapi.repository.UserRepository;
 import com.doaibu.rebikeapi.service.MidtransService;
+import com.doaibu.rebikeapi.service.NotificationService;
 import com.doaibu.rebikeapi.service.TransactionService;
 import com.doaibu.rebikeapi.util.TokenHolder;
 import jakarta.transaction.Transactional;
@@ -4338,6 +5437,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -4362,6 +5462,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final MidtransService midtransService;
     private final BikeRepository bikeRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
     private final TokenHolder tokenHolder;
 
     @Override
@@ -4372,9 +5473,13 @@ public class TransactionServiceImpl implements TransactionService {
                     .orElseThrow(() -> new CustomException.ResourceNotFoundException("Customer not found."));
             Bike bike = bikeRepository.findById(request.getBikeID())
                     .orElseThrow(() -> new CustomException.ResourceNotFoundException("Bike not found."));
+
             if (bike.getStatus() != BikeStatus.AVAILABLE) {
                 throw new CustomException.BadRequestException("Bike is not available for booking.");
             }
+
+            bike.setStatus(BikeStatus.PENDING);
+            bikeRepository.save(bike);
 
             long days = ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
             BigDecimal baseCost = bike.getWeekdayPricePerDay().multiply(BigDecimal.valueOf(days));
@@ -4394,7 +5499,6 @@ public class TransactionServiceImpl implements TransactionService {
             transactionRepository.save(transaction);
 
             String orderId = "INV-RBK-" + transaction.getId();
-
             CreatePaymentRequest payRequest = CreatePaymentRequest.builder()
                     .orderId(orderId)
                     .grossAmount(transaction.getTotalCost())
@@ -4402,12 +5506,10 @@ public class TransactionServiceImpl implements TransactionService {
                     .customerEmail(customer.getEmail())
                     .bank("BRI") // remove for integration with fe
                     .build();
-
             MidtransChargeResponse response = midtransService.createTransaction(payRequest);
 
             String bank = null;
             String vaNumber = null;
-
             if (response.getVaNumbers() instanceof List<?> vaList && !vaList.isEmpty()) {
                 Object vaObj = vaList.get(0);
                 if (vaObj instanceof Map<?, ?> map) {
@@ -4460,8 +5562,19 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionDetailResponse getTransactionDetails(String transactionId) {
+        User currentUser = userRepository.findByUsername(tokenHolder.getUsername())
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
+
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Transaction not found."));
+
+        boolean isCustomer = transaction.getCustomer().getId().equals(currentUser.getId());
+        boolean isPartner = transaction.getBike().getPartner().getId().equals(currentUser.getId());
+
+        if (!isCustomer && !isPartner) {
+            throw new CustomException.AuthorizationException("You are not authorized to view this transaction.");
+        }
+
         return mapToTransactionDetailedResponse(transaction);
     }
 
@@ -4490,14 +5603,14 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.save(transaction);
     }
 
-    @Transactional
-    @Override
-    public void uploadPaymentProof(String transactionId, String paymentProofUrl) {
-        Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Transaction not found."));
-        transaction.setPaymentStatus(PaymentStatus.PENDING);
-        transactionRepository.save(transaction);
-    }
+//    @Transactional
+//    @Override
+//    public void uploadPaymentProof(String transactionId, String paymentProofUrl) {
+//        Transaction transaction = transactionRepository.findById(transactionId)
+//                .orElseThrow(() -> new CustomException.ResourceNotFoundException("Transaction not found."));
+//        transaction.setPaymentStatus(PaymentStatus.PENDING);
+//        transactionRepository.save(transaction);
+//    }
 
     @Override
     @Transactional
@@ -4514,15 +5627,32 @@ public class TransactionServiceImpl implements TransactionService {
             throw new CustomException.BadRequestException("Only pending transactions can be confirmed or cancelled.");
         }
 
-        if (status == BookingStatus.CONFIRMED) {
-            transaction.setBookingStatus(BookingStatus.CONFIRMED);
-        } else if (status == BookingStatus.CANCELLED) {
-            transaction.setBookingStatus(BookingStatus.CANCELLED);
-        } else {
-            throw new CustomException.BadRequestException("Invalid status provided.");
-        }
+        transaction.setBookingStatus(status);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+        try {
+            User customer = savedTransaction.getCustomer();
+            if (customer.getFcmToken() != null && !customer.getFcmToken().isEmpty()) {
+                String title = "";
+                String body = "";
 
-        transactionRepository.save(transaction);
+                if (savedTransaction.getBookingStatus() == BookingStatus.CONFIRMED) {
+                    title = "✅ Order Dikonfirmasi!";
+                    body = "Pesanan Anda untuk sepeda '" + savedTransaction.getBike().getName() + "' telah diterima.";
+                } else if (savedTransaction.getBookingStatus() == BookingStatus.CANCELLED) {
+                    title = "❌ Order Dibatalkan";
+                    body = "Pesanan Anda untuk sepeda '" + savedTransaction.getBike().getName() + "' telah dibatalkan oleh partner.";
+                }
+
+                if (!title.isEmpty()) {
+                    notificationService.sendNotification(
+                            customer.getFcmToken(), title, body,
+                            Map.of("transactionId", savedTransaction.getId(), "screen", "TransactionDetail")
+                    );
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Gagal mengirim notifikasi konfirmasi ke pelanggan: " + e.getMessage());
+        }
     }
 
     @Override
@@ -4560,11 +5690,9 @@ public class TransactionServiceImpl implements TransactionService {
                         t -> t.getStartDate().getMonth(),
                         Collectors.mapping(Transaction::getTotalCost, Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))
                 ));
-
         List<String> labels = new ArrayList<>();
         List<BigDecimal> data = new ArrayList<>();
         LocalDate currentDate = LocalDate.now();
-
         for (int i = 5; i >= 0; i--) {
             Month month = currentDate.minusMonths(i).getMonth();
             String monthLabel = month.getDisplayName(TextStyle.SHORT, new Locale("id", "ID"));
@@ -4661,10 +5789,10 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/impl/UserServiceImpl.
 package com.doaibu.rebikeapi.service.impl;
 
 import com.doaibu.rebikeapi.constant.UserRole;
-import com.doaibu.rebikeapi.dto.request.*;
+import com.doaibu.rebikeapi.dto.request.ChangePasswordRequest;
+import com.doaibu.rebikeapi.dto.request.UpdateFcmTokenRequest;
+import com.doaibu.rebikeapi.dto.request.UpdateUserProfileRequest;
 import com.doaibu.rebikeapi.dto.response.AdminPartnerResponse;
-import com.doaibu.rebikeapi.dto.response.LoginResponse;
-import com.doaibu.rebikeapi.dto.response.RegisterResponse;
 import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
 import com.doaibu.rebikeapi.entity.Partner;
 import com.doaibu.rebikeapi.entity.Role;
@@ -4672,24 +5800,21 @@ import com.doaibu.rebikeapi.entity.User;
 import com.doaibu.rebikeapi.exception.CustomException;
 import com.doaibu.rebikeapi.repository.PartnerRepository;
 import com.doaibu.rebikeapi.repository.UserRepository;
-import com.doaibu.rebikeapi.security.JwtUtil;
-import com.doaibu.rebikeapi.service.EmailService;
+import com.doaibu.rebikeapi.service.CloudinaryService;
 import com.doaibu.rebikeapi.service.RoleService;
 import com.doaibu.rebikeapi.service.UserService;
+import com.doaibu.rebikeapi.util.TokenHolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -4699,182 +5824,22 @@ public class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final PartnerRepository partnerRepository;
-    private final EmailService emailService;
-    private final JwtUtil jwtUtil;
-    private final Random random = new SecureRandom();
+    private final CloudinaryService cloudinaryService;
+    private final TokenHolder tokenHolder;
 
-    @Override
-    @Transactional
-    public RegisterResponse registerCustomer(RegisterCustomerRequest request) {
-        if (request.getEmail() == null || request.getEmail().isBlank() ||
-                request.getPassword() == null || request.getPassword().isBlank()) {
-            throw new CustomException.BadRequestException("Email and password are required.");
-        }
-
-        if (userRepository.existsByEmail(request.getEmail())) {
-            User user = userRepository.findByEmail(request.getEmail());
-            Set<Role> roles = user.getRoles();
-            Set<UserRole> roleNames = roles.stream()
-                    .map(Role::getName)
-                    .collect(Collectors.toSet());
-
-            if (roleNames.contains(UserRole.CUSTOMER)) {
-                throw new CustomException.ConflictException("Email already in use as customer.");
-            }
-
-            roles.add(roleService.getOrCreate(UserRole.CUSTOMER));
-            user.setRoles(roles);
-            userRepository.save(user);
-            return mapToRegisterResponse(user);
-        }
-
-        Set<Role> customerRole = new HashSet<>();
-        customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
-
-        User user = buildUser(null, null, request.getUsername(), request.getEmail(), request.getPassword(), request.getPhoneNumber(), customerRole);
-        userRepository.save(user);
-        return mapToRegisterResponse(user);
-    }
-
-    @Override
-    @Transactional
-    public RegisterResponse registerPartner(RegisterPartnerRequest request) {
-        if (request.getEmail() == null || request.getEmail().isBlank() ||
-                request.getPassword() == null || request.getPassword().isBlank()) {
-            throw new CustomException.BadRequestException("Email and password are required.");
-        }
-
-        if (userRepository.existsByEmail(request.getEmail())) {
-            User user = userRepository.findByEmail(request.getEmail());
-            Set<Role> roles = user.getRoles();
-            Set<UserRole> roleNames = roles.stream()
-                    .map(Role::getName)
-                    .collect(Collectors.toSet());
-
-            System.out.println(roleNames);
-
-            if (roleNames.contains(UserRole.PARTNER)) {
-                throw new CustomException.ConflictException("Email already in use as partner");
-            }
-
-            roles.add(roleService.getOrCreate(UserRole.PARTNER));
-            user.setRoles(roles);
-
-            Partner partner = Partner.builder()
-                    .user(user)
-                    .locationName(request.getLocationName())
-                    .bankAccountName(request.getBankAccountName())
-                    .bankAccountNumber(request.getBankAccountNumber())
-                    .bankName(request.getBankName())
-                    .isVerified(false)
-                    .build();
-
-            user.setPartnerDetail(partner);
-            userRepository.save(user);
-            return mapToRegisterResponse(user);
-        }
-
-        Set<Role> partnerRole = new HashSet<>();
-        partnerRole.add(roleService.getOrCreate(UserRole.PARTNER));
-
-        User user = buildUser(null, null, request.getUsername(), request.getEmail(), request.getPassword(), request.getPhoneNumber(), partnerRole);
-
-        Partner partner = Partner.builder()
-                .user(user)
-                .isVerified(false)
-                .build();
-
-        user.setPartnerDetail(partner);
-        userRepository.save(user);
-        return mapToRegisterResponse(user);
-    }
-
-    @Override
-    @Transactional
-    public void verifyEmailOtp(String email, String otp) {
-        User user = userRepository.findByEmail(email);
-
-        if (user == null) {
-            throw new CustomException.ResourceNotFoundException("User not found.");
-        }
-
-        if (user.isEmailVerified()) {
-            throw new CustomException.BadRequestException("Email has been verified.");
-        }
-
-        if (user.getOtpExpiryTime().isBefore(LocalDateTime.now())) {
-            throw new CustomException.BadRequestException("OTP code has expired.");
-        }
-
-        if (!passwordEncoder.matches(otp, user.getVerificationOtp())) {
-            throw new CustomException.BadRequestException("OTP code does not match.");
-        }
-
-        user.setEmailVerified(true);
-        user.setEnabled(true);
-        user.setVerificationOtp(null);
-        user.setOtpExpiryTime(null);
-        userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public void resendVerificationOtp(String email) {
-        User user = userRepository.findByEmail(email);
-
-        if (user == null) {
-            throw new CustomException.ResourceNotFoundException("User not found.");
-        }
-
-        if (user.isEmailVerified()) {
-            throw new CustomException.BadRequestException("Email has been verified.");
-        }
-
-        String newOtp = generateOtp();
-        user.setVerificationOtp(passwordEncoder.encode(newOtp));
-        user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
-        userRepository.save(user);
-
-        sendVerificationEmail(user, newOtp);
-    }
-
-    @Override
-    public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail());
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new CustomException.AuthenticationException("Email or password is incorrect.");
-        }
-        if (!user.isEmailVerified()) {
-            throw new CustomException.AuthorizationException("Email is not verified. Please try again.");
-        }
-        if (!user.isEnabled()) {
-            throw new CustomException.AuthorizationException("Your account is disabled.");
-        }
-
-        String token = jwtUtil.generateToken(user);
-        return LoginResponse.builder()
-                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()))
-                .token(token)
-                .build();
-    }
+    private final long maxSize = 5 * 1024 * 1024;
 
     @Override
     public PagedResponse<AdminPartnerResponse> getAllPartners(Pageable pageable) {
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleService.getOrCreate(UserRole.PARTNER));
-
-        Page<User> userPage = userRepository.findByRolesIn(roles, pageable);
-
-        List<AdminPartnerResponse> partnerResponses = userPage.getContent().stream()
-                .map(this::mapToAdminPartnerResponse)
-                .collect(Collectors.toList());
+        Role partnerRole = roleService.getOrCreate(UserRole.PARTNER);
+        Page<AdminPartnerResponse> partnerPage = userRepository.findAllPartnersWithBikeCount(partnerRole, pageable);
 
         return PagedResponse.<AdminPartnerResponse>builder()
-                .data(partnerResponses)
-                .page(userPage.getNumber())
-                .size(userPage.getSize())
-                .totalElements(userPage.getTotalElements())
-                .totalPages(userPage.getTotalPages())
+                .data(partnerPage.getContent())
+                .page(partnerPage.getNumber())
+                .size(partnerPage.getSize())
+                .totalElements(partnerPage.getTotalElements())
+                .totalPages(partnerPage.getTotalPages())
                 .build();
     }
 
@@ -4882,67 +5847,45 @@ public class UserServiceImpl implements UserService {
     public AdminPartnerResponse getPartnerById(String partnerId) {
         User user = userRepository.findById(partnerId)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-
         if (user.getRoles().stream().noneMatch(role -> role.getName().equals(UserRole.PARTNER))) {
             throw new CustomException.BadRequestException("User is not a partner.");
         }
-
         return mapToAdminPartnerResponse(user);
     }
 
     @Override
     @Transactional
-    public void verifyPartner(String partnerId) {
+    public void updateProfile(UpdateUserProfileRequest request, MultipartFile file) {
+        String username = tokenHolder.getUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        if (file != null && !file.isEmpty()) {
+            if (file.getSize() > maxSize) {
+                throw new CustomException.BadRequestException("File size exceeds 5MB limit.");
+            }
+            String fileName = file.getOriginalFilename();
+            if (fileName != null && !fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png")) {
+                throw new CustomException.BadRequestException("Only JPG/PNG files are allowed.");
+            }
+
+            String url = cloudinaryService.uploadFile(file, "profile_pictures");
+            user.setPhotoUrl(url);
+        }
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setUsername(request.getUsername());
+        user.setPhoneNumber(request.getPhoneNumber());
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void verifyPartner(String partnerId, boolean isVerified) {
         Partner partner = partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Partner not found."));
-
-        partner.setVerified(!partner.isVerified());
+        partner.setVerified(isVerified);
         partnerRepository.save(partner);
-    }
-
-    @Override
-    @Transactional
-    public void processForgotPassword(String email, String feBaseUrl) {
-        User user = userRepository.findByEmail(email);
-
-        if (user == null) {
-            return;
-        }
-
-        String otp = generateOtp();
-        user.setResetPasswordToken(passwordEncoder.encode(otp));
-        user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(10));
-        userRepository.save(user);
-
-        String emailText = "Anda menerima email ini karena ada permintaan untuk mereset password akun Rebike Anda.\n\n"
-                + "Gunakan kode OTP ini untuk melanjutkan: \n\n"
-                + "Kode OTP: " + otp + "\n\n"
-                + "PENTING: Kode ini hanya berlaku selama 10 menit. Jika Anda tidak meminta ini, abaikan email ini.";
-
-        emailService.sendEmail(user.getEmail(), "Reset Password Rebike (Berlaku 10 Menit)", emailText);
-    }
-
-    @Override
-    @Transactional
-    public void resetPasswordWithOtp(ResetPasswordWithOtpRequest request) {
-        User user = userRepository.findByEmail(request.getEmail());
-
-        if (user == null) {
-            throw new CustomException.ResourceNotFoundException("User not found.");
-        }
-
-        if (user.getResetPasswordToken() == null || user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())) {
-            throw new CustomException.BadRequestException("OTP code has expired.");
-        }
-
-        if (!passwordEncoder.matches(request.getOtp(), user.getResetPasswordToken())) {
-            throw new CustomException.BadRequestException("OTP code does not match.");
-        }
-
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        user.setResetPasswordToken(null);
-        user.setResetPasswordTokenExpiry(null);
-        userRepository.save(user);
     }
 
     @Override
@@ -4950,94 +5893,30 @@ public class UserServiceImpl implements UserService {
     public void changePassword(String username, ChangePasswordRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
-
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Old password is incorrect.");
         }
-
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Confirm password does not match.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Confirm password does not match.");
         }
-
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public User processOAuthPostLogin(String email, String name) {
-        User existUser = userRepository.findByEmail(email);
-
-        if (existUser != null) {
-            return existUser;
+    public void updateFcmToken(UpdateFcmTokenRequest request) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email;
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
         } else {
-            Set<Role> customerRole = new HashSet<>();
-            customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
-
-            User newUser = User.builder()
-                    .email(email)
-                    .username(email)
-                    .firstName(name)
-                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
-                    .roles(customerRole)
-                    .createdAt(LocalDateTime.now())
-                    .isAccountNonExpired(true)
-                    .isAccountNonLocked(true)
-                    .isCredentialsNonExpired(true)
-                    .isEnabled(true)
-                    .isEmailVerified(true)
-                    .build();
-
-            return userRepository.save(newUser);
+            email = principal.toString();
         }
-    }
-
-    private String generateOtp() {
-        return String.format("%06d", random.nextInt(999999));
-    }
-
-    private void sendVerificationEmail(User user, String otp) {
-        String emailText = "Gunakan kode OTP ini untuk verifikasi email Rebike Anda.\n\n"
-                + "Kode OTP: " + otp + "\n\n"
-                + "PENTING: Kode ini hanya berlaku selama 10 menit. Jangan berikan kode ini kepada siapapun.";
-
-        emailService.sendEmail(user.getEmail(), "Verifikasi Email Rebike (Berlaku 10 Menit)", emailText);
-    }
-
-    private User buildUser(String firstName, String lastName, String username, String email, String password, String phoneNumber, Set<Role> roles) {
-        String otp = generateOtp();
-
-        String finalFirstName = (firstName == null || firstName.isBlank()) ? username : firstName;
-        String finalLastName = (lastName == null || lastName.isBlank()) ? "" : lastName;
-
-        User user = User.builder()
-                .firstName(finalFirstName)
-                .lastName(finalLastName)
-                .username(username)
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .phoneNumber(phoneNumber)
-                .roles(roles)
-                .createdAt(LocalDateTime.now())
-                .isAccountNonExpired(true)
-                .isAccountNonLocked(true)
-                .isCredentialsNonExpired(true)
-                .isEnabled(false)
-                .isEmailVerified(false)
-                .verificationOtp(passwordEncoder.encode(otp))
-                .otpExpiryTime(LocalDateTime.now().plusMinutes(10))
-                .build();
-
-        sendVerificationEmail(user, otp);
-        return user;
-    }
-
-    private RegisterResponse mapToRegisterResponse(User user) {
-        return RegisterResponse.builder()
-                .userID(user.getId())
-                .email(user.getEmail())
-                .build();
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException.ResourceNotFoundException("User with email '" + email + "' not found"));
+        currentUser.setFcmToken(request.getFcmToken());
+        userRepository.save(currentUser);
     }
 
     private AdminPartnerResponse mapToAdminPartnerResponse(User user) {
@@ -5082,6 +5961,50 @@ public interface AdminSettingService {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/AIAssistantService.java
+---
+
+package com.doaibu.rebikeapi.service;
+
+public interface AIAssistantService {
+
+    void autoProcessPendingPayouts();
+
+}
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/AuthService.java
+---
+
+package com.doaibu.rebikeapi.service;
+
+import com.doaibu.rebikeapi.dto.request.*;
+import com.doaibu.rebikeapi.dto.response.LoginResponse;
+import com.doaibu.rebikeapi.dto.response.RegisterResponse;
+import com.doaibu.rebikeapi.entity.User;
+
+public interface AuthService {
+
+    RegisterResponse registerCustomer(RegisterCustomerRequest request);
+
+    RegisterResponse registerPartner(RegisterPartnerRequest request);
+
+    void verifyEmailOtp(String email, String otp);
+
+    void resendVerificationOtp(String email);
+
+    LoginResponse login(LoginRequest request);
+
+    void processForgotPassword(String email, String feBaseUrl);
+
+    void resetPasswordWithOtp(ResetPasswordWithOtpRequest request);
+
+    User processOAuthPostLogin(String email, String name);
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/BikeService.java
 ---
 
@@ -5093,13 +6016,16 @@ import com.doaibu.rebikeapi.dto.response.BikeDetailResponse;
 import com.doaibu.rebikeapi.dto.response.BikeResponse;
 import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface BikeService {
-    BikeResponse addBike(BikeRequest request);
+    BikeResponse addBike(BikeRequest request, MultipartFile file);
 
     PagedResponse<BikeResponse> getAllBikes(Pageable pageable);
+
+    PagedResponse<BikeResponse> getAllMyBikes(Pageable pageable);
 
     BikeDetailResponse getBikeById(String id);
 
@@ -5110,6 +6036,20 @@ public interface BikeService {
     void deleteBike(String id);
 }
 
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/BusinessInsightService.java
+---
+
+package com.doaibu.rebikeapi.service;
+
+import com.doaibu.rebikeapi.dto.response.BusinessRecommendationResponse;
+import java.util.List;
+
+public interface BusinessInsightService {
+    List<BusinessRecommendationResponse> generateRecommendations();
+}
 
 
 ---
@@ -5140,6 +6080,21 @@ public interface EmailService {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/FraudDetectionService.java
+---
+
+package com.doaibu.rebikeapi.service;
+
+import com.doaibu.rebikeapi.dto.response.FlaggedTransactionResponse;
+import java.util.List;
+
+public interface FraudDetectionService {
+    void detectAnomalies();
+    List<FlaggedTransactionResponse> getFlaggedTransactions();
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/MidtransService.java
 ---
 
@@ -5156,6 +6111,19 @@ public interface MidtransService {
     void handleWebhook(Map<String, Object> payload);
 }
 
+
+
+---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/NotificationService.java
+---
+
+package com.doaibu.rebikeapi.service;
+
+import java.util.Map;
+
+public interface NotificationService {
+    void sendNotification(String token, String title, String body, Map<String, String> data);
+}
 
 
 ---
@@ -5198,6 +6166,7 @@ public interface PayoutService {
     PayoutResponse requestPayout(PayoutRequest request);
 
     void processPayout(String payoutId, ProcessPayoutRequest request);
+
 }
 
 
@@ -5246,6 +6215,19 @@ public interface RoleService {
 
 
 ---
+File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/ScheduledTasksService.java
+---
+
+package com.doaibu.rebikeapi.service;
+
+public interface ScheduledTasksService {
+
+    void sendRentalReminders();
+
+}
+
+
+---
 File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/TransactionService.java
 ---
 
@@ -5263,7 +6245,6 @@ public interface TransactionService {
     MidtransChargeResponse createBooking(TransactionRequest request);
 
     PagedResponse<TransactionDetailResponse> getAllTransactions(Pageable pageable);
-
     List<TransactionResponse> getTransactionHistory();
 
     TransactionDetailResponse getTransactionDetails(String transactionId);
@@ -5272,15 +6253,14 @@ public interface TransactionService {
 
     void verifyPayment(String transactionId, boolean isValid, String reason);
 
-    void uploadPaymentProof(String transactionId, String paymentProofUrl);
-
+//    void uploadPaymentProof(String transactionId, String paymentProofUrl);
     void confirmTransaction(String transactionId, BookingStatus status);
 
     FinancialSummaryResponse getFinancialSummaryForPartner();
 
     RevenueTrendResponse getRevenueTrendForPartner();
-}
 
+}
 
 
 ---
@@ -5289,40 +6269,28 @@ File: be-rebike/src/main/java/com/doaibu/rebikeapi/service/UserService.java
 
 package com.doaibu.rebikeapi.service;
 
-import com.doaibu.rebikeapi.dto.request.*;
+import com.doaibu.rebikeapi.dto.request.ChangePasswordRequest;
+import com.doaibu.rebikeapi.dto.request.UpdateFcmTokenRequest;
+import com.doaibu.rebikeapi.dto.request.UpdateUserProfileRequest;
 import com.doaibu.rebikeapi.dto.response.AdminPartnerResponse;
-import com.doaibu.rebikeapi.dto.response.LoginResponse;
-import com.doaibu.rebikeapi.dto.response.RegisterResponse;
 import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
-import com.doaibu.rebikeapi.entity.User;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
-    RegisterResponse registerCustomer(RegisterCustomerRequest request);
-
-    RegisterResponse registerPartner(RegisterPartnerRequest request);
-
-    void verifyEmailOtp(String email, String otp);
-
-    void resendVerificationOtp(String email);
-
-    LoginResponse login(LoginRequest request);
 
     PagedResponse<AdminPartnerResponse> getAllPartners(Pageable pageable);
 
     AdminPartnerResponse getPartnerById(String partnerId);
 
-    void verifyPartner(String partnerId);
+    void updateProfile(UpdateUserProfileRequest request, MultipartFile file);
 
-    void processForgotPassword(String email, String feBaseUrl);
-
-    void resetPasswordWithOtp(ResetPasswordWithOtpRequest request);
+    void verifyPartner(String partnerId, boolean isVerified);
 
     void changePassword(String username, ChangePasswordRequest request);
 
-    User processOAuthPostLogin(String email, String name);
+    void updateFcmToken(UpdateFcmTokenRequest request);
 }
-
 
 
 ---
@@ -5387,8 +6355,10 @@ package com.doaibu.rebikeapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class RebikeApplication {
 
     public static void main(String[] args) {

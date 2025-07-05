@@ -2,6 +2,7 @@ import Card from "../../components/ui/Card";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPartners } from "../../store/admin/adminSlice";
+import { Users, ClipboardList } from 'lucide-react';
 
 export default function UserManajement() {
   const dispatch = useDispatch();
@@ -14,21 +15,8 @@ export default function UserManajement() {
   return (
     <>
       {/* Header Manajemen Product */}
-      <div className="flex items-center gap-2 mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-8 h-8 text-slate-700"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
+      <div className="flex items-center gap-4 mb-6">
+        <Users className="w-8 h-8 text-slate-700" />
         <h1 className="text-3xl font-bold text-slate-800">Manajemen Product</h1>
       </div>
 
@@ -38,20 +26,21 @@ export default function UserManajement() {
 
       <Card className="min-h-[400px] flex items-center justify-center bg-slate-100"> 
         <p className="text-slate-500">Area untuk Tabel Manajemen Produk</p>
-        {/* Konten tabel Anda yang sudah ada */}
-        {/* {loading && <p>Loading armada...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-
-        {!loading && !error && (
+        {!loading && !error && bikes.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 text-slate-500">
+            <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
+            <p>Tidak ada motor yang ditemukan.</p>
+          </div>
+        ) : (
           <div className="overflow-x-auto rounded-lg border border-slate-200">
             <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="p-3">Motor</th>
-                  <th className="p-3">Plat No.</th>
-                  <th className="p-3">Harga/hari</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Aksi</th>
+                  <th className="p-3 border-b-2 border-gray-200">Motor</th>
+                  <th className="p-3 border-b-2 border-gray-200">Plat No.</th>
+                  <th className="p-3 border-b-2 border-gray-200">Harga/hari</th>
+                  <th className="p-3 border-b-2 border-gray-200">Status</th>
+                  <th className="p-3 border-b-2 border-gray-200">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -89,7 +78,7 @@ export default function UserManajement() {
               </tbody>
             </table>
           </div>
-        )} */}
+        )}
       </Card>
     </>
   );

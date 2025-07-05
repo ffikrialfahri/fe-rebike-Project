@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from "../../components/ui/Card";
+import { Landmark, History, CircleDollarSign } from 'lucide-react';
 
 export default function Billing() {
   const currentBalance = "Rp 750.000";
@@ -29,21 +30,8 @@ export default function Billing() {
 
   return (
     <>
-      <div className="flex items-center gap-2 mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-8 h-8 text-slate-700"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
+      <div className="flex items-center gap-4 mb-10 pt-10">
+        <Landmark className="w-8 h-8 text-slate-700" />
         <h1 className="text-3xl font-bold text-slate-800">Billing</h1>
       </div>
 
@@ -93,34 +81,45 @@ export default function Billing() {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((transaction) => (
-                <tr key={transaction.id}>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">{transaction.date}</p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">{transaction.description}</p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">{transaction.amount}</p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <span
-                      className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
-                        transaction.status === "Lunas" ? "text-green-900" : "text-red-900"
-                      }`}
-                    >
+              {transactions.length > 0 ? (
+                transactions.map((transaction) => (
+                  <tr key={transaction.id}>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <p className="text-gray-900 whitespace-no-wrap">{transaction.date}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <p className="text-gray-900 whitespace-no-wrap">{transaction.description}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <p className="text-gray-900 whitespace-no-wrap">{transaction.amount}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <span
-                        aria-hidden
-                        className={`absolute inset-0 opacity-50 rounded-full ${
-                          transaction.status === "Lunas" ? "bg-green-200" : "bg-red-200"
+                        className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
+                          transaction.status === "Lunas" ? "text-green-900" : "text-red-900"
                         }`}
-                      ></span>
-                      <span className="relative">{transaction.status}</span>
-                    </span>
+                      >
+                        <span
+                          aria-hidden
+                          className={`absolute inset-0 opacity-50 rounded-full ${
+                            transaction.status === "Lunas" ? "bg-green-200" : "bg-red-200"
+                          }`}
+                        ></span>
+                        <span className="relative">{transaction.status}</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center py-10">
+                      <History className="w-12 h-12 text-gray-400 mb-3" />
+                      <p>Tidak ada riwayat transaksi.</p>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -144,31 +143,42 @@ export default function Billing() {
               </tr>
             </thead>
             <tbody>
-              {withdrawalHistory.map((withdrawal) => (
-                <tr key={withdrawal.id}>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">{withdrawal.date}</p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <p className="text-gray-900 whitespace-no-wrap">{withdrawal.amount}</p>
-                  </td>
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <span
-                      className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
-                        withdrawal.status === "Berhasil" ? "text-green-900" : "text-red-900"
-                      }`}
-                    >
+              {withdrawalHistory.length > 0 ? (
+                withdrawalHistory.map((withdrawal) => (
+                  <tr key={withdrawal.id}>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <p className="text-gray-900 whitespace-no-wrap">{withdrawal.date}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <p className="text-gray-900 whitespace-no-wrap">{withdrawal.amount}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <span
-                        aria-hidden
-                        className={`absolute inset-0 opacity-50 rounded-full ${
-                          withdrawal.status === "Berhasil" ? "bg-green-200" : "bg-red-200"
+                        className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
+                          withdrawal.status === "Berhasil" ? "text-green-900" : "text-red-900"
                         }`}
-                      ></span>
-                      <span className="relative">{withdrawal.status}</span>
-                    </span>
+                      >
+                        <span
+                          aria-hidden
+                          className={`absolute inset-0 opacity-50 rounded-full ${
+                            withdrawal.status === "Berhasil" ? "bg-green-200" : "bg-red-200"
+                          }`}
+                        ></span>
+                        <span className="relative">{withdrawal.status}</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center py-10">
+                      <CircleDollarSign className="w-12 h-12 text-gray-400 mb-3" />
+                      <p>Tidak ada riwayat pencairan.</p>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

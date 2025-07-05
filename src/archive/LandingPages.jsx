@@ -5,8 +5,7 @@ import Card from "@/components/ui/Card";
 import Logo2 from "@/assets/Logo2.png"
 import Logo3 from "@/assets/logo3.png"
 import LoginPage from '@/components/pages/Login/LoginPage';
-import bg1 from "@/assets/bg1.png" 
-import bg2 from "@/assets/bg2.png"
+
 
 export default function LandingPage() {
   // State untuk mengontrol visibilitas modal login, sekarang di LandingPage

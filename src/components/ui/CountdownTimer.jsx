@@ -31,7 +31,7 @@ export default function CountdownTimer({ initialSeconds, onResend, onTimeout }) 
     } else {
         toast.error(`Harap tunggu ${seconds} detik sebelum mengirim ulang.`);
     }
-  }, [canResend, initialSeconds, onResend]);
+  }, [canResend, initialSeconds, onResend, seconds]);
 
   return (
     <div className="mt-6 text-center text-sm">

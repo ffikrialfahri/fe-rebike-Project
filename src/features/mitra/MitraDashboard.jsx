@@ -4,6 +4,7 @@ import StatCard from "../../components/ui/StatCard";
 import ChartComponent from "../../components/ui/ChartComponent";
 import axios from "../../api/axios";
 import { formatRupiah } from "../../lib/navigation";
+import { LayoutDashboard, ClipboardList } from "lucide-react";
 
 export default function MitraDashboard() {
   const [summary, setSummary] = useState(null);
@@ -80,29 +81,15 @@ export default function MitraDashboard() {
   
   return (
     <>
-      <div className="flex items-center gap-2 mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-8 h-8 text-slate-700"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
+      <div className="flex items-center gap-4 mb-10 pt-10">
+        <LayoutDashboard className="w-8 h-8 text-slate-700" />
         <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        
         <Card className="lg:col-span-2 min-h-[300px] p-4 flex flex-col">
           <h3 className="text-xl font-semibold text-slate-700 mb-4">
-            Pendapatan Bulanan
+             Pendapatan Bulanan
           </h3>
           <div className="flex-grow">
             <ChartComponent type="line" data={chartData} options={chartOptions} />
@@ -117,6 +104,7 @@ export default function MitraDashboard() {
               valueColor="text-blue-600"
               contentAlign="left"
               valueAlign="center"
+              iconType="order"
             />
             <StatCard
               title="Product"
@@ -124,6 +112,7 @@ export default function MitraDashboard() {
               valueColor="text-green-600"
               contentAlign="left"
               valueAlign="center"
+              iconType="product"
             />
           </div>
           <div className="flex-grow">
@@ -141,11 +130,11 @@ export default function MitraDashboard() {
       <div className="mt-6">
         <Card className="min-h-[400px] p-4">
           <h3 className="text-xl font-semibold text-slate-700 mb-4">
-            Aktivitas Terbaru
+            Aktivitas Terbaru (Booking)
           </h3>
           {transactions.length > 0 ? (
             <ul className="space-y-3">
-              {transactions.slice(0, 5).map((transaction) => ( // Hanya tampilkan 5 terbaru
+              {transactions.slice(0, 5).map((transaction) => (
                 <li
                   key={transaction.transactionID}
                   className="p-3 bg-gray-50 rounded-md shadow-sm flex justify-between items-center"
@@ -165,7 +154,10 @@ export default function MitraDashboard() {
               ))}
             </ul>
           ) : (
-            <p className="text-slate-500">Belum ada aktivitas booking terbaru.</p>
+            <div className="flex flex-col items-center justify-center py-10 text-slate-500">
+              <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
+              <p>Belum ada aktivitas booking terbaru.</p>
+            </div>
           )}
         </Card>
       </div>

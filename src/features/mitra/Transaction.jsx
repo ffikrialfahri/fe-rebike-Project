@@ -23,7 +23,7 @@ export default function Transaction() {
     setLoading(true);
     try {
       const response = await axios.get("/partner/transactions");
-      let fetchedTransactions = response.data.data;
+      let fetchedTransactions = response.data?.data || [];
 
       if (selectedStatus !== "ALL") {
         fetchedTransactions = fetchedTransactions.filter(

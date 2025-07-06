@@ -16,7 +16,7 @@ export const fetchBikes = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get('/partner/bikes');
-            return response.data.data;
+            return response.data?.data?.content || [];
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Failed to fetch bikes';
             toast.error(errorMessage);

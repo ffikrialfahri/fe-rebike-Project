@@ -32,7 +32,7 @@ export default function Laporan() {
     setLoading(true);
     try {
       const response = await axios.get("/partner/transactions");
-      const allTransactions = response.data.data;
+      const allTransactions = response.data?.data || [];
 
       let filteredTransactions = [];
       const today = new Date();

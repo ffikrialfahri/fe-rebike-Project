@@ -18,7 +18,7 @@ export default function ArmadaManagement() {
     setLoading(true);
     try {
       const response = await axios.get("/partner/bikes");
-      let fetchedBikes = response.data.data.data;
+      let fetchedBikes = response.data?.data?.content || [];
 
       if (filterStatus !== "ALL") {
         fetchedBikes = fetchedBikes.filter(bike => bike.status === filterStatus);

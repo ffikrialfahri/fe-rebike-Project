@@ -30,9 +30,9 @@ export default function HistoryPage() {
         axios.get("/partner/payouts"),
       ]);
 
-      const allBikes = bikesRes.data.data.data || [];
-      const allTransactions = transactionsRes.data.data || [];
-      const allPayouts = payoutsRes.data.data || [];
+      const allBikes = bikesRes.data?.data?.content || [];
+      const allTransactions = transactionsRes.data?.data || [];
+      const allPayouts = payoutsRes.data?.data || [];
 
       let processedActivities = [];
 

@@ -7,7 +7,7 @@ import { formatRupiah } from "../../lib/navigation";
 import { LayoutDashboard, ClipboardList } from "lucide-react";
 
 export default function MitraDashboard() {
-  const [summary, setSummary] = useState(null);
+  const [summary, setSummary] = useState({ totalRevenue: 0 });
   const [bikes, setBikes] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [revenueTrend, setRevenueTrend] = useState({});
@@ -29,10 +29,10 @@ export default function MitraDashboard() {
           axios.get("/partner/dashboard/revenue-trend"),
         ]);
 
-        setSummary(summaryRes.data.data);
-        setBikes(bikesRes.data.data.totalElements);
-        setTransactions(transactionsRes.data.data);
-        setRevenueTrend(revenueTrendRes.data.data);
+        setSummary(summaryRes.data?.data || { totalRevenue: 0 });
+        setBikes(bikesRes.data?.data?.totalElements || 0);
+        setTransactions(transactionsRes.data?.data || []);
+        setRevenueTrend(revenueTrendRes.data?.data || {});
       } catch (err) {
         setError(err);
       } finally {

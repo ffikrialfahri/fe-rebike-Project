@@ -35,16 +35,16 @@ export default function LandingPage() {
       
       {/* Main Content (Section 1) */}
       <main id="hero" className="bg-white">
-        <div className="flex min-h-[680px] flex-col lg:flex-row bg-slate-50">
-          <div className="w-full lg:w-1/2 px-6 pb-10 pt-10 flex flex-col justify-start">
+        <div className="flex flex-col lg:flex-row min-h-[680px]">
+          <div className="pt-12 w-full lg:w-1/2 px-6 pb-10 flex flex-col justify-start text-center lg:text-left bg-slate-50">
             <img src={Logo3} alt="Rebike Logo" className="w-20 md:w-48 mb-2 mx-auto lg:mx-0" />
-            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 !leading-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 !leading-tight mb-4 mx-auto lg:mx-0">
               Sewa Motor di Malang Lebih Mudah
             </h1>
             <p className="text-slate-600 max-w-lg mb-8 mx-auto lg:mx-0">
               Temukan ratusan pilihan motor berkualitas dari mitra terpercaya kami, siap mengantar Anda menjelajahi keindahan Malang dan sekitarnya. Dengan proses pemesanan yang cepat dan mudah melalui aplikasi, liburan Anda dijamin tenang dan penuh kebebasan.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mx-auto lg:mx-0">
               <HashLink to="/#download-app" smooth className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-lg transition shadow-md text-center">
                 Download Aplikasi
               </HashLink>
@@ -53,7 +53,7 @@ export default function LandingPage() {
               </HashLink>
             </div>
           </div>
-          <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-6">
+          <div className="w-full lg:w-1/2 bg-white flex items-center justify-center px-6">
             <img src={Logo2} alt="Tiga motor scooter" className="w-full max-w-3xl h-auto"/>
           </div>
         </div>

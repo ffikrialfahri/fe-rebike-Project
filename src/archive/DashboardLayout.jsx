@@ -2,7 +2,6 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/auth/authSlice";
 import { LogOut, MoreHorizontal, Bell, User } from "lucide-react";
-import Logo3 from "@/assets/logo3.png";
 
 const Sidebar = ({ navItems }) => {
   const { user } = useSelector((state) => state.auth);
@@ -19,7 +18,7 @@ const Sidebar = ({ navItems }) => {
           key={item.path}
           to={item.path}
           end={item.path.endsWith("dashboard")}
-          className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+          className="sidebar-link"
         >
           <item.icon size={20} className="text-slate-500" />
           <span>{item.name}</span>
@@ -29,10 +28,10 @@ const Sidebar = ({ navItems }) => {
   );
 
   return (
-    <aside id={user?.roles?.includes("ROLE_PARTNER") ? "mitra-sidebar" : "admin-sidebar"} className="w-72 bg-white border-r border-slate-200 flex flex-col">
+    <aside className="w-72 bg-white border-r border-slate-200 flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-slate-200">
         <div className="flex items-center gap-2">
-          <img src={Logo3} alt="Rebike Logo" className="h-15 w-20" />
+          <img src="/vite.svg" alt="Rebike Logo" className="h-8 w-8" />
           <span className="text-xl font-bold text-brand-primary">ReBike</span>
         </div>
         <button className="relative text-slate-500 hover:text-slate-800">
@@ -46,7 +45,9 @@ const Sidebar = ({ navItems }) => {
         </p>
         <div className="flex items-center gap-3 p-2 border border-slate-300 rounded-lg bg-slate-50">
           <img
-            src={`https://ui-avatars.com/api/?name=${user?.firstName || user?.username || "A"}&background=c7d2fe&color=4338ca`}
+            src={`https://ui-avatars.com/api/?name=${
+              user?.firstName || user?.username || "A"
+            }&background=c7d2fe&color=4338ca`}
             alt="User Avatar"
             className="w-9 h-9 rounded-full"
           />
@@ -60,7 +61,7 @@ const Sidebar = ({ navItems }) => {
           </span>
         </div>
       </div>
-      <nav className="flex-grow overflow-y-auto">
+      <nav className="flex-grow">
         {navItems.navigate && renderNavSection("Navigate", navItems.navigate)}
         {navItems.account && renderNavSection("Account", navItems.account)}
         {navItems.subscriptions &&
@@ -69,7 +70,9 @@ const Sidebar = ({ navItems }) => {
       <div className="p-4 border-t border-slate-200">
         <div className="flex items-center gap-3">
           <img
-            src={`https://ui-avatars.com/api/?name=${user?.firstName || user?.username || "A"}&background=c7d2fe&color=4338ca`}
+            src={`https://ui-avatars.com/api/?name=${
+              user?.firstName || user?.username || "A"
+            }&background=c7d2fe&color=4338ca`}
             alt="User Avatar"
             className="w-10 h-10 rounded-full"
           />
@@ -78,7 +81,7 @@ const Sidebar = ({ navItems }) => {
               {user?.firstName || user?.username || "Pengguna"}
             </p>
             <p className="text-xs text-slate-500">
-              {user?.email}
+              {user?.email || "pengguna@example.com"}
             </p>
           </div>
           <button className="text-slate-500 hover:text-slate-800">
@@ -118,13 +121,21 @@ export default function DashboardLayout({ navItems }) {
   const currentPath = location.pathname;
 
   const getPageTitle = () => {
-    return "";
+    const allNavItems = [
+      ...(navItems.navigate || []),
+      ...(navItems.account || []),
+      ...(navItems.subscriptions || []),
+    ];
+    const currentNavItem = allNavItems.find((item) =>
+      currentPath.startsWith(item.path)
+    );
+    return currentNavItem ? currentNavItem.name : "Dashboard";
   };
 
   const pageTitle = getPageTitle();
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-background-panel">
       <Sidebar navItems={navItems} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <PanelHeader title={pageTitle} />

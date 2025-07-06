@@ -8,7 +8,7 @@ import LoginPage from "@/components/pages/Login/LoginPage";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { UserPlus } from 'lucide-react';
+import { UserPlus, ChevronLeft } from 'lucide-react';
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("Nama depan tidak boleh kosong"),
@@ -113,14 +113,22 @@ export default function RegisterPage() {
         {/* Kolom Kanan: Form Registrasi */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
-            <div className="text-right mb-4">
-              <span className="text-sm text-slate-500">Sudah punya akun? </span>
+            <div className="mb-8 flex justify-between items-center ml-0">
               <button
-                onClick={openLoginModal}
-                className="text-sm font-semibold text-brand-primary hover:underline"
+                onClick={() => navigate('/')}
+                className="text-slate-500 rounded-full hover:bg-slate-100 transition"
               >
-                Login di sini
+                <ChevronLeft size={24} />
               </button>
+              <div className="text-sm text-slate-500">
+                <span>Sudah punya akun? </span>
+                <button
+                  onClick={openLoginModal}
+                  className="font-semibold text-brand-primary hover:underline"
+                >
+                  Login di sini
+                </button>
+              </div>
             </div>
             <div className="flex items-center gap-3 mb-2">
               <UserPlus className="w-8 h-8 text-brand-primary" />

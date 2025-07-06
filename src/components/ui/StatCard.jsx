@@ -39,11 +39,11 @@ export default function StatCard({
           {icons[iconType]}
         </div>
       )}
-      <h4 className={`text-xl font-bold text-black ${titleTextAlignClass}`}>
+      <h4 className={`text-xl font-bold text-black ${titleTextAlignClass} mb-6`}>
         {title}
       </h4>
       <div className={`flex-grow flex items-center ${valueHorizontalAlignClass}`}>
-        <p className={`text-4xl font-bold ${valueTextAlignClass} ${valueColor || 'text-slate-800'}`}>
+        <p className={`text-2xl font-bold ${valueTextAlignClass} ${valueColor || 'text-slate-800'}`}>
           {value}
           {detail && <span className="text-slate-400"> / {detail}</span>}
         </p>

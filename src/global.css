@@ -24,7 +24,7 @@
     @apply bg-brand-secondary text-brand-primary;
   }
   #mitra-sidebar .sidebar-link.active {
-    @apply bg-brand-primary text-white font-semibold;
+    @apply bg-slate-50 text-slate-800 font-semibold;
   }
 
   /* Admin Panel Sidebar Link */
@@ -35,7 +35,7 @@
     @apply bg-white/10;
   }
   #admin-sidebar .sidebar-link.active {
-    @apply bg-brand-primary text-white;
+    @apply bg-slate-50 text-slate-800;
   }
 
   .icon-large {

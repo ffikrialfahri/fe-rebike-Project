@@ -1,4 +1,3 @@
-// Konfigurasi untuk chart Mitra
 export const mitraChartData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
     datasets: [{
@@ -11,7 +10,6 @@ export const mitraChartData = {
     }]
 };
 
-// Konfigurasi untuk chart Admin
 export const adminChartData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
     datasets: [

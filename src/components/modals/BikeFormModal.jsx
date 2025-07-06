@@ -68,7 +68,7 @@ export default function BikeFormModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <Card className="w-full max-w-lg p-6">
+      <Card className="w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-4">
           {bikeData ? "Edit Motor" : "Tambah Motor Baru"}
         </h2>

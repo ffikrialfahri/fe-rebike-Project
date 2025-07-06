@@ -142,7 +142,7 @@ Laporan finansial lengkap tanpa grafik, bisa diekspor.
 #### 📋 Tabel Rincian:
 
 | Tanggal | ID Pesanan | Customer | Pendapatan Kotor | Komisi | Bersih |
-| ------- | ---------- | -------- | ---------------- | ------ | ------ |
+| ------- | ---------- | -------- | ---------------- | ------   ------ |
 
 - Tombol Ekspor: [↓ Excel/CSV]
 

@@ -26,7 +26,8 @@ export const loginUser = createAsyncThunk(
             const user = {
                 username: decodedUser.sub,
                 roles: roles,
-                firstName: decodedUser.firstName
+                firstName: decodedUser.firstName,
+                email: decodedUser.email // Tambahkan baris ini
             };
             localStorage.setItem('user', JSON.stringify(user));
 

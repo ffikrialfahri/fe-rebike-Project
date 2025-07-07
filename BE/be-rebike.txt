@@ -184,10 +184,15 @@ File: be-rebike/postman/postman-collection.json
           "name": "Register Customer",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"username\": \"johndoe\",\n    \"email\": \"johndoe@example.com\",
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"username\": \"johndoe\",\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"password123\",\n    \"phoneNumber\": \"081234567890\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -213,10 +218,15 @@ File: be-rebike/postman/postman-collection.json
           "name": "Register Partner",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"firstName\": \"Mitra\",\n    \"lastName\": \"Baru\",\n    "username": \"mitrabaru\",\n    \"email\": \"mitrabaru@example.com\",
+              "raw": "{\n    \"firstName\": \"Mitra\",\n    \"lastName\": \"Baru\",\n    \"username\": \"mitrabaru\",\n    \"email\": \"mitrabaru@example.com\",\n    \"password\": \"password123\",\n    \"phoneNumber\": \"089876543210\",\n    \"locationName\": \"Rental Mitra Sejahtera\",\n    \"bankAccountName\": \"Mitra Baru\",\n    \"bankAccountNumber\": \"1234567890\",\n    \"bankName\": \"BCA\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -242,7 +252,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Verify Email (OTP)",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"email\": \"mitrabaru@example.com\",\n    \"otp\": \"123456\"\n}",
@@ -270,7 +285,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Resend OTP",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"email\": \"mitrabaru@example.com\"\n}",
@@ -309,7 +329,12 @@ File: be-rebike/postman/postman-collection.json
           ],
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"email\": \"mitra@example.com\",\n    \"password\": \"password\"\n}",
@@ -337,7 +362,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Forgot Password",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"email\": \"mitra@example.com\"\n}",
@@ -364,7 +394,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Reset Password with OTP",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"email\": \"mitra@example.com\",\n    \"otp\": \"123456\",\n    \"newPassword\": \"passwordbaru123\"\n}",
@@ -451,10 +486,15 @@ File: be-rebike/postman/postman-collection.json
           "name": "Midtrans Webhook Notification",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"transaction_time\": \"2024-05-22 14:55:02\",\n    \"transaction_status\": \"capture\",\n    \"transaction_id\": \"some-transaction-id\",\n    \"status_message\": \"midtrans payment notification\",\n    \"status_code\": \"200\",\n    \"signature_key\": \"...\",\n    \"payment_type\": \"credit_card\",\n    "order_id\": \"some-order-id\",\n    \"merchant_id\": \"...\",\n    \"gross_amount\": \"150000.00\",\n    \"fraud_status\": \"accept\",\n    \"currency\": \"IDR\"\n}",
+              "raw": "{\n    \"transaction_time\": \"2024-05-22 14:55:02\",\n    \"transaction_status\": \"capture\",\n    \"transaction_id\": \"some-transaction-id\",\n    \"status_message\": \"midtrans payment notification\",\n    \"status_code\": \"200\",\n    \"signature_key\": \"...\",\n    \"payment_type\": \"credit_card\",\n    \"order_id\": \"some-order-id\",\n    \"merchant_id\": \"...\",\n    \"gross_amount\": \"150000.00\",\n    \"fraud_status\": \"accept\",\n    \"currency\": \"IDR\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -483,7 +523,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Change Password",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"oldPassword\": \"password\",\n    \"newPassword\": \"passwordbaru\",\n    \"confirmPassword\": \"passwordbaru\"\n}",
@@ -511,7 +556,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Update FCM Token",
           "request": {
             "method": "PUT",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"fcmToken\": \"your_fcm_token_here\"\n}",
@@ -612,10 +662,15 @@ File: be-rebike/postman/postman-collection.json
           "name": "Create Booking",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"bikeID\": \"{{bikeId}}\",\n    \"startDate\": \"2025-07-10\",\n    \"endDate\": \"2025-07-12\",\n    \"pickupPointId\": \"{{pickupPointId}}\"\n}",
+              "raw": "{\n    \"bikeID\": \"{{bikeId}}\",\n    \"startDate\": \"2025-07-10T10:00:00\",\n    \"endDate\": \"2025-07-12T10:00:00\",\n    \"pickupPointId\": \"{{pickupPointId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -731,7 +786,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Update Profile (Location)",
           "request": {
             "method": "PUT",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"locationName\": \"Rental Mitra Jaya Abadi\"\n}",
@@ -776,7 +836,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Update Bank Info",
           "request": {
             "method": "PUT",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"bankName\": \"BCA\",\n    \"bankAccountName\": \"Mitra Satu Jaya\",\n    \"bankAccountNumber\": \"1122334455\"\n}",
@@ -816,7 +881,7 @@ File: be-rebike/postman/postman-collection.json
                   "key": "bikeRequest",
                   "contentType": "application/json",
                   "type": "text",
-                  "value": "{\n    \"name\": \"Honda Vario 160\",\n    \"plateNumber\": \"N 1234 ABC\",\n    \"brand\": \"Honda\",\n    \"year\": 2023,\n    \"machineCapacity\": \"160\",\n    \"transmissionType\": \"AUTOMATIC\",\n    \"weekdayPricePerDay\": 75000,\n    \"weekendPricePerDay\": 85000,\n    \"stock\": 1\n}"
+                  "value": "{\n    \"name\": \"Honda Vario 160\",\n    \"plateNumber\": \"N 1234 ABC\",\n    \"brand\": \"Honda\",\n    \"year\": 2023,\n    \"machineCapacity\": \"160cc\",\n    \"transmissionType\": \"AUTOMATIC\",\n    \"weekdayPricePerDay\": 75000,\n    \"weekendPricePerDay\": 85000\n}"
                 }
               ]
             },
@@ -875,10 +940,15 @@ File: be-rebike/postman/postman-collection.json
           "name": "Update Bike",
           "request": {
             "method": "PUT",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Honda Vario 160 New\",\n    \"plateNumber\": \"N 1234 XYZ\",\n    \"brand\": \"Honda\",\n    \"year\": 2024,\n    \"machineCapacity\": \"160\",\n    \"transmissionType\": \"AUTOMATIC\",\n    \"weekdayPricePerDay\": 80000,\n    \"weekendPricePerDay\": 90000,\n    \"stock\": 2\n}",
+              "raw": "{\n    \"name\": \"Honda Vario 160 New\",\n    \"plateNumber\": \"N 1234 XYZ\",\n    \"brand\": \"Honda\",\n    \"year\": 2024,\n    \"machineCapacity\": \"160cc\",\n    \"transmissionType\": \"AUTOMATIC\",\n    \"weekdayPricePerDay\": 80000,\n    \"weekendPricePerDay\": 90000\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -903,10 +973,15 @@ File: be-rebike/postman/postman-collection.json
           "name": "Update Bike Status",
           "request": {
             "method": "PUT",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"status\": \"UNAVAILABLE\"\n}",
+              "raw": "{\n    \"status\": \"INACTIVE\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -969,7 +1044,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Confirm Transaction",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"status\": \"CONFIRMED\"\n}",
@@ -1034,7 +1114,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Request Payout",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"amount\": 50000\n}",
@@ -1132,7 +1217,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Verify Partner",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"isVerified\": true\n}",
@@ -1179,7 +1269,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Verify Payment",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"isValid\": true,\n    \"reason\": \"Pembayaran valid\"\n}",
@@ -1208,7 +1303,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Create Pickup Point",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"locationName\": \"Stasiun Kota Baru\",\n    \"address\": \"Jl. Trunojoyo No.10, Kiduldalem, Kec. Klojen, Kota Malang\"\n}",
@@ -1235,7 +1335,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Update Pickup Point",
           "request": {
             "method": "PUT",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"locationName\": \"Stasiun Kota Lama\",\n    \"address\": \"Jl. Kolonel Sugiono, Ciptomulyo, Kec. Sukun, Kota Malang\"\n}",
@@ -1300,7 +1405,12 @@ File: be-rebike/postman/postman-collection.json
           "name": "Process Payout",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n    \"status\": \"APPROVED\",\n    \"notes\": \"Sudah ditransfer\"\n}",
@@ -1370,7 +1480,12 @@ File: be-rebike/postman/postman-collection.json
               "name": "Update Platform Fee",
               "request": {
                 "method": "POST",
-                "header": [],
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n    \"percentage\": \"5.0\"\n}",
@@ -1426,38 +1541,50 @@ File: be-rebike/postman/postman-collection.json
             ]
           }
         }
-      ],
-      "variable": [
-        {
-          "key": "baseUrl",
-          "value": "http://localhost:8083/api"
-        },
-        {
-          "key": "jwt_token",
-          "value": ""
-        },
-        {
-          "key": "partnerId",
-          "value": ""
-        },
-        {
-          "key": "bikeId",
-          "value": ""
-        },
-        {
-          "key": "transactionId",
-          "value": ""
-        },
-        {
-          "key": "payoutId",
-          "value": ""
-        },
-        {
-          "key": "pickupPointId",
-          "value": ""
-        }
       ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083/api"
     },
+    {
+      "key": "jwt_token",
+      "value": ""
+    },
+    {
+      "key": "partnerId",
+      "value": ""
+    },
+    {
+      "key": "bikeId",
+      "value": ""
+    },
+    {
+      "key": "transactionId",
+      "value": ""
+    },
+    {
+      "key": "payoutId",
+      "value": ""
+    },
+    {
+      "key": "pickupPointId",
+      "value": ""
+    }
+  ]
+}
 
 
 ---
@@ -1543,7 +1670,6 @@ public class DataInitializer implements CommandLineRunner {
     private final UsagePolicyRepository usagePolicyRepository;
     private final PickupPointRepository pickupPointRepository;
     private final TransactionRepository transactionRepository;
-
     private final String defaultPhotoUrl = "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png";
 
     private final Random random = new Random();
@@ -1551,16 +1677,15 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        Set<Role> customerRole = new HashSet<>();
-        customerRole.add(roleService.getOrCreate(UserRole.CUSTOMER));
+        ensureInitialRolesAndPoliciesExist();
 
-        Set<Role> partnerRole = new HashSet<>();
-        partnerRole.add(roleService.getOrCreate(UserRole.PARTNER));
+        createInitialCoreUsers();
 
         if (userRepository.count() < 100 || bikeRepository.count() < 100 || transactionRepository.count() < 50) {
             System.out.println("[Rebike DataInitializer] Starting generation of additional dummy data.");
 
-            ensureInitialRolesAndPoliciesExist();
+            Set<Role> customerRole = Collections.singleton(roleService.getOrCreate(UserRole.CUSTOMER));
+            Set<Role> partnerRole = Collections.singleton(roleService.getOrCreate(UserRole.PARTNER));
 
             createAdditionalDummyUsers(customerRole, partnerRole);
             createAdditionalDummyBikes();
@@ -1571,6 +1696,89 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("[Rebike DataInitializer] Sufficient dummy data already exists. Skipping generation.");
         }
     }
+
+    private void createInitialCoreUsers() {
+        System.out.println("[Rebike Initializer] Ensuring core users (admin, partner, customer) exist...");
+
+        Role adminRole = roleService.getOrCreate(UserRole.ADMIN);
+        Role partnerRole = roleService.getOrCreate(UserRole.PARTNER);
+        Role customerRole = roleService.getOrCreate(UserRole.CUSTOMER);
+
+        if (!userRepository.existsByEmail("admin@rebike.com")) {
+            User admin = User.builder()
+                    .firstName("Admin")
+                    .lastName("Rebike")
+                    .username("admin")
+                    .email("admin@rebike.com")
+                    .password(passwordEncoder.encode("password"))
+                    .phoneNumber("081234567890")
+                    .roles(Collections.singleton(adminRole))
+                    .photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now())
+                    .isAccountNonExpired(true)
+                    .isAccountNonLocked(true)
+                    .isCredentialsNonExpired(true)
+                    .isEnabled(true)
+                    .isEmailVerified(true)
+                    .build();
+            userRepository.save(admin);
+            System.out.println("[Rebike Initializer] Created ADMIN user: admin@rebike.com");
+        }
+
+        if (!userRepository.existsByEmail("partner@rebike.com")) {
+            User partnerUser = User.builder()
+                    .firstName("Mitra")
+                    .lastName("Utama")
+                    .username("partner")
+                    .email("partner@rebike.com")
+                    .password(passwordEncoder.encode("password"))
+                    .phoneNumber("089876543210")
+                    .roles(Collections.singleton(partnerRole))
+                    .photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now())
+                    .isAccountNonExpired(true)
+                    .isAccountNonLocked(true)
+                    .isCredentialsNonExpired(true)
+                    .isEnabled(true)
+                    .isEmailVerified(true)
+                    .build();
+
+            Partner partnerDetails = Partner.builder()
+                    .user(partnerUser)
+                    .locationName("Rental Mitra Utama")
+                    .bankAccountName("Mitra Utama")
+                    .bankAccountNumber("1234567890")
+                    .bankName("BCA")
+                    .isVerified(true)
+                    .build();
+            partnerUser.setPartnerDetail(partnerDetails);
+            userRepository.save(partnerUser);
+            System.out.println("[Rebike Initializer] Created PARTNER user: partner@rebike.com");
+        }
+
+        if (!userRepository.existsByEmail("customer@rebike.com")) {
+            User customer = User.builder()
+                    .firstName("Pelanggan")
+                    .lastName("Setia")
+                    .username("customer")
+                    .email("customer@rebike.com")
+                    .password(passwordEncoder.encode("password"))
+                    .phoneNumber("081122334455")
+                    .roles(Collections.singleton(customerRole))
+                    .photoUrl(defaultPhotoUrl)
+                    .createdAt(LocalDateTime.now())
+                    .isAccountNonExpired(true)
+                    .isAccountNonLocked(true)
+                    .isCredentialsNonExpired(true)
+                    .isEnabled(true)
+                    .isEmailVerified(true)
+                    .build();
+            userRepository.save(customer);
+            System.out.println("[Rebike Initializer] Created CUSTOMER user: customer@rebike.com");
+        }
+        System.out.println("[Rebike Initializer] Core user check finished.");
+    }
+
 
     private void ensureInitialRolesAndPoliciesExist() {
         roleService.getOrCreate(UserRole.ADMIN);
@@ -1599,7 +1807,6 @@ public class DataInitializer implements CommandLineRunner {
         long existingUsersCount = userRepository.count();
         int targetUsers = 100;
         int usersToGenerate = (int) (targetUsers - existingUsersCount);
-
         if (usersToGenerate <= 0) {
             System.out.println("[Rebike Initializer] Target user count already met or exceeded.");
             return;
@@ -1608,7 +1815,6 @@ public class DataInitializer implements CommandLineRunner {
         for (int i = 0; i < usersToGenerate; i++) {
             UserRole roleType = random.nextBoolean() ? UserRole.CUSTOMER : UserRole.PARTNER;
             Set<Role> roles = (roleType == UserRole.CUSTOMER) ? customerRole : partnerRole;
-
             String firstName = "GenUser" + (i + 1);
             String lastName = (roleType == UserRole.CUSTOMER ? "Customer" : "Partner") + random.nextInt(100);
             String baseUsername = (roleType.name().toLowerCase() + "gen" + (i + 1)).replaceAll("[^a-zA-Z0-9]", "");
@@ -1646,7 +1852,6 @@ public class DataInitializer implements CommandLineRunner {
                     .isEnabled(true)
                     .isEmailVerified(true)
                     .build();
-
             if (roleType.equals(UserRole.PARTNER)) {
                 Partner partner = Partner.builder()
                         .user(user)
@@ -1663,12 +1868,10 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-
     private void createAdditionalDummyBikes() {
         long existingBikesCount = bikeRepository.count();
         int targetBikes = 100;
         int bikesToGenerate = (int) (targetBikes - existingBikesCount);
-
         if (bikesToGenerate <= 0) {
             System.out.println("[Rebike Initializer] Target bike count already met or exceeded.");
             return;
@@ -1709,7 +1912,6 @@ public class DataInitializer implements CommandLineRunner {
                 }
             }
             if (attempt > 100) continue;
-
             int year = 2018 + random.nextInt(7);
             String machineCapacity = (100 + random.nextInt(150)) + "cc";
             String transmissionType = transmissionTypes[random.nextInt(transmissionTypes.length)];
@@ -1717,7 +1919,6 @@ public class DataInitializer implements CommandLineRunner {
             BigDecimal weekendPrice = weekdayPrice.add(new BigDecimal(10000 + random.nextInt(30000)));
             BikeStatus status = statuses[random.nextInt(statuses.length)];
             String photoURL = "https://picsum.photos/id/" + (100 + random.nextInt(100)) + "/200/300";
-
             Bike bike = Bike.builder()
                     .partner(randomPartner)
                     .name(name)
@@ -1753,7 +1954,6 @@ public class DataInitializer implements CommandLineRunner {
         long existingTransactionsCount = transactionRepository.count();
         int targetTransactions = 50;
         int transactionsToGenerate = (int) (targetTransactions - existingTransactionsCount);
-
         if (transactionsToGenerate <= 0) {
             System.out.println("[Rebike Initializer] Target transaction count already met or exceeded.");
             return;
@@ -1778,7 +1978,6 @@ public class DataInitializer implements CommandLineRunner {
 
         List<Transaction> transactionsToCreate = new ArrayList<>();
         List<Bike> bikesToUpdate = new ArrayList<>();
-
         for (int i = 0; i < transactionsToGenerate; i++) {
             User randomCustomer = customers.get(random.nextInt(customers.size()));
             Bike currentBike = allBikes.get(random.nextInt(allBikes.size()));
@@ -1789,11 +1988,8 @@ public class DataInitializer implements CommandLineRunner {
                 continue;
             }
             currentBike = bikeOptional.get();
-
-
             LocalDateTime startDate = LocalDateTime.now().plusDays(random.nextInt(61) - 30);
             LocalDateTime endDate = startDate.plusDays(1 + random.nextInt(7));
-
             if (endDate.isBefore(startDate)) {
                 LocalDateTime temp = startDate;
                 startDate = endDate;
@@ -1808,7 +2004,6 @@ public class DataInitializer implements CommandLineRunner {
             PaymentStatus paymentStatus;
 
             int statusChoice = random.nextInt(4);
-
             if (statusChoice == 0) {
                 bookingStatus = BookingStatus.CONFIRMED;
                 paymentStatus = PaymentStatus.PAID;
@@ -2093,7 +2288,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token"));
         configuration.setAllowCredentials(true);
@@ -2247,12 +2442,14 @@ package com.doaibu.rebikeapi.controller;
 import com.doaibu.rebikeapi.constant.Endpoint;
 import com.doaibu.rebikeapi.dto.request.PickupPointRequest;
 import com.doaibu.rebikeapi.dto.request.ProcessPayoutRequest;
+import com.doaibu.rebikeapi.dto.request.RegisterCustomerRequest;
 import com.doaibu.rebikeapi.dto.request.VerifyPaymentRequest;
 import com.doaibu.rebikeapi.dto.response.*;
 import com.doaibu.rebikeapi.dto.response.other.PagedResponse;
 import com.doaibu.rebikeapi.exception.CustomException;
 import com.doaibu.rebikeapi.service.*;
 import com.doaibu.rebikeapi.util.ResponseUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
@@ -2277,6 +2474,7 @@ public class AdminController {
     private final AdminDashboardService adminDashboardService;
     private final FraudDetectionService fraudDetectionService;
     private final BusinessInsightService businessInsightService;
+    private final AuthService authService;
 
     @GetMapping("/partners")
     public ResponseEntity<?> getAllPartners(@RequestParam(required = false, defaultValue = "0") int page,
@@ -2300,6 +2498,16 @@ public class AdminController {
                 HttpStatus.OK,
                 "Partner details retrieved successfully.",
                 response);
+    }
+
+    @PostMapping("/admins")
+    public ResponseEntity<?> registerNewAdmin(@Valid @RequestBody RegisterCustomerRequest request) {
+        RegisterResponse response = authService.registerAdmin(request);
+        return ResponseUtil.response(
+                HttpStatus.CREATED,
+                "Admin registered successfully.",
+                response
+        );
     }
 
     @PatchMapping("/partners/{partnerId}/verify")
@@ -2736,6 +2944,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -2763,8 +2972,11 @@ public class PartnerController {
                 null);
     }
 
-    @PostMapping("/bikes")
-    public ResponseEntity<?> addBike(@RequestBody BikeRequest bikeRequest, @RequestParam MultipartFile file) {
+    @PostMapping(value = "/bikes", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<?> addBike(
+            @RequestPart("bikeRequest") BikeRequest bikeRequest,
+            @RequestPart("file") MultipartFile file) {
+
         BikeResponse response = bikeService.addBike(bikeRequest, file);
         return ResponseUtil.response(
                 HttpStatus.CREATED,
@@ -5735,6 +5947,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    public RegisterResponse registerAdmin(RegisterCustomerRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new CustomException.ConflictException("Email already in use.");
+        }
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new CustomException.ConflictException("Username already in use.");
+        }
+
+        Set<Role> adminRole = new HashSet<>();
+        adminRole.add(roleService.getOrCreate(UserRole.ADMIN));
+
+        User user = buildUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getEmail(), request.getPassword(), request.getPhoneNumber(), adminRole);
+
+        User savedUser = userRepository.save(user);
+
+        return mapToRegisterResponse(savedUser);
+    }
+
+    @Override
+    @Transactional
     public void verifyEmailOtp(String email, String otp) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
@@ -5929,8 +6161,13 @@ public class BikeServiceImpl implements BikeService {
     public BikeResponse addBike(BikeRequest request, MultipartFile file) {
         User partner = userRepository.findByUsername(tokenHolder.getUsername())
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
+
         if (partner.getPartnerDetail() == null || !partner.getPartnerDetail().isVerified()) {
             throw new CustomException.AuthorizationException("Your partner account is not verified. Please contact administrator.");
+        }
+
+        if (bikeRepository.findByPlateNumber(request.getPlateNumber()).isPresent()) {
+            throw new CustomException.ConflictException("Plate number '" + request.getPlateNumber() + "' is already registered.");
         }
 
         if (file.getSize() > maxSize) {
@@ -7567,6 +7804,8 @@ public interface AuthService {
 
     RegisterResponse registerPartner(RegisterPartnerRequest request);
 
+    RegisterResponse registerAdmin(RegisterCustomerRequest request);
+
     void verifyEmailOtp(String email, String otp);
 
     void resendVerificationOtp(String email);
@@ -7969,4 +8208,3 @@ class RebikeApplicationTests {
     }
 
 }
-

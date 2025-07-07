@@ -73,14 +73,18 @@ export default function LoginPage({ isOpen, onClose }) {
           if (user && user.roles) {
             if (user.roles.includes("ROLE_ADMIN")) {
               navigate("/admin/dashboard", { replace: true });
+              onClose();
             } else if (user.roles.includes("ROLE_PARTNER")) {
               console.log("ini mitra", user)
               navigate("/mitra/dashboard", { replace: true });
+              onClose();
             } else {
               navigate("/", { replace: true });
+              onClose();
             }
+          } else {
+            onClose(); // Tutup modal jika tidak ada peran yang dikenali
           }
-          onClose();
         },
       })
     );

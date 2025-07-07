@@ -34,10 +34,10 @@ export const adminNavItems = {
         { name: 'Manajemen User', path: '/admin/pengguna', icon: Users },
         { name: 'Manajemen Transaksi', path: '/admin/transaksi', icon: Package },
         { name: 'Keuangan', path: '/admin/keuangan', icon: Banknote },
-        { name: 'Manajemen Konten', path: '/admin/konten', icon: FileText },
+        { name: 'Report & Finance', path: '/admin/laporan', icon: FileText },
     ],
     account: [
-      { name: "Verifikasi Mitra", path: "/admin/verifikasi", icon: ShieldCheck },
+      { name: "Verifikasi Mitra", path: "/admin/mitra-verification", icon: ShieldCheck },
       { name: "Pengaturan Akun", path: "/admin/profil", icon: Settings }
     ],
 };

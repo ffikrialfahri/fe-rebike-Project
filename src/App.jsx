@@ -32,8 +32,9 @@ import UserManagement from "./features/admin/UserManajement.jsx";
 import TransactionManagement from "./features/admin/Transaction.jsx";
 import LaporanAdmin from "./features/admin/Laporan.jsx";
 import HistoryAdmin from "./features/admin/History.jsx";
-import BillingAdmin from "./features/admin/Billing.jsx";
+import KeuanganAdmin from "./features/admin/Keuangan.jsx";
 import ProfileSettingAdmin from "./features/admin/ProfileSetting.jsx";
+import MitraVerificationPage from "./components/pages/Admin/MitraVerificationPage.jsx";
 
 function App() {
   return (
@@ -70,17 +71,20 @@ function App() {
         <Route
           path="/admin"
           element={
-            <AdminPanel />
+            <ProtectedRoute requiredRole="ROLE_ADMIN">
+              <AdminPanel />
+            </ProtectedRoute>
           }
         >
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="pengguna" element={<UserManagement />} />
           <Route path="transaksi" element={<TransactionManagement />} />
-          <Route path="laporan" element={<LaporanAdmin />} />
+          <Route path="laporan" element={<LaporanMitra />} />
           <Route path="history" element={<HistoryAdmin />} />
-          <Route path="billing" element={<BillingAdmin />} />
+          <Route path="keuangan" element={<KeuanganAdmin />} />
           <Route path="profil" element={<ProfileSettingAdmin />} />
+          <Route path="mitra-verification" element={<MitraVerificationPage />} />
         </Route>
       </Routes>
     </>

@@ -29,7 +29,7 @@
 
   /* Admin Panel Sidebar Link */
   #admin-sidebar .sidebar-link {
-    @apply text-slate-300 hover:text-white;
+    @apply text-black hover:text-slate-400;
   }
   #admin-sidebar .sidebar-link:hover {
     @apply bg-white/10;

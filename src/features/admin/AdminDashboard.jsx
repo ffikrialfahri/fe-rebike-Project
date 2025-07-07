@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import StatCard from "../../components/ui/StatCard";
 import ChartComponent from "../../components/ui/ChartComponent";
 import axios from "../../api/axios";
 import { formatRupiah } from "../../lib/navigation";
-import { LayoutDashboard, ClipboardList } from "lucide-react";
+import { LayoutDashboard, ClipboardList, UserCheck } from "lucide-react";
 
 export default function AdminDashboard() {
   const [summary, setSummary] = useState(null);
-  const [bikes, setBikes] = useState(0);
+  const [partners, setPartners] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [revenueTrend, setRevenueTrend] = useState({});
+  const [unverifiedPartnersCount, setUnverifiedPartnersCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,20 +21,27 @@ export default function AdminDashboard() {
       try {
         const [
           summaryRes,
-          bikesRes,
+          partnersRes,
           transactionsRes,
-          revenueTrendRes,
         ] = await Promise.all([
-          axios.get("/partner/financial-summary"),
-          axios.get("/partner/bikes"),
-          axios.get("/partner/transactions"),
-          axios.get("/partner/dashboard/revenue-trend"),
+          axios.get("/admin/dashboard/summary"),
+          axios.get("/admin/partners"),
+          axios.get("/admin/transactions"),
         ]);
 
-        setSummary(summaryRes.data.data);
-        setBikes(bikesRes.data.data.totalElements);
-        setTransactions(transactionsRes.data.data);
-        setRevenueTrend(revenueTrendRes.data.data);
+        const summaryData = summaryRes.data.data || {};
+        const partnersData = partnersRes.data.data || {};
+        const transactionsData = transactionsRes.data.data || {};
+
+        const unverifiedPartners = partnersData.data.filter(
+          (partner) => !partner.verified
+        );
+
+        setSummary(summaryData);
+        setPartners(partnersData.data || []);
+        setUnverifiedPartnersCount(unverifiedPartners.length);
+        setTransactions(transactionsData.data || []);
+        setRevenueTrend(summaryData.revenueTrend || {});
       } catch (err) {
         setError(err);
       } finally {
@@ -83,7 +92,7 @@ export default function AdminDashboard() {
     <>
       <div className="flex items-center gap-4 mb-6">
         <LayoutDashboard className="w-8 h-8 text-slate-700" />
-        <h1 className="text-3xl font-bold text-slate-800">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-black">Dashboard</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -99,17 +108,19 @@ export default function AdminDashboard() {
 
         <div className="flex flex-col gap-6">
           <div className="flex-grow grid grid-cols-2 gap-6 items-center text-center ">
+            <Link to="/admin/mitra-verification">
+              <StatCard
+                title="Verifikasi Mitra"
+                value={unverifiedPartnersCount}
+                valueColor="text-blue-600"
+                contentAlign="left"
+                valueAlign="center"
+                iconType="userCheck"
+              />
+            </Link>
             <StatCard
-              title="Order"
-              value={transactions.length}
-              valueColor="text-blue-600"
-              contentAlign="left"
-              valueAlign="center"
-              iconType="order"
-            />
-            <StatCard
-              title="Product"
-              value={bikes}
+              title="Total Mitra"
+              value={partners.length}
               valueColor="text-green-600"
               contentAlign="left"
               valueAlign="center"
@@ -123,7 +134,6 @@ export default function AdminDashboard() {
               valueColor="text-purple-600"
               className="h-full"
               contentAlign="left"
-              iconType="income"
             />
           </div>
         </div>
@@ -131,9 +141,8 @@ export default function AdminDashboard() {
 
       <div className="mt-6">
         <Card className="min-h-[400px] p-4">
-          <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b-2 border-gray-200 pb-2">
-            Aktivitas Terbaru (Booking)
-          </h3>
+          <h3 className="text-lg font-semibold text-black">Quick Acces</h3>
+          Aktivitas Terbaru (Booking)
           {transactions.length > 0 ? (
             <ul className="space-y-3">
               {transactions.slice(0, 5).map((transaction) => (

@@ -6,7 +6,6 @@ import Logo3 from "@/assets/logo3.png";
 
 const Sidebar = ({ navItems }) => {
   const { user } = useSelector((state) => state.auth);
-  // eslint-disable-next-line no-unused-vars
   const basePath = user?.roles?.includes("ROLE_PARTNER") ? "/mitra" : "/admin";
 
   const renderNavSection = (title, items) => (
@@ -29,8 +28,8 @@ const Sidebar = ({ navItems }) => {
   );
 
   return (
-    <aside id={user?.roles?.includes("ROLE_PARTNER") ? "mitra-sidebar" : "admin-sidebar"} className="w-72 bg-white border-r border-slate-200 flex flex-col">
-      <div className="flex items-center justify-between p-4 border-b border-slate-200">
+    <aside id={user?.roles?.includes("ROLE_PARTNER") ? "mitra-sidebar" : "admin-sidebar"} className="w-72 bg-white border-r border-slate-300 flex flex-col">
+      <div className="flex items-center justify-between p-4 border-b border-slate-300">
         <div className="flex items-center gap-2">
           <img src={Logo3} alt="Rebike Logo" className="h-15 w-20" />
           <span className="text-xl font-bold text-brand-primary">ReBike</span>
@@ -118,7 +117,15 @@ export default function DashboardLayout({ navItems }) {
   const currentPath = location.pathname;
 
   const getPageTitle = () => {
-    return "";
+    const allNavItems = [
+      ...(navItems.navigate || []),
+      ...(navItems.account || []),
+      ...(navItems.subscriptions || []),
+    ];
+    const currentItem = allNavItems.find(
+      (item) => item.path === currentPath || (item.path === "/admin/dashboard" && currentPath === "/admin")
+    );
+    return currentItem ? currentItem.name : "Dashboard";
   };
 
   const pageTitle = getPageTitle();

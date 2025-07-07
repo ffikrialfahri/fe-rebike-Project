@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import StatCard from "../../components/ui/StatCard";
@@ -7,73 +7,46 @@ import axios from "../../api/axios";
 import { formatRupiah } from "../../lib/navigation";
 import { LayoutDashboard, UserCheck } from "lucide-react";
 import RecentBookingsTable from "../../components/shared/RecentBookingsTable";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchDashboardSummary, fetchPartners, fetchTransactions } from '../../store/admin/adminSlice';
 
 export default function AdminDashboard() {
-  const [summary, setSummary] = useState(null);
-  const [partners, setPartners] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [revenueTrend, setRevenueTrend] = useState({});
+  const dispatch = useDispatch();
+  const { dashboardSummary, partners, transactions, loading, error } = useSelector((state) => state.admin);
+
   const [unverifiedPartnersCount, setUnverifiedPartnersCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [
-          summaryRes,
-          partnersRes,
-          transactionsRes,
-        ] = await Promise.all([
-          axios.get("/admin/dashboard/summary"),
-          axios.get("/admin/partners"),
-          axios.get("/admin/transactions"),
-        ]);
+    dispatch(fetchDashboardSummary());
+    dispatch(fetchPartners({ name: '' })); // Fetch partners for unverified count
+    dispatch(fetchTransactions());
+  }, [dispatch]);
 
-        const summaryData = summaryRes.data.data || {};
-        console.log("Summary Response:", summaryRes.data);
-        const partnersData = partnersRes.data.data || {};
-        console.log("Partners Response:", partnersRes.data);
-        const transactionsData = transactionsRes.data.data || {};
-        console.log("Transactions Response:", transactionsRes.data);
-
-        const unverifiedPartners = partnersData.data.filter(
-          (partner) => !partner.verified
-        );
-
-        setSummary(summaryData);
-        setPartners(partnersData.data || []);
-        setUnverifiedPartnersCount(unverifiedPartners.length);
-        setTransactions(transactionsData.data || []);
-        setRevenueTrend(summaryData.revenueTrend || {});
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (partners && partners.length > 0) {
+      const unverified = partners.filter(partner => !partner.verified);
+      setUnverifiedPartnersCount(unverified.length);
+    }
+  }, [partners]);
 
   if (loading) {
-    return <p>Loading dashboard data...</p>;
+    return <p>Memuat data dashboard...</p>;
   }
 
   if (error) {
-    return <p>Error loading dashboard data: {error.message}</p>;
+    return <p>Error memuat data dashboard: {error.message}</p>;
   }
   
-  if (!summary) {
-    return <p>Data summary tidak tersedia.</p>;
+  if (!dashboardSummary) {
+    return <p>Data ringkasan dashboard tidak tersedia.</p>;
   }
 
   const chartData = {
-    labels: Object.keys(revenueTrend.monthlyRevenue || {}),
+    labels: dashboardSummary.userGrowth?.labels || [],
     datasets: [
       {
-        label: "Pendapatan Bulanan",
-        data: Object.values(revenueTrend.monthlyRevenue || {}),
+        label: "Pertumbuhan Pengguna",
+        data: dashboardSummary.userGrowth?.data || [],
         borderColor: "rgb(75, 192, 192)",
         backgroundColor: 'rgba(75, 192, 192, 0.2)', 
         tension: 0.1,
@@ -103,7 +76,7 @@ export default function AdminDashboard() {
         
         <Card className="lg:col-span-2 min-h-[300px] p-4 flex flex-col">
           <h3 className="text-xl font-semibold text-slate-700 mb-4">
-            Tren Pendapatan Bulanan
+            Tren Pertumbuhan Pengguna
           </h3>
           <div className="flex-grow">
             <ChartComponent type="line" data={chartData} options={chartOptions} />
@@ -124,7 +97,7 @@ export default function AdminDashboard() {
             </Link>
             <StatCard
               title="Total Mitra"
-              value={partners.length}
+              value={dashboardSummary?.totalPartners?.toLocaleString() || '0'}
               valueColor="text-green-600"
               contentAlign="left"
               valueAlign="center"
@@ -133,8 +106,8 @@ export default function AdminDashboard() {
           </div>
           <div className="flex-grow">
             <StatCard
-              title={"Income"}
-              value={formatRupiah(summary.totalRevenue)}
+              title={"Pendapatan Platform"}
+              value={formatRupiah(dashboardSummary?.platformRevenue || 0)}
               valueColor="text-purple-600"
               className="h-full"
               contentAlign="left"
@@ -145,8 +118,8 @@ export default function AdminDashboard() {
 
       <div className="mt-6">
         <RecentBookingsTable
-          title="Quick Acces"
-          subtitle="Aktivitas Terbaru (Booking)"
+          title="Transaksi Terbaru"
+          subtitle="Aktivitas Transaksi Terbaru"
           transactions={transactions}
           loading={loading}
           error={error}

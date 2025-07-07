@@ -1,6 +1,6 @@
 import { 
   AreaChart, Car, LayoutDashboard, Package, History, Users, Receipt, User, 
-  Settings, FileText, Banknote, ShieldCheck 
+  Settings, FileText, Banknote, ShieldCheck, MapPin 
 } from "lucide-react";
 
 
@@ -33,6 +33,7 @@ export const adminNavItems = {
         { name: 'Dasbor', path: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Manajemen User', path: '/admin/pengguna', icon: Users },
         { name: 'Manajemen Transaksi', path: '/admin/transaksi', icon: Package },
+        { name: 'Manajemen Lokasi Penjemputan', path: '/admin/pickup-points', icon: MapPin },
         { name: 'Keuangan', path: '/admin/keuangan', icon: Banknote },
         { name: 'Report & Finance', path: '/admin/laporan', icon: FileText },
     ],

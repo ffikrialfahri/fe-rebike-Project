@@ -35,6 +35,7 @@ import HistoryAdmin from "./features/admin/History.jsx";
 import KeuanganAdmin from "./features/admin/Keuangan.jsx";
 import ProfileSettingAdmin from "./features/admin/ProfileSetting.jsx";
 import MitraVerificationPage from "./components/pages/Admin/MitraVerificationPage.jsx";
+import PickupPointManagement from "./features/admin/PickupPointManagement.jsx";
 
 function App() {
   return (
@@ -80,6 +81,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="pengguna" element={<UserManagement />} />
           <Route path="transaksi" element={<TransactionManagement />} />
+          <Route path="pickup-points" element={<PickupPointManagement />} />
           <Route path="laporan" element={<LaporanMitra />} />
           <Route path="history" element={<HistoryAdmin />} />
           <Route path="keuangan" element={<KeuanganAdmin />} />

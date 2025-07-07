@@ -1,82 +1,96 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from "../../components/ui/Card";
 import { Landmark, History, CircleDollarSign } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchDashboardSummary, fetchPayouts, processPayout, fetchPlatformFee, updatePlatformFee } from '../../store/admin/adminSlice';
+import ProcessPayoutModal from '../../components/modals/ProcessPayoutModal';
+import UpdateFeeModal from '../../components/modals/UpdateFeeModal';
 
-export default function Billing() {
-  const currentBalance = "Rp 1.500.000";
-  const bankName = "Bank Central Asia (BCA)";
-  const accountNumber = "1234567890";
-  const accountHolder = "Admin Rebike";
+export default function Keuangan() {
+  const dispatch = useDispatch();
+  const { dashboardSummary, payouts, platformFee, loading, error } = useSelector((state) => state.admin);
 
-  const transactions = [
-    { id: 1, date: "2024-06-28", description: "Pembayaran Sewa Bulan Juni", amount: "Rp 500.000", status: "Lunas" },
-    { id: 2, date: "2024-05-28", description: "Pembayaran Sewa Bulan Mei", amount: "Rp 500.000", status: "Lunas" },
-    { id: 3, date: "2024-04-28", description: "Pembayaran Sewa Bulan April", amount: "Rp 500.000", status: "Lunas" },
-    { id: 4, date: "2024-07-01", description: "Tagihan Sewa Bulan Juli", amount: "Rp 500.000", status: "Belum Lunas" },
-  ];
+  const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
+  const [selectedPayout, setSelectedPayout] = useState(null);
+  const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
 
-  const withdrawalHistory = [
-    { id: 1, date: "2024-06-29", amount: "Rp 1.000.000", status: "Berhasil" },
-    { id: 2, date: "2024-05-30", amount: "Rp 500.000", status: "Berhasil" },
-    { id: 3, date: "2024-04-25", amount: "Rp 750.000", status: "Berhasil" },
-  ];
+  useEffect(() => {
+    dispatch(fetchDashboardSummary());
+    dispatch(fetchPayouts());
+    dispatch(fetchPlatformFee());
+  }, [dispatch]);
 
-  const handleWithdraw = () => {
-    alert("Fungsi cairkan semua dana akan diimplementasikan di sini.");
+  const handleProcessPayoutClick = (payout) => {
+    setSelectedPayout(payout);
+    setIsProcessModalOpen(true);
   };
 
-  const handleChangeAccount = () => {
-    alert("Fungsi ubah rekening akan diimplementasikan di sini.");
+  const handleConfirmProcessPayout = (payoutId, status, notes) => {
+    dispatch(processPayout({ payoutId, status, notes }));
   };
+
+  const handleUpdateFeeClick = () => {
+    setIsFeeModalOpen(true);
+  };
+
+  const handleConfirmUpdateFee = (newFeePercentage) => {
+    dispatch(updatePlatformFee(newFeePercentage));
+  };
+
+  if (loading) {
+    return <p>Memuat data keuangan...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
 
   return (
     <>
-      {/* Header Billing */}
+      {/* Header Keuangan */}
       <div className="flex items-center gap-4 mb-6">
         <Landmark className="w-8 h-8 text-slate-700" />
-        <h1 className="text-3xl font-bold text-slate-800">Billing</h1>
+        <h1 className="text-3xl font-bold text-slate-800">Keuangan</h1>
       </div>
 
       {/* Container for Top Section (Balance and Account Panels) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Balance Panel */}
         <Card className="p-6 bg-white shadow-md rounded-lg">
-          <h2 className="text-xl font-semibold text-slate-700 mb-2">Saldo Tersedia</h2>
-          <p className="text-3xl font-bold text-indigo-600 mb-4">{currentBalance}</p>
-          <button
+          <h2 className="text-xl font-semibold text-slate-700 mb-2">Pendapatan Platform</h2>
+          <p className="text-3xl font-bold text-indigo-600 mb-4">Rp {dashboardSummary?.platformRevenue?.toLocaleString('id-ID') || '0'}</p>
+          {/* <button
             onClick={handleWithdraw}
             className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
           >
             Cairkan Semua Dana
-          </button>
+          </button> */}
         </Card>
-        {/* Account Panel */}
+        {/* Platform Fee Panel */}
         <Card className="p-6 bg-white shadow-md rounded-lg">
-          <h2 className="text-xl font-semibold text-slate-700 mb-2">Informasi Rekening</h2>
-          <p className="text-lg text-slate-600">Bank: {bankName}</p>
-          <p className="text-lg text-slate-600">Nomor Rekening: {accountNumber}</p>
-          <p className="text-lg text-slate-600 mb-4">Atas Nama: {accountHolder}</p>
+          <h2 className="text-xl font-semibold text-slate-700 mb-2">Biaya Platform</h2>
+          <p className="text-3xl font-bold text-indigo-600 mb-4">{platformFee !== null ? `${platformFee}%` : 'Memuat...'}</p>
           <button
-            onClick={handleChangeAccount}
+            onClick={handleUpdateFeeClick}
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300"
           >
-            Ubah Rekening
+            Ubah Biaya Platform
           </button>
         </Card>
       </div>
 
-      {/* Transaction History */}
-      <Card className="p-6 bg-white shadow-md rounded-lg mb-6"> {/* Added mb-6 for spacing */}
-        <h2 className="text-xl font-semibold text-slate-700 mb-4">Riwayat Transaksi</h2>
+      {/* Payout Requests */}
+      <Card className="p-6 bg-white shadow-md rounded-lg mb-6">
+        <h2 className="text-xl font-semibold text-slate-700 mb-4">Permintaan Pencairan Dana</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full leading-normal">
             <thead>
               <tr>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Tanggal
+                  ID Pencairan
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Deskripsi
+                  Mitra
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Jumlah
@@ -84,44 +98,61 @@ export default function Billing() {
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Status
                 </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Aksi
+                </th>
               </tr>
             </thead>
             <tbody>
-              {transactions.length > 0 ? (
-                transactions.map((transaction) => (
-                  <tr key={transaction.id}>
+              {payouts && payouts.length > 0 ? (
+                payouts.map((payout) => (
+                  <tr key={payout.id}>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">{transaction.date}</p>
+                      <p className="text-gray-900 whitespace-no-wrap">{payout.id}</p>
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">{transaction.description}</p>
+                      <p className="text-gray-900 whitespace-no-wrap">{payout.partnerName}</p>
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">{transaction.amount}</p>
+                      <p className="text-gray-900 whitespace-no-wrap">Rp {payout.amount.toLocaleString('id-ID')}</p>
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <span
                         className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
-                          transaction.status === "Lunas" ? "text-green-900" : "text-red-900"
+                          payout.status === 'APPROVED' ? 'text-green-900' :
+                          payout.status === 'REJECTED' ? 'text-red-900' :
+                          'text-yellow-900'
                         }`}
                       >
                         <span
                           aria-hidden
                           className={`absolute inset-0 opacity-50 rounded-full ${
-                            transaction.status === "Lunas" ? "bg-green-200" : "bg-red-200"
+                            payout.status === 'APPROVED' ? 'bg-green-200' :
+                            payout.status === 'REJECTED' ? 'bg-red-200' :
+                            'bg-yellow-200'
                           }`}
                         ></span>
-                        <span className="relative">{transaction.status}</span>
+                        <span className="relative">{payout.status}</span>
                       </span>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      {payout.status === 'PENDING' && (
+                        <button
+                          onClick={() => handleProcessPayoutClick(payout)}
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1 px-3 rounded-lg text-xs"
+                        >
+                          Proses
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-slate-500">
+                  <td colSpan="5" className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center py-10">
-                      <History className="w-12 h-12 text-gray-400 mb-3" />
-                      <p>Tidak ada riwayat transaksi.</p>
+                      <CircleDollarSign className="w-12 h-12 text-gray-400 mb-3" />
+                      <p>Tidak ada permintaan pencairan dana.</p>
                     </div>
                   </td>
                 </tr>
@@ -131,65 +162,23 @@ export default function Billing() {
         </div>
       </Card>
 
-      {/* Withdrawal History */}
-      <Card className="p-6 bg-white shadow-md rounded-lg">
-        <h2 className="text-xl font-semibold text-slate-700 mb-4">Riwayat Pencairan</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full leading-normal">
-            <thead>
-              <tr>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Tanggal
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Jumlah
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {withdrawalHistory.length > 0 ? (
-                withdrawalHistory.map((withdrawal) => (
-                  <tr key={withdrawal.id}>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">{withdrawal.date}</p>
-                    </td>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">{withdrawal.amount}</p>
-                    </td>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <span
-                        className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
-                          withdrawal.status === "Berhasil" ? "text-green-900" : "text-red-900"
-                        }`}
-                      >
-                        <span
-                          aria-hidden
-                          className={`absolute inset-0 opacity-50 rounded-full ${
-                            withdrawal.status === "Berhasil" ? "bg-green-200" : "bg-red-200"
-                          }`}
-                        ></span>
-                        <span className="relative">{withdrawal.status}</span>
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-slate-500">
-                    <div className="flex flex-col items-center justify-center py-10">
-                      <CircleDollarSign className="w-12 h-12 text-gray-400 mb-3" />
-                      <p>Tidak ada riwayat pencairan.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      {selectedPayout && (
+        <ProcessPayoutModal
+          isOpen={isProcessModalOpen}
+          onClose={() => setIsProcessModalOpen(false)}
+          onConfirm={handleConfirmProcessPayout}
+          payout={selectedPayout}
+        />
+      )}
+
+      {platformFee !== null && (
+        <UpdateFeeModal
+          isOpen={isFeeModalOpen}
+          onClose={() => setIsFeeModalOpen(false)}
+          onConfirm={handleConfirmUpdateFee}
+          currentFee={platformFee}
+        />
+      )}
     </>
   );
 }

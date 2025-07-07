@@ -1,24 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from "../../components/ui/Card";
 import { UserCog } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUserProfile, changeUserPassword } from '../../store/admin/adminSlice';
+import toast from 'react-hot-toast';
 
 export default function ProfileSetting() {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth); // Asumsi data user ada di state.auth.user
+  const { loading, error } = useSelector((state) => state.admin); // Untuk loading/error dari thunk admin
+
   const [profileData, setProfileData] = useState({
-    name: "Admin Utama",
-    email: "admin@rebike.com",
+    firstName: '',
+    lastName: '',
+    username: '',
+    phoneNumber: '',
+    file: null,
   });
   const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
+    oldPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
 
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        username: user.username || '',
+        phoneNumber: user.phoneNumber || '',
+        file: null,
+      });
+    }
+  }, [user]);
+
   const handleProfileChange = (e) => {
-    const { name, value } = e.target;
-    setProfileData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const { name, value, files } = e.target;
+    if (name === 'file') {
+      setProfileData((prevData) => ({
+        ...prevData,
+        file: files[0],
+      }));
+    } else {
+      setProfileData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -29,25 +58,33 @@ export default function ProfileSetting() {
     }));
   };
 
-  const handleUpdateProfile = (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    // Logika untuk memperbarui profil admin
-    alert("Profil admin berhasil diperbarui!\nNama: " + profileData.name + "\nEmail: " + profileData.email);
+    try {
+      await dispatch(updateUserProfile(profileData)).unwrap();
+      toast.success('Profil berhasil diperbarui!');
+    } catch (err) {
+      toast.error(`Gagal memperbarui profil: ${err.message || err}`);
+    }
   };
 
-  const handleUpdatePassword = (e) => {
+  const handleUpdatePassword = async (e) => {
     e.preventDefault();
-    // Logika untuk memperbarui password admin
     if (passwordData.newPassword !== passwordData.confirmNewPassword) {
-      alert("Konfirmasi password baru tidak cocok!");
+      toast.error("Konfirmasi password baru tidak cocok!");
       return;
     }
-    alert("Password admin berhasil diperbarui!");
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmNewPassword: "",
-    });
+    try {
+      await dispatch(changeUserPassword(passwordData)).unwrap();
+      toast.success('Password berhasil diperbarui!');
+      setPasswordData({
+        oldPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
+    } catch (err) {
+      toast.error(`Gagal memperbarui password: ${err.message || err}`);
+    }
   };
 
   return (
@@ -62,25 +99,56 @@ export default function ProfileSetting() {
         <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Informasi Profil</h3>
         <form onSubmit={handleUpdateProfile} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Nama Admin</label>
+            <label className="block text-sm font-medium text-gray-700">Nama Depan</label>
             <input
               type="text"
-              name="name"
-              value={profileData.name}
+              name="firstName"
+              value={profileData.firstName}
               onChange={handleProfileChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">Nama Belakang</label>
             <input
-              type="email"
-              name="email"
-              value={profileData.email}
+              type="text"
+              name="lastName"
+              value={profileData.lastName}
               onChange={handleProfileChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              type="text"
+              name="username"
+              value={profileData.username}
+              onChange={handleProfileChange}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Nomor Telepon</label>
+            <input
+              type="text"
+              name="phoneNumber"
+              value={profileData.phoneNumber}
+              onChange={handleProfileChange}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Foto Profil</label>
+            <input
+              type="file"
+              name="file"
+              onChange={handleProfileChange}
+              className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
             />
           </div>
           <button
@@ -99,8 +167,8 @@ export default function ProfileSetting() {
             <label className="block text-sm font-medium text-gray-700">Password Saat Ini</label>
             <input
               type="password"
-              name="currentPassword"
-              value={passwordData.currentPassword}
+              name="oldPassword"
+              value={passwordData.oldPassword}
               onChange={handlePasswordChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required

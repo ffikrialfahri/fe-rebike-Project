@@ -5,7 +5,8 @@ import StatCard from "../../components/ui/StatCard";
 import ChartComponent from "../../components/ui/ChartComponent";
 import axios from "../../api/axios";
 import { formatRupiah } from "../../lib/navigation";
-import { LayoutDashboard, ClipboardList, UserCheck } from "lucide-react";
+import { LayoutDashboard, UserCheck } from "lucide-react";
+import RecentBookingsTable from "../../components/shared/RecentBookingsTable";
 
 export default function AdminDashboard() {
   const [summary, setSummary] = useState(null);
@@ -143,37 +144,13 @@ export default function AdminDashboard() {
       </div>
 
       <div className="mt-6">
-        <Card className="min-h-[400px] p-4">
-          <h3 className="text-lg font-semibold text-black">Quick Acces</h3>
-          Aktivitas Terbaru (Booking)
-          {transactions.length > 0 ? (
-            <ul className="space-y-3">
-              {transactions.slice(0, 5).map((transaction) => (
-                <li
-                  key={transaction.transactionID}
-                  className="p-3 bg-gray-50 rounded-md shadow-sm flex justify-between items-center"
-                >
-                  <div>
-                    <p className="font-medium text-slate-800">
-                      Booking ID: {transaction.transactionID.substring(0, 8)}...
-                    </p>
-                    <p className="text-sm text-slate-600">
-                      Status: {transaction.bookingStatus}
-                    </p>
-                  </div>
-                  <span className="font-semibold text-lg text-indigo-600">
-                    {formatRupiah(transaction.totalPrice)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-10 text-slate-500">
-              <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
-              <p>Belum ada aktivitas booking terbaru.</p>
-            </div>
-          )}
-        </Card>
+        <RecentBookingsTable
+          title="Quick Acces"
+          subtitle="Aktivitas Terbaru (Booking)"
+          transactions={transactions}
+          loading={loading}
+          error={error}
+        />
       </div>
     </>
   );

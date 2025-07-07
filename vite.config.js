@@ -14,6 +14,20 @@ export default defineConfig({
     },
   },
   server: {
+    proxy: {
+      '/api': {
+        target: 'https://buck-darling-minnow.ngrok-free.app',
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, _options) => {
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            if (req.url.includes('/admin/partners/') && req.url.includes('/verify')) {
+              proxyReq.removeHeader('Origin');
+            }
+          });
+        },
+      },
+    },
     historyApiFallback: true,
   },
 })

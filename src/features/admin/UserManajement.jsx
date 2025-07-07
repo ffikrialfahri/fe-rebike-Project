@@ -5,6 +5,7 @@ import { fetchPartners } from "../../store/admin/adminSlice";
 import { Users, ClipboardList, Search } from 'lucide-react';
 import axios from "../../api/axios";
 import EditPartnerModal from "../../components/modals/EditPartnerModal";
+import ConfirmationModal from "../../components/modals/ConfirmationModal";
 
 export default function UserManajement() {
   const dispatch = useDispatch();
@@ -12,6 +13,8 @@ export default function UserManajement() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [partnerToBlock, setPartnerToBlock] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
@@ -48,16 +51,22 @@ export default function UserManajement() {
     dispatch(fetchPartners({ name: debouncedSearchQuery })); // Refresh data setelah modal ditutup
   };
 
-  const handleDeletePartner = async (partnerId) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus mitra ini?")) {
-      try {
-        await axios.delete(`/admin/partners/${partnerId}`);
-        dispatch(fetchPartners({ name: debouncedSearchQuery })); // Refresh data setelah penghapusan
-        alert("Mitra berhasil dihapus!");
-      } catch (err) {
-        console.error("Error deleting partner:", err);
-        alert("Gagal menghapus mitra.");
-      }
+  const handleBlockClick = (partnerId) => {
+    setPartnerToBlock(partnerId);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmBlock = async () => {
+    try {
+      await axios.patch(`/admin/partners/${partnerToBlock}/verify`, { isVerified: false });
+      dispatch(fetchPartners({ name: debouncedSearchQuery }));
+      alert("Mitra berhasil diblokir!");
+    } catch (err) {
+      console.error("Error blocking partner:", err);
+      alert("Gagal memblokir mitra.");
+    } finally {
+      setIsConfirmModalOpen(false);
+      setPartnerToBlock(null);
     }
   };
 
@@ -112,7 +121,7 @@ export default function UserManajement() {
                 <tr>
                   <th className="p-3 border-b-2 border-gray-200">Nama Mitra</th>
                   <th className="p-3 border-b-2 border-gray-200">Email</th>
-                  <th className="p-3 border-b-2 border-gray-200">Lokasi</th>
+                  
                   <th className="p-3 border-b-2 border-gray-200">Status Verifikasi</th>
                   <th className="p-3 border-b-2 border-gray-200">Aksi</th>
                 </tr>
@@ -125,7 +134,7 @@ export default function UserManajement() {
                   >
                     <td className="p-3 font-medium">{partner.name || ''}</td>
                     <td className="p-3">{partner.email || ''}</td>
-                    <td className="p-3">{partner?.locationName || ''}</td>
+                    
                     <td className="p-3">
                       <span
                         className={
@@ -139,25 +148,12 @@ export default function UserManajement() {
                     </td>
                     <td className="p-3">
                       <div className="flex items-center space-x-2">
-                      {!partner?.verified && (
-                        <button 
-                          className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
-                          onClick={() => handleVerifyPartner(partner.id)}
-                        >
-                          Verifikasi
-                        </button>
-                      )}
-                        <button
-                          className="text-indigo-600 hover:text-indigo-800 text-xs font-semibold"
-                          onClick={() => handleEditClick(partner)}
-                        >
-                          Edit
-                        </button>
+                      
                         <button
                           className="text-red-600 hover:text-red-800 text-xs font-semibold"
-                          onClick={() => handleDeletePartner(partner.id)}
+                          onClick={() => handleBlockClick(partner.id)}
                         >
-                          Hapus
+                          Block
                         </button>
                       </div>
                     </td>
@@ -176,6 +172,13 @@ export default function UserManajement() {
           partnerData={selectedPartner}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmBlock}
+        message="Apakah Anda yakin ingin memblokir mitra ini? Mitra yang diblokir tidak akan dapat login dan motornya tidak akan tersedia untuk disewa."
+      />
     </>
   );
 }

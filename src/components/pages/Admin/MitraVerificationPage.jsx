@@ -32,7 +32,7 @@ export default function MitraVerificationPage() {
 
   const handleVerifyPartner = async (partnerId) => {
     try {
-      await axios.patch(`/admin/partners/${partnerId}/verify`, { isVerified: true });
+      await axios.patch(`/admin/partners/${partnerId}/verify`, { isVerified: true }, { withCredentials: true });
       toast.success("Mitra berhasil diverifikasi!");
       fetchUnverifiedPartners(); // Refresh the list
     } catch (err) {
@@ -87,7 +87,6 @@ export default function MitraVerificationPage() {
                 <tr className="bg-slate-100 text-slate-600 uppercase text-sm leading-normal">
                   <th className="py-3 px-6 text-left">Nama Mitra</th>
                   <th className="py-3 px-6 text-left">Email</th>
-                  <th className="py-3 px-6 text-left">Telepon</th>
                   <th className="py-3 px-6 text-center">Aksi</th>
                 </tr>
               </thead>
@@ -96,7 +95,6 @@ export default function MitraVerificationPage() {
                   <tr key={partner.id} className="border-b border-slate-200 hover:bg-slate-50">
                     <td className="py-3 px-6 text-left whitespace-nowrap">{partner.name}</td>
                     <td className="py-3 px-6 text-left">{partner.email}</td>
-                    <td className="py-3 px-6 text-left">{partner.phoneNumber}</td>
                     <td className="py-3 px-6 text-center">
                       <button
                         onClick={() => handleVerifyPartner(partner.id)}

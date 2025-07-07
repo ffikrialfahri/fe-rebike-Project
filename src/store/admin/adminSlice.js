@@ -24,6 +24,21 @@ export const fetchPartners = createAsyncThunk(
     }
 );
 
+export const fetchTransactions = createAsyncThunk(
+    'admin/fetchTransactions',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get('/admin/transactions');
+            return response.data.data.data;
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+            const errorMessage = error.response?.data?.message || 'Failed to fetch transactions';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
 export const updatePartner = createAsyncThunk(
     'admin/updatePartner',
     async (partnerData, { rejectWithValue }) => {
@@ -55,6 +70,18 @@ const adminSlice = createSlice({
                 state.partners = action.payload;
             })
             .addCase(fetchPartners.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchTransactions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchTransactions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.transactions = action.payload;
+            })
+            .addCase(fetchTransactions.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

@@ -30,8 +30,11 @@ export default function AdminDashboard() {
         ]);
 
         const summaryData = summaryRes.data.data || {};
+        console.log("Summary Response:", summaryRes.data);
         const partnersData = partnersRes.data.data || {};
+        console.log("Partners Response:", partnersRes.data);
         const transactionsData = transactionsRes.data.data || {};
+        console.log("Transactions Response:", transactionsRes.data);
 
         const unverifiedPartners = partnersData.data.filter(
           (partner) => !partner.verified

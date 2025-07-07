@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8083/api';
+const API_BASE_URL = 'https://buck-darling-minnow.ngrok-free.app/api';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

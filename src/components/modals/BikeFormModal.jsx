@@ -9,58 +9,67 @@ export default function BikeFormModal({
 }) {
   const [formData, setFormData] = useState({
     name: "",
-    photoURL: "",
     plateNumber: "",
     brand: "",
-    year: "",
+    year: 0, // Changed to number
     machineCapacity: "",
     transmissionType: "",
-    weekdayPricePerDay: "",
-    weekendPricePerDay: "",
-    stock: "",
+    weekdayPricePerDay: 0, // Changed to number
+    weekendPricePerDay: 0, // Changed to number
+    stock: 0, // Changed to number
   });
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     if (bikeData) {
       setFormData({
         name: bikeData.name || "",
-        photoURL: bikeData.photoURL || "",
         plateNumber: bikeData.plateNumber || "",
         brand: bikeData.brand || "",
-        year: bikeData.year || "",
+        year: bikeData.year || 0, // Ensure it's a number
         machineCapacity: bikeData.machineCapacity || "",
         transmissionType: bikeData.transmissionType || "",
-        weekdayPricePerDay: bikeData.weekdayPricePerDay || "",
-        weekendPricePerDay: bikeData.weekendPricePerDay || "",
-        stock: bikeData.stock || "",
+        weekdayPricePerDay: bikeData.weekdayPricePerDay || 0, // Ensure it's a number
+        weekendPricePerDay: bikeData.weekendPricePerDay || 0, // Ensure it's a number
+        stock: bikeData.stock || 0, // Ensure it's a number
       });
+      setSelectedFile(null); // Reset file when editing
     } else {
       setFormData({
         name: "",
-        photoURL: "",
         plateNumber: "",
         brand: "",
-        year: "",
+        year: 0, // Changed to number
         machineCapacity: "",
         transmissionType: "",
-        weekdayPricePerDay: "",
-        weekendPricePerDay: "",
-        stock: "",
+        weekdayPricePerDay: 0, // Changed to number
+        weekendPricePerDay: 0, // Changed to number
+        stock: 0, // Changed to number
       });
+      setSelectedFile(null);
     }
   }, [bikeData]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const { name, value, files, type } = e.target;
+    if (name === 'file') {
+      setSelectedFile(files[0]);
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: type === 'number' ? Number(value) : value,
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    const dataToSend = new FormData();
+    dataToSend.append('bikeRequest', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
+    if (selectedFile) {
+      dataToSend.append('file', selectedFile);
+    }
+    onSave(dataToSend);
     onClose();
   };
 
@@ -85,11 +94,10 @@ export default function BikeFormModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">URL Foto</label>
+            <label className="block text-sm font-medium text-gray-700">Foto Motor</label>
             <input
-              type="text"
-              name="photoURL"
-              value={formData.photoURL}
+              type="file"
+              name="file"
               onChange={handleChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />

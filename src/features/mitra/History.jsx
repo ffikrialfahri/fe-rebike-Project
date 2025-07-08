@@ -51,7 +51,7 @@ export default function HistoryPage() {
           id: `trans-${transaction.transactionID}`,
           type: "ORDER",
           timestamp: transaction.createdAt || new Date().toISOString(), // Assuming createdAt exists
-          description: `Pesanan ${transaction.transactionID} untuk motor ${transaction.bikeName} berstatus ${transaction.bookingStatus}. Total: ${formatRupiah(transaction.totalPrice)}.`, 
+          description: `Pesanan ${transaction.transactionID} untuk motor ${transaction.bike.name} berstatus ${transaction.bookingStatus}. Total: ${formatRupiah(transaction.totalCost)}.`, 
           details: transaction,
         });
       });

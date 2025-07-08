@@ -1,48 +1,24 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axios from "../../api/axios";
 import Card from "../../components/ui/Card";
 import BikeFormModal from "../../components/modals/BikeFormModal";
 import { formatRupiah } from "../../lib/navigation";
 import { Bike, ClipboardList } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBikes, addBike, updateBike, deleteBike, updateBikeStatus } from '../../store/mitra/mitraSlice';
+import toast from 'react-hot-toast';
 
 export default function ArmadaManagement() {
-  const [bikes, setBikes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { bikes, loading, error } = useSelector((state) => state.mitra);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentBike, setCurrentBike] = useState(null);
 
-  const fetchBikes = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get("/partner/bikes");
-      let fetchedBikes = response.data?.data?.content || [];
-
-      if (filterStatus !== "ALL") {
-        fetchedBikes = fetchedBikes.filter(bike => bike.status === filterStatus);
-      }
-
-      if (searchQuery) {
-        const lowerCaseQuery = searchQuery.toLowerCase();
-        fetchedBikes = fetchedBikes.filter(
-          bike =>
-            bike.name.toLowerCase().includes(lowerCaseQuery) ||
-            bike.plateNumber.toLowerCase().includes(lowerCaseQuery)
-        );
-      }
-      setBikes(fetchedBikes);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [filterStatus, searchQuery, setBikes, setLoading, setError]);
-
   useEffect(() => {
-    fetchBikes();
-  }, [fetchBikes]);
+    dispatch(fetchBikes());
+  }, [dispatch]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -65,10 +41,10 @@ export default function ArmadaManagement() {
   const handleDeleteBike = async (bikeId) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus motor ini?")) {
       try {
-        await axios.delete(`/partner/bikes/${bikeId}`);
-        fetchBikes();
+        await dispatch(deleteBike(bikeId)).unwrap();
+        toast.success("Motor berhasil dihapus!");
       } catch (err) {
-        alert("Gagal menghapus motor: " + err.message);
+        toast.error(`Gagal menghapus motor: ${err.message || err}`);
       }
     }
   };
@@ -76,15 +52,34 @@ export default function ArmadaManagement() {
   const handleSaveBike = async (bikeData) => {
     try {
       if (currentBike) {
-        await axios.put(`/partner/bikes/${currentBike.bikeID}`, bikeData);
+        await dispatch(updateBike({ bikeId: currentBike.bikeID, bikeData })).unwrap();
+        toast.success("Motor berhasil diperbarui!");
       } else {
-        await axios.post("/partner/bikes", bikeData);
+        await dispatch(addBike(bikeData)).unwrap();
+        toast.success("Motor berhasil ditambahkan!");
       }
-      fetchBikes();
+      setIsModalOpen(false);
     } catch (err) {
-      alert("Gagal menyimpan motor: " + err.message);
+      toast.error(`Gagal menyimpan motor: ${err.message || err}`);
     }
   };
+
+  const handleUpdateBikeStatus = async (bikeId, status) => {
+    try {
+      await dispatch(updateBikeStatus({ bikeId, status })).unwrap();
+      toast.success("Status motor berhasil diperbarui!");
+    } catch (err) {
+      toast.error(`Gagal memperbarui status motor: ${err.message || err}`);
+    }
+  };
+
+  const filteredBikes = bikes.filter(bike => {
+    const matchesSearch = searchQuery === "" || 
+                          bike.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          bike.plateNumber.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === "ALL" || bike.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   if (loading) {
     return <p>Memuat data armada...</p>;
@@ -131,7 +126,7 @@ export default function ArmadaManagement() {
 
       <Card>
         <h3 className="text-xl font-semibold text-slate-700 mb-4">Daftar Motor</h3>
-        {bikes.length === 0 ? (
+        {filteredBikes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-slate-500">
             <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
             <p>Tidak ada motor yang ditemukan.</p>
@@ -150,13 +145,23 @@ export default function ArmadaManagement() {
                 </tr>
               </thead>
               <tbody>
-                {bikes.map((bike) => (
+                {filteredBikes.map((bike) => (
                   <tr key={bike.bikeID}>
                     <td className="py-2 px-4 border-b">{bike.name}</td>
                     <td className="py-2 px-4 border-b">{bike.plateNumber}</td>
                     <td className="py-2 px-4 border-b">{formatRupiah(bike.weekdayPricePerDay)}</td>
                     <td className="py-2 px-4 border-b">{formatRupiah(bike.weekendPricePerDay)}</td>
-                    <td className="py-2 px-4 border-b">{bike.status}</td>
+                    <td className="py-2 px-4 border-b">
+                      <select
+                        value={bike.status}
+                        onChange={(e) => handleUpdateBikeStatus(bike.bikeID, e.target.value)}
+                        className="p-1 border border-gray-300 rounded-md text-sm"
+                      >
+                        <option value="AVAILABLE">Tersedia</option>
+                        <option value="RENTED">Disewa</option>
+                        <option value="INACTIVE">Perbaikan</option>
+                      </select>
+                    </td>
                     <td className="py-2 px-4 border-b">
                       <button
                         className="bg-yellow-500 text-white px-3 py-1 rounded-md text-sm mr-2"

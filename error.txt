@@ -1,26 +1,60 @@
-Access to XMLHttpRequest at 'http://buck-darling-minnow.ngrok-free.app/oauth2/authorization/google' (redirected from 'http://localhost:5173/api/partner/transactions') from origin 'http://localhost:5173' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request.
-Laporan.jsx:34 
- 
- GET http://buck-darling-minnow.ngrok-free.app/oauth2/authorization/google net::ERR_FAILED
-Promise.then		
-(anonymous)	@	Laporan.jsx:34
-(anonymous)	@	Laporan.jsx:98
-<Laporan>		
-App	@	App.jsx:85
-<App>		
-(anonymous)	@	main.jsx:16
-[NEW] Explain Console errors by using Copilot in Edge: click 
- to explain an error. Learn more
-Don't show again
-laporan:1 
- Access to XMLHttpRequest at 'http://buck-darling-minnow.ngrok-free.app/oauth2/authorization/google' (redirected from 'http://localhost:5173/api/partner/transactions') from origin 'http://localhost:5173' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: Redirect is not allowed for a preflight request.
-Laporan.jsx:34 
- 
- GET http://buck-darling-minnow.ngrok-free.app/oauth2/authorization/google net::ERR_FAILED
-Promise.then		
-(anonymous)	@	Laporan.jsx:34
-(anonymous)	@	Laporan.jsx:98
-<Laporan>		
-App	@	App.jsx:85
-<App>		
-(anonymous)	@	main.jsx:16
+{
+    "message": "Partner transactions retrieved successfully",
+    "statusCode": 200,
+    "data": [
+        {
+            "transactionID": "30f195f1-1c41-4a7a-9e6d-fa4c87da62a2",
+            "startDate": "2025-07-02T09:43:46.252536",
+            "endDate": "2025-07-08T09:43:46.252536",
+            "baseCost": 564578.00,
+            "totalCost": 614568.00,
+            "paymentStatus": "EXPIRED",
+            "bookingStatus": "CANCELLED",
+            "bike": {
+                "bikeID": "78f8f6c5-d6e6-4ea4-bd56-e952f4036aa9",
+                "name": "Vespa Beat 195",
+                "year": 0,
+                "transmissionType": null,
+                "machineCapacity": null,
+                "photoURL": null,
+                "brand": "Vespa",
+                "weekdayPricePerDay": 80654.00,
+                "weekendPricePerDay": null
+            },
+            "customer": {
+                "userID": "975c580c-800d-4eb8-85ea-e47488a334b9",
+                "firstName": "GenUser65",
+                "lastName": "Customer61",
+                "email": "customergen65@rebike.com",
+                "phoneNumber": "08050060281"
+            }
+        },
+        {
+            "transactionID": "10a51d4c-94c8-4c25-80d1-f8be4678f73b",
+            "startDate": "2025-06-22T09:43:46.252536",
+            "endDate": "2025-06-23T09:43:46.252536",
+            "baseCost": 328418.00,
+            "totalCost": 357498.00,
+            "paymentStatus": "PENDING",
+            "bookingStatus": "CONFIRMED",
+            "bike": {
+                "bikeID": "35d749b1-6793-4f65-ad5f-6146f7bf838e",
+                "name": "Vespa Scoopy 198",
+                "year": 0,
+                "transmissionType": null,
+                "machineCapacity": null,
+                "photoURL": null,
+                "brand": "Vespa",
+                "weekdayPricePerDay": 164209.00,
+                "weekendPricePerDay": null
+            },
+            "customer": {
+                "userID": "323527fa-b3af-44b3-93db-bbe6d7859c92",
+                "firstName": "GenUser37",
+                "lastName": "Customer52",
+                "email": "customergen37@rebike.com",
+                "phoneNumber": "08937967315"
+            }
+        }
+    ]
+}

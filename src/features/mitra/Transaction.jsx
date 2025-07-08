@@ -14,7 +14,6 @@ export default function Transaction() {
     { name: "Semua", value: "ALL" },
     { name: "Pending", value: "PENDING" },
     { name: "Dikonfirmasi", value: "CONFIRMED" },
-    { name: "Dalam Proses", value: "IN_PROGRESS" },
     { name: "Selesai", value: "COMPLETED" },
     { name: "Dibatalkan", value: "CANCELLED" },
   ];
@@ -115,11 +114,11 @@ export default function Transaction() {
                 {transactions.map((transaction) => (
                   <tr key={transaction.transactionID}>
                     <td className="py-2 px-4 border-b">{transaction.transactionID}</td>
-                    <td className="py-2 px-4 border-b">{transaction.bikeName}</td>
-                    <td className="py-2 px-4 border-b">{transaction.customerName}</td>
+                    <td className="py-2 px-4 border-b">{transaction.bike.name}</td>
+                    <td className="py-2 px-4 border-b">{transaction.customer.firstName} {transaction.customer.lastName}</td>
                     <td className="py-2 px-4 border-b">{new Date(transaction.startDate).toLocaleDateString()}</td>
                     <td className="py-2 px-4 border-b">{new Date(transaction.endDate).toLocaleDateString()}</td>
-                    <td className="py-2 px-4 border-b">{formatRupiah(transaction.totalPrice)}</td>
+                    <td className="py-2 px-4 border-b">{formatRupiah(transaction.totalCost)}</td>
                     <td className="py-2 px-4 border-b">{transaction.bookingStatus}</td>
                     <td className="py-2 px-4 border-b">
                       {transaction.bookingStatus === "PENDING" && (
@@ -132,18 +131,10 @@ export default function Transaction() {
                       )}
                       {transaction.bookingStatus === "CONFIRMED" && (
                         <button
-                          className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm mr-2"
-                          onClick={() => handleUpdateStatus(transaction.transactionID, "IN_PROGRESS")}
-                        >
-                          Mulai Sewa
-                        </button>
-                      )}
-                      {transaction.bookingStatus === "IN_PROGRESS" && (
-                        <button
                           className="bg-purple-500 text-white px-3 py-1 rounded-md text-sm mr-2"
                           onClick={() => handleUpdateStatus(transaction.transactionID, "COMPLETED")}
                         >
-                          Selesai Sewa
+                          Selesai
                         </button>
                       )}
                       {(transaction.bookingStatus === "PENDING" || transaction.bookingStatus === "CONFIRMED") && (

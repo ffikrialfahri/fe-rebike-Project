@@ -32,7 +32,7 @@ export default function MitraDashboard() {
 
         setSummary(summaryRes.data?.data || { totalRevenue: 0 });
         setBikes(bikesRes.data?.data?.totalElements || 0);
-        setTransactions(transactionsRes.data?.data?.data || []);
+        setTransactions(transactionsRes.data?.data || []);
         setRevenueTrend(revenueTrendRes.data?.data || {});
       } catch (err) {
         setError(err);

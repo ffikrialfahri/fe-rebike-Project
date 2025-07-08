@@ -81,7 +81,7 @@ export default function RegisterPage() {
       username: userData.username,
       email: userData.email,
       password: userData.password,
-      phoneNumber: `+62${userData.phoneNumber}`,
+      phoneNumber: `${userData.phoneNumber}`,
       locationName: "",
       bankAccountName: "",
       bankAccountNumber: "",

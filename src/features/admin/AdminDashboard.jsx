@@ -5,7 +5,7 @@ import StatCard from "../../components/ui/StatCard";
 import ChartComponent from "../../components/ui/ChartComponent";
 import axios from "../../api/axios";
 import { formatRupiah } from "../../lib/navigation";
-import { LayoutDashboard, UserCheck } from "lucide-react";
+import { LayoutDashboard, UserCheck, Users, Package, Car } from "lucide-react";
 import RecentBookingsTable from "../../components/shared/RecentBookingsTable";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDashboardSummary, fetchPartners, fetchTransactions } from '../../store/admin/adminSlice';
@@ -84,6 +84,24 @@ export default function AdminDashboard() {
         </Card>
 
         <div className="flex flex-col gap-6">
+          <div className="flex-grow grid grid-cols-2 gap-6">
+            <StatCard
+              title="Total Pengguna"
+              value={dashboardSummary?.totalUsers?.toLocaleString() || '0'}
+              valueColor="text-teal-600"
+              contentAlign="left"
+              valueAlign="center"
+              icon={Users}
+            />
+            <StatCard
+              title="Total Transaksi"
+              value={dashboardSummary?.totalTransactions?.toLocaleString() || '0'}
+              valueColor="text-orange-600"
+              contentAlign="left"
+              valueAlign="center"
+              icon={Package}
+            />
+          </div>
           <div className="flex-grow grid grid-cols-2 gap-6 items-center text-center ">
             <Link to="/admin/mitra-verification">
               <StatCard
@@ -92,7 +110,7 @@ export default function AdminDashboard() {
                 valueColor="text-blue-600"
                 contentAlign="left"
                 valueAlign="center"
-                iconType="userCheck"
+                icon={UserCheck}
               />
             </Link>
             <StatCard
@@ -101,7 +119,7 @@ export default function AdminDashboard() {
               valueColor="text-green-600"
               contentAlign="left"
               valueAlign="center"
-              iconType="product"
+              icon={Car}
             />
           </div>
           <div className="flex-grow">

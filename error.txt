@@ -1,60 +1,138 @@
 {
-    "message": "Partner transactions retrieved successfully",
+    "message": "All users retrieved successfully.",
     "statusCode": 200,
-    "data": [
-        {
-            "transactionID": "30f195f1-1c41-4a7a-9e6d-fa4c87da62a2",
-            "startDate": "2025-07-02T09:43:46.252536",
-            "endDate": "2025-07-08T09:43:46.252536",
-            "baseCost": 564578.00,
-            "totalCost": 614568.00,
-            "paymentStatus": "EXPIRED",
-            "bookingStatus": "CANCELLED",
-            "bike": {
-                "bikeID": "78f8f6c5-d6e6-4ea4-bd56-e952f4036aa9",
-                "name": "Vespa Beat 195",
-                "year": 0,
-                "transmissionType": null,
-                "machineCapacity": null,
-                "photoURL": null,
-                "brand": "Vespa",
-                "weekdayPricePerDay": 80654.00,
-                "weekendPricePerDay": null
+    "data": {
+        "data": [
+            {
+                "userID": "6cb2f735-14a9-4c2e-b05c-2254533a7fb7",
+                "firstName": "fikri",
+                "lastName": "fahri",
+                "email": "fahrialfikri05@gmail.com",
+                "phoneNumber": "+62083809545147"
             },
-            "customer": {
-                "userID": "975c580c-800d-4eb8-85ea-e47488a334b9",
-                "firstName": "GenUser65",
-                "lastName": "Customer61",
-                "email": "customergen65@rebike.com",
-                "phoneNumber": "08050060281"
-            }
-        },
-        {
-            "transactionID": "10a51d4c-94c8-4c25-80d1-f8be4678f73b",
-            "startDate": "2025-06-22T09:43:46.252536",
-            "endDate": "2025-06-23T09:43:46.252536",
-            "baseCost": 328418.00,
-            "totalCost": 357498.00,
-            "paymentStatus": "PENDING",
-            "bookingStatus": "CONFIRMED",
-            "bike": {
-                "bikeID": "35d749b1-6793-4f65-ad5f-6146f7bf838e",
-                "name": "Vespa Scoopy 198",
-                "year": 0,
-                "transmissionType": null,
-                "machineCapacity": null,
-                "photoURL": null,
-                "brand": "Vespa",
-                "weekdayPricePerDay": 164209.00,
-                "weekendPricePerDay": null
+            {
+                "userID": "2c61565a-da12-4c16-b02c-fbcc276f2bc6",
+                "firstName": "GenUser97",
+                "lastName": "Partner77",
+                "email": "partnergen97@rebike.com",
+                "phoneNumber": "08149786719"
             },
-            "customer": {
-                "userID": "323527fa-b3af-44b3-93db-bbe6d7859c92",
-                "firstName": "GenUser37",
+            {
+                "userID": "b15b4216-4100-445c-aec3-d5aa38385e30",
+                "firstName": "GenUser96",
+                "lastName": "Partner28",
+                "email": "partnergen96@rebike.com",
+                "phoneNumber": "08285311582"
+            },
+            {
+                "userID": "8105fef2-0ecc-4132-bbd6-fab7b7a3b255",
+                "firstName": "GenUser95",
+                "lastName": "Customer45",
+                "email": "customergen95@rebike.com",
+                "phoneNumber": "08338174657"
+            },
+            {
+                "userID": "fa1b87fe-0a6c-4613-90df-431315e4a754",
+                "firstName": "GenUser94",
+                "lastName": "Customer63",
+                "email": "customergen94@rebike.com",
+                "phoneNumber": "08002065470"
+            },
+            {
+                "userID": "bbb844c6-19c9-4356-9a0c-6660384862d7",
+                "firstName": "GenUser93",
+                "lastName": "Partner72",
+                "email": "partnergen93@rebike.com",
+                "phoneNumber": "08032429342"
+            },
+            {
+                "userID": "a9b829e6-a8ca-4106-b516-a43342193f04",
+                "firstName": "GenUser92",
+                "lastName": "Partner51",
+                "email": "partnergen92@rebike.com",
+                "phoneNumber": "08420944902"
+            },
+            {
+                "userID": "4b4774de-4b05-4e17-9bf2-f876f3a18397",
+                "firstName": "GenUser91",
+                "lastName": "Customer68",
+                "email": "customergen91@rebike.com",
+                "phoneNumber": "08870863728"
+            },
+            {
+                "userID": "4671d16f-7145-4799-8d06-489b308425ba",
+                "firstName": "GenUser90",
+                "lastName": "Customer67",
+                "email": "customergen90@rebike.com",
+                "phoneNumber": "08490929662"
+            },
+            {
+                "userID": "cd468b97-4d38-4bda-8bc0-a5d9cc826c03",
+                "firstName": "GenUser89",
                 "lastName": "Customer52",
-                "email": "customergen37@rebike.com",
-                "phoneNumber": "08937967315"
+                "email": "customergen89@rebike.com",
+                "phoneNumber": "08373522176"
             }
-        }
-    ]
+        ],
+        "page": 0,
+        "size": 10,
+        "totalElements": 101,
+        "totalPages": 11
+    }
 }
+
+PATCH http://localhost:5173/api/admin/users/6cb2f735-14a9-4c2e-b05c-2254533a7fb7/status 403 (Forbidden)
+dispatchXhrRequest @ axios.js?v=1a74b196:1651
+xhr @ axios.js?v=1a74b196:1531
+dispatchRequest @ axios.js?v=1a74b196:2006
+Promise.then
+_request @ axios.js?v=1a74b196:2209
+request @ axios.js?v=1a74b196:2118
+httpMethod @ axios.js?v=1a74b196:2256
+wrap @ axios.js?v=1a74b196:8
+handleToggleUserStatus @ UserManagement.jsx:73
+onClick @ UserManagement.jsx:153
+executeDispatch @ react-dom_client.js?v=1a74b196:11736
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+processDispatchQueue @ react-dom_client.js?v=1a74b196:11772
+(anonymous) @ react-dom_client.js?v=1a74b196:12182
+batchedUpdates$1 @ react-dom_client.js?v=1a74b196:2628
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=1a74b196:11877
+dispatchEvent @ react-dom_client.js?v=1a74b196:14792
+dispatchDiscreteEvent @ react-dom_client.js?v=1a74b196:14773
+<button>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+(anonymous) @ UserManagement.jsx:152
+renderUserTable @ UserManagement.jsx:127
+UserManagement @ UserManagement.jsx:202
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<UserManagement>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+App @ App.jsx:83
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+(anonymous) @ main.jsx:16Understand this error
+UserManagement.jsx:80 Gagal mengubah status pengguna: AxiosError {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}

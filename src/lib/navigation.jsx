@@ -31,11 +31,11 @@ export const formatRupiah = (amount) => {
 export const adminNavItems = {
     navigate: [
         { name: 'Dasbor', path: '/admin/dashboard', icon: LayoutDashboard },
-        { name: 'Manajemen User', path: '/admin/pengguna', icon: Users },
+        { name: 'Manajemen Partner', path: '/admin/partners', icon: Users },
+        { name: 'Manajemen User', path: '/admin/users', icon: User },
         { name: 'Manajemen Transaksi', path: '/admin/transaksi', icon: Package },
         { name: 'Manajemen Lokasi Penjemputan', path: '/admin/pickup-points', icon: MapPin },
         { name: 'Keuangan', path: '/admin/keuangan', icon: Banknote },
-        { name: 'Report & Finance', path: '/admin/laporan', icon: FileText },
     ],
     account: [
       { name: "Verifikasi Mitra", path: "/admin/mitra-verification", icon: ShieldCheck },

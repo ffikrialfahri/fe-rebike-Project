@@ -103,7 +103,7 @@ export default function UserManajement() {
 
       <Card className="min-h-[400px] p-4"> 
         <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b-2 border-gray-200 pb-2">
-          Daftar Mitra
+          Daftar Partner
         </h3>
         {loading ? (
           <p>Memuat data mitra...</p>

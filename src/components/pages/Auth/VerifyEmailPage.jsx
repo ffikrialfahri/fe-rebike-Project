@@ -1,115 +1,26 @@
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate, Link, Navigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
-import {
-  verifyEmail,
-  resendOtp,
-  resetAuthStatus,
-} from "@/store/auth/authSlice";
-import CountdownTimer from "@/components/ui/CountdownTimer";
-import { MailCheck } from 'lucide-react';
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
+import VerifyEmailModal from "../../modals/VerifyEmailModal";
 
 export default function VerifyEmailPage() {
-  const [otp, setOtp] = useState("");
-  const [isOtpExpired, setIsOtpExpired] = useState(false); // State baru
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const email = location.state?.email;
-  const { mutationLoading, error, verifySuccess } = useSelector(
-    (state) => state.auth
-  );
-
-  useEffect(() => {
-    if (verifySuccess) {
-      toast.success("Verifikasi berhasil! Silakan login.");
-      dispatch(resetAuthStatus());
-      navigate("/");
-    }
-  }, [verifySuccess, navigate, dispatch]);
 
   if (!email) {
     return <Navigate to="/register" replace />;
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (otp.length !== 6) {
-      toast.error("OTP harus 6 digit.");
-      return;
-    }
-    dispatch(verifyEmail({ email, otp }));
-  };
-
-  const handleResend = () => {
-    dispatch(resendOtp({ email }));
-    setOtp(""); // Kosongkan OTP setelah resend
-    setIsOtpExpired(false); // Reset status expired
-    toast.success("OTP baru telah dikirim ke email Anda.");
+  const handleCloseModal = () => {
+    navigate("/login"); // Redirect to login page after modal is closed
   };
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-panel-bg">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <div className="flex justify-center items-center gap-3 mb-2">
-          <MailCheck className="w-8 h-8 text-teal-600" />
-          <h2 className="text-3xl font-extrabold text-center text-teal-600">
-            Verifikasi Email Anda
-          </h2>
-        </div>
-        <p className="text-center text-slate-500 mb-6">
-          Kami telah mengirimkan kode OTP 6 digit ke <strong>{email}</strong>.
-        </p>
-        {!isOtpExpired ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="otp"
-                className="block text-sm font-medium text-slate-700 mb-1"
-              >
-                Kode OTP
-              </label>
-              <input
-                type="text"
-                id="otp"
-                maxLength="6"
-                className="w-full px-4 py-2 text-center text-2xl tracking-[.5em] border border-slate-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required
-              />
-            </div>
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-            <button
-              type="submit"
-              disabled={mutationLoading}
-              className="w-full bg-teal-600 text-white py-2.5 rounded-lg hover:bg-teal-700 transition font-semibold disabled:bg-slate-400"
-            >
-              {mutationLoading ? "Memverifikasi..." : "Verifikasi"}
-            </button>
-          </form>
-        ) : (
-          <div className="text-center space-y-4">
-            <p className="text-red-500">Waktu OTP telah habis.</p>
-            <button
-              type="button"
-              onClick={handleResend}
-              disabled={mutationLoading}
-              className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-semibold disabled:bg-slate-400"
-            >
-              {mutationLoading ? "Mengirim Ulang..." : "Kirim Ulang OTP"}
-            </button>
-          </div>
-        )}
-        {!isOtpExpired && (
-          <CountdownTimer
-            initialSeconds={60}
-            onTimeout={() => setIsOtpExpired(true)}
-            onResend={handleResend}
-          />
-        )}
-      </div>
+      <VerifyEmailModal
+        isOpen={true} // Always open when this page is rendered
+        onClose={handleCloseModal}
+        email={email}
+      />
     </section>
   );
 }

@@ -219,7 +219,7 @@ export const updateUserProfile = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
             const formData = new FormData();
-            formData.append('request', new Blob([JSON.stringify(userData.profile)], { type: 'application/json' }));
+            formData.append('request', new Blob([JSON.stringify({ firstName: userData.firstName, lastName: userData.lastName, username: userData.username, phoneNumber: userData.phoneNumber })], { type: 'application/json' }));
             if (userData.file) {
                 formData.append('file', userData.file);
             }

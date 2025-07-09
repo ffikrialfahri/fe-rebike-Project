@@ -5,8 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateUserProfile } from '../../store/admin/adminSlice';
 import toast from 'react-hot-toast';
 import { getUsagePolicies, createUsagePolicy, updateUsagePolicy, deleteUsagePolicy } from '../../api/usagePoliciesApi';
+import { registerAdmin } from '../../api/adminApi';
 import UsagePolicyFormModal from '../../components/modals/UsagePolicyFormModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import RegisterAdminModal from '../../components/modals/RegisterAdminModal';
 
 export default function ProfileSetting() {
   const dispatch = useDispatch();
@@ -25,6 +27,7 @@ export default function ProfileSetting() {
   const [editingPolicy, setEditingPolicy] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [policyToDelete, setPolicyToDelete] = useState(null);
+  const [isRegisterAdminModalOpen, setIsRegisterAdminModalOpen] = useState(false);
 
   const refreshUsagePolicies = async () => {
     try {
@@ -112,6 +115,16 @@ export default function ProfileSetting() {
       refreshUsagePolicies();
     } catch (err) {
       toast.error(`Gagal menghapus kebijakan. Kebijakan ini mungkin sedang digunakan atau memiliki keterkaitan dengan data lain.`);
+    }
+  };
+
+  const handleRegisterAdmin = async (adminData) => {
+    try {
+      await registerAdmin(adminData);
+      toast.success('Admin baru berhasil didaftarkan!');
+      setIsRegisterAdminModalOpen(false);
+    } catch (err) {
+      toast.error(`Gagal mendaftarkan admin baru: ${err}`);
     }
   };
 
@@ -273,6 +286,26 @@ export default function ProfileSetting() {
         message="Apakah Anda yakin ingin menghapus kebijakan ini? Tindakan ini tidak dapat dibatalkan."
         confirmText="Hapus"
         cancelText="Batal"
+      />
+
+      {/* Manajemen Admin */}
+      <Card className="p-6 bg-white shadow-md rounded-lg mt-6">
+        <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-4">
+          <h2 className="text-xl font-semibold text-slate-700">Manajemen Admin</h2>
+          <button
+            onClick={() => setIsRegisterAdminModalOpen(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
+          >
+            Tambah Admin Baru
+          </button>
+        </div>
+        <p className="text-gray-600 mb-4">Gunakan bagian ini untuk mendaftarkan akun administrator baru ke sistem.</p>
+      </Card>
+
+      <RegisterAdminModal
+        isOpen={isRegisterAdminModalOpen}
+        onClose={() => setIsRegisterAdminModalOpen(false)}
+        onRegister={handleRegisterAdmin}
       />
     </>
   );

@@ -11,7 +11,7 @@ export default function RecentBookingsTable({
   limit = 5,
   emptyMessage = "Belum ada aktivitas booking terbaru.",
 }) {
-  const transactionsArray = transactions?.data || []; // Extract the actual array
+  const transactionsArray = transactions?.data || transactions || []; // Handles both object and array structures
 
   if (loading) {
     return (

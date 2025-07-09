@@ -9,9 +9,11 @@ import { registerAdmin } from '../../api/adminApi';
 import UsagePolicyFormModal from '../../components/modals/UsagePolicyFormModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RegisterAdminModal from '../../components/modals/RegisterAdminModal';
+import { useNavigate } from "react-router-dom"; // Add this import
 
 export default function ProfileSetting() {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Get the navigate function
   const { user } = useSelector((state) => state.auth); // Asumsi data user ada di state.auth.user
   const { loading, error } = useSelector((state) => state.admin); // Untuk loading/error dari thunk admin
 
@@ -120,9 +122,18 @@ export default function ProfileSetting() {
 
   const handleRegisterAdmin = async (adminData) => {
     try {
-      await registerAdmin(adminData);
-      toast.success('Admin baru berhasil didaftarkan!');
+      const completeAdminData = {
+        ...adminData,
+        locationName: "",
+        bankAccountName: "",
+        bankAccountNumber: "",
+        bankName: "",
+      };
+      await registerAdmin(completeAdminData);
+      toast.success('Admin baru berhasil didaftarkan! Silakan verifikasi email.'); // Update toast message
       setIsRegisterAdminModalOpen(false);
+      // Navigate to verify-email page with userType
+      navigate("/verify-email", { state: { email: adminData.email, userType: 'admin' } });
     } catch (err) {
       toast.error(`Gagal mendaftarkan admin baru: ${err}`);
     }

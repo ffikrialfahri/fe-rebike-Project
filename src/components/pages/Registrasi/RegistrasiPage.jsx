@@ -92,7 +92,7 @@ export default function RegisterPage() {
       registerUser({
         userData: completeUserData,
         onComplete: () => {
-          navigate("/verify-email", { state: { email: completeUserData.email } });
+          navigate("/verify-email", { state: { email: completeUserData.email, userType: 'partner' } });
           reset();
         },
       })

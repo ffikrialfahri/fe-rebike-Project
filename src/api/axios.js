@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://rattler-secure-flounder.ngrok-free.app/api';
+const API_BASE_URL = '/api';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

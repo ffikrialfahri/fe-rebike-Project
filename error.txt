@@ -1,5 +1,81 @@
-Access to XMLHttpRequest at 'https://rattler-secure-flounder.ngrok-free.app/api/admin/admins' from origin 'http://localhost:5173' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.Understand this error
-adminApi.js:7 
-            
-            
-           POST https://rattler-secure-flounder.ngrok-free.app/api/admin/admins net::ERR_FAILED
+client:495 [vite] connecting...
+client:618 [vite] connected.
+react-dom_client.js?v=1a74b196:17987 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+Transaction.jsx:114 Uncaught TypeError: transactions.map is not a function
+    at Transaction (Transaction.jsx:114:31)
+    at react-stack-bottom-frame (react-dom_client.js?v=1a74b196:17424:20)
+    at renderWithHooks (react-dom_client.js?v=1a74b196:4206:24)
+    at updateFunctionComponent (react-dom_client.js?v=1a74b196:6619:21)
+    at beginWork (react-dom_client.js?v=1a74b196:7654:20)
+    at runWithFiberInDEV (react-dom_client.js?v=1a74b196:1485:72)
+    at performUnitOfWork (react-dom_client.js?v=1a74b196:10868:98)
+    at workLoopSync (react-dom_client.js?v=1a74b196:10728:43)
+    at renderRootSync (react-dom_client.js?v=1a74b196:10711:13)
+    at performWorkOnRoot (react-dom_client.js?v=1a74b196:10359:46)
+Transaction @ Transaction.jsx:114
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooks @ react-dom_client.js?v=1a74b196:4206
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10359
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<Transaction>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+App @ App.jsx:64
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+(anonymous) @ main.jsx:16
+App.jsx:64 An error occurred in the <Transaction> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+defaultOnUncaughtError @ react-dom_client.js?v=1a74b196:6229
+logUncaughtError @ react-dom_client.js?v=1a74b196:6283
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+lane.callback @ react-dom_client.js?v=1a74b196:6311
+callCallback @ react-dom_client.js?v=1a74b196:4097
+commitCallbacks @ react-dom_client.js?v=1a74b196:4109
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1487
+commitLayoutEffectOnFiber @ react-dom_client.js?v=1a74b196:9029
+flushLayoutEffects @ react-dom_client.js?v=1a74b196:11174
+commitRoot @ react-dom_client.js?v=1a74b196:11080
+commitRootWhenReady @ react-dom_client.js?v=1a74b196:10512
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10457
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<Transaction>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+App @ App.jsx:64
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+(anonymous) @ main.jsx:16

@@ -5,19 +5,24 @@ export default function VerifyEmailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const email = location.state?.email;
+  const userType = location.state?.userType; // Get userType from state
 
   if (!email) {
     return <Navigate to="/register" replace />;
   }
 
   const handleCloseModal = () => {
-    navigate("/login"); // Redirect to login page after modal is closed
+    if (userType === 'admin') {
+      navigate("/admin/profil"); // Redirect admin to ProfileSetting
+    } else {
+      navigate("/"); // Redirect partner/mitra to home
+    }
   };
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-panel-bg">
       <VerifyEmailModal
-        isOpen={true} // Always open when this page is rendered
+        isOpen={true}
         onClose={handleCloseModal}
         email={email}
       />

@@ -20,7 +20,7 @@ export const fetchPartners = createAsyncThunk(
     async ({ name = '' }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/admin/partners?name=${name}`);
-            return response.data.data;
+            return response.data.data.data;
         } catch (error) {
             console.error("Error fetching partners:", error);
             const errorMessage = error.response?.data?.message || 'Failed to fetch partners';

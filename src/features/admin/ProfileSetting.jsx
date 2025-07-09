@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Card from "../../components/ui/Card";
-import { UserCog } from 'lucide-react';
+import { UserCog, ClipboardList } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUserProfile, changeUserPassword } from '../../store/admin/adminSlice';
+import { updateUserProfile } from '../../store/admin/adminSlice';
 import toast from 'react-hot-toast';
+import { getUsagePolicies, createUsagePolicy, updateUsagePolicy, deleteUsagePolicy } from '../../api/usagePoliciesApi';
+import UsagePolicyFormModal from '../../components/modals/UsagePolicyFormModal';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 export default function ProfileSetting() {
   const dispatch = useDispatch();
@@ -17,11 +20,20 @@ export default function ProfileSetting() {
     phoneNumber: '',
     file: null,
   });
-  const [passwordData, setPasswordData] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmNewPassword: "",
-  });
+  const [usagePolicies, setUsagePolicies] = useState([]);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [editingPolicy, setEditingPolicy] = useState(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [policyToDelete, setPolicyToDelete] = useState(null);
+
+  const refreshUsagePolicies = async () => {
+    try {
+      const policies = await getUsagePolicies();
+      setUsagePolicies(policies);
+    } catch (err) {
+      toast.error(`Gagal memuat kebijakan penggunaan: ${err}`);
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -33,6 +45,7 @@ export default function ProfileSetting() {
         file: null,
       });
     }
+    refreshUsagePolicies();
   }, [user]);
 
   const handleProfileChange = (e) => {
@@ -50,14 +63,6 @@ export default function ProfileSetting() {
     }
   };
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
@@ -68,22 +73,45 @@ export default function ProfileSetting() {
     }
   };
 
-  const handleUpdatePassword = async (e) => {
-    e.preventDefault();
-    if (passwordData.newPassword !== passwordData.confirmNewPassword) {
-      toast.error("Konfirmasi password baru tidak cocok!");
-      return;
-    }
+  const handleAddPolicyClick = () => {
+    setEditingPolicy(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleEditPolicyClick = (policy) => {
+    setEditingPolicy(policy);
+    setIsFormModalOpen(true);
+  };
+
+  const handleSavePolicy = async (policyData) => {
     try {
-      await dispatch(changeUserPassword(passwordData)).unwrap();
-      toast.success('Password berhasil diperbarui!');
-      setPasswordData({
-        oldPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
-      });
+      if (editingPolicy) {
+        await updateUsagePolicy(editingPolicy.id, policyData);
+        toast.success('Kebijakan berhasil diperbarui!');
+      } else {
+        await createUsagePolicy(policyData);
+        toast.success('Kebijakan berhasil ditambahkan!');
+      }
+      setIsFormModalOpen(false);
+      refreshUsagePolicies();
     } catch (err) {
-      toast.error(`Gagal memperbarui password: ${err.message || err}`);
+      toast.error(`Gagal menyimpan kebijakan: ${err}`);
+    }
+  };
+
+  const handleDeletePolicyClick = (policyId) => {
+    setPolicyToDelete(policyId);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteUsagePolicy(policyToDelete);
+      toast.success('Kebijakan berhasil dihapus!');
+      setIsConfirmModalOpen(false);
+      refreshUsagePolicies();
+    } catch (err) {
+      toast.error(`Gagal menghapus kebijakan. Kebijakan ini mungkin sedang digunakan atau memiliki keterkaitan dengan data lain.`);
     }
   };
 
@@ -159,51 +187,93 @@ export default function ProfileSetting() {
           </button>
         </form>
       </Card>
-      {/* Ubah Password Admin */}
-      <Card className="p-6 bg-white shadow-md rounded-lg">
-        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Ubah Password</h3>
-        <form onSubmit={handleUpdatePassword} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password Saat Ini</label>
-            <input
-              type="password"
-              name="oldPassword"
-              value={passwordData.oldPassword}
-              onChange={handlePasswordChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password Baru</label>
-            <input
-              type="password"
-              name="newPassword"
-              value={passwordData.newPassword}
-              onChange={handlePasswordChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Konfirmasi Password Baru</label>
-            <input
-              type="password"
-              name="confirmNewPassword"
-              value={passwordData.confirmNewPassword}
-              onChange={handlePasswordChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300"
-          >
-            Perbarui Password
-          </button>
-        </form>
+
+      {/* Kebijakan Penggunaan */}
+      <Card className="p-6 bg-white shadow-md rounded-lg mt-6">
+        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Kebijakan Penggunaan</h3>
+        <button
+          onClick={handleAddPolicyClick}
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300 mb-4"
+        >
+          Tambah Kebijakan Baru
+        </button>
+        <div className="overflow-x-auto">
+          <table className="min-w-full leading-normal">
+            <thead>
+              <tr>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Nama Kebijakan
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Deskripsi
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Diizinkan
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Aksi
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {usagePolicies.length > 0 ? (
+                usagePolicies.map((policy) => (
+                  <tr key={policy.id}>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <p className="text-gray-900 whitespace-no-wrap">{policy.policyName}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <p className="text-gray-900 whitespace-no-wrap">{policy.description}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <p className="text-gray-900 whitespace-no-wrap">{policy.permitted ? 'Ya' : 'Tidak'}</p>
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <button
+                        onClick={() => handleEditPolicyClick(policy)}
+                        className="text-indigo-600 hover:text-indigo-900 mr-3"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeletePolicyClick(policy.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Hapus
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center py-10">
+                      <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
+                      <p>Tidak ada kebijakan penggunaan yang ditemukan.</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </Card>
+
+      <UsagePolicyFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        onSave={handleSavePolicy}
+        policy={editingPolicy}
+      />
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Apakah Anda yakin ingin menghapus kebijakan ini? Tindakan ini tidak dapat dibatalkan."
+        confirmText="Hapus"
+        cancelText="Batal"
+      />
     </>
   );
 }

@@ -8,7 +8,7 @@ export default function Transaction() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("ALL"); // Mengubah activeTab menjadi selectedStatus
+  const [selectedStatus, setSelectedStatus] = useState("ALL");
 
   const statusOptions = [
     { name: "Semua", value: "ALL" },
@@ -22,7 +22,7 @@ export default function Transaction() {
     setLoading(true);
     try {
       const response = await axios.get("/partner/transactions");
-      let fetchedTransactions = response.data?.data || [];
+      let fetchedTransactions = Array.isArray(response.data.data?.data) ? response.data.data.data : [];
 
       if (selectedStatus !== "ALL") {
         fetchedTransactions = fetchedTransactions.filter(
@@ -40,18 +40,6 @@ export default function Transaction() {
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
-
-  const handleUpdateStatus = async (transactionId, newStatus) => {
-    try {
-      await axios.post(`/partner/transactions/${transactionId}/confirm`, {
-        status: newStatus,
-      });
-      alert(`Status transaksi ${transactionId} berhasil diperbarui menjadi ${newStatus}`);
-      fetchTransactions();
-    } catch (err) {
-      alert("Gagal memperbarui status transaksi: " + err.message);
-    }
-  };
 
   if (loading) {
     return <p>Memuat data transaksi...</p>;
@@ -121,29 +109,14 @@ export default function Transaction() {
                     <td className="py-2 px-4 border-b">{formatRupiah(transaction.totalCost)}</td>
                     <td className="py-2 px-4 border-b">{transaction.bookingStatus}</td>
                     <td className="py-2 px-4 border-b">
-                      {transaction.bookingStatus === "PENDING" && (
-                        <button
-                          className="bg-green-500 text-white px-3 py-1 rounded-md text-sm mr-2"
-                          onClick={() => handleUpdateStatus(transaction.transactionID, "CONFIRMED")}
-                        >
-                          Konfirmasi
-                        </button>
-                      )}
-                      {transaction.bookingStatus === "CONFIRMED" && (
-                        <button
-                          className="bg-purple-500 text-white px-3 py-1 rounded-md text-sm mr-2"
-                          onClick={() => handleUpdateStatus(transaction.transactionID, "COMPLETED")}
-                        >
-                          Selesai
-                        </button>
-                      )}
-                      {(transaction.bookingStatus === "PENDING" || transaction.bookingStatus === "CONFIRMED") && (
-                        <button
-                          className="bg-red-500 text-white px-3 py-1 rounded-md text-sm"
-                          onClick={() => handleUpdateStatus(transaction.transactionID, "CANCELLED")}
-                        >
-                          Batalkan
-                        </button>
+                      {transaction.bookingStatus === "PENDING" ? (
+                        <span className="bg-yellow-500 text-white px-3 py-1 rounded-md text-sm whitespace-nowrap">
+                          Dalam Antrian
+                        </span>
+                      ) : (
+                        <span className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm whitespace-nowrap">
+                          {transaction.bookingStatus}
+                        </span>
                       )}
                     </td>
                   </tr>

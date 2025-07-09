@@ -101,7 +101,7 @@ export default function MitraDashboard() {
           <div className="flex-grow grid grid-cols-2 gap-6 items-center text-center ">
             <StatCard
               title="Order"
-              value={transactions.length}
+              value={Array.isArray(transactions) ? transactions.length : 0}
               valueColor="text-blue-600"
               contentAlign="left"
               valueAlign="center"

@@ -1,6 +1,7 @@
 import React from 'react';
 import Card from "../../components/ui/Card";
 import { Landmark, History, CircleDollarSign } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function Billing() {
   const currentBalance = "Rp 750.000";

@@ -1,13 +1,9 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../../store/admin/adminSlice';
-import { Users, Lightbulb, UserCheck, UserX } from 'lucide-react';
-import axiosInstance from '../../api/axios';
+import { Users, Lightbulb } from 'lucide-react';
 import ResourceTable from '../../components/shared/ResourceTable';
 import Card from "../../components/ui/Card";
 
 export default function UserManagement() {
-  const dispatch = useDispatch();
 
   // Data dummy untuk rekomendasi bisnis, bisa diganti dengan data dari API jika ada
   const businessRecommendations = [
@@ -23,44 +19,11 @@ export default function UserManagement() {
     },
   ];
 
-  const handleToggleUserStatus = async (userId, isEnabled) => {
-    try {
-      await axiosInstance.patch(`/admin/users/${userId}/status`, { isEnabled: !isEnabled });
-      dispatch(fetchUsers({})); // Refresh data setelah perubahan status
-    } catch (err) {
-      console.error('Gagal mengubah status pengguna:', err);
-      // Tampilkan notifikasi error jika perlu
-    }
-  };
-
   const columns = [
     { header: 'ID', accessor: (item) => item.userID },
     { header: 'Nama', accessor: (item) => `${item.firstName} ${item.lastName}` },
     { header: 'Email', accessor: (item) => item.email },
     { header: 'Nomor Telepon', accessor: (item) => item.phoneNumber },
-    {
-      header: 'Status',
-      cell: (item) => (
-        <span className={`relative inline-block px-3 py-1 font-semibold leading-tight ${item.enabled ? 'text-green-900' : 'text-red-900'}`}>
-          <span aria-hidden className={`absolute inset-0 ${item.enabled ? 'bg-green-200' : 'bg-red-200'} opacity-50 rounded-full`}></span>
-          <span className="relative">{item.enabled ? 'Aktif' : 'Nonaktif'}</span>
-        </span>
-      ),
-      accessor: (item) => item.enabled,
-    },
-    {
-      header: 'Aksi',
-      cell: (item) => (
-        <button 
-          onClick={() => handleToggleUserStatus(item.userID, item.enabled)}
-          className={`p-2 rounded-full hover:bg-gray-200 ${item.enabled ? 'text-red-600' : 'text-green-600'}`}
-          title={item.enabled ? 'Nonaktifkan Pengguna' : 'Aktifkan Pengguna'}
-        >
-          {item.enabled ? <UserX size={20} /> : <UserCheck size={20} />}
-        </button>
-      ),
-      accessor: (item) => item.userID, // Dummy accessor for actions column
-    },
   ];
 
   return (

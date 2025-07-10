@@ -114,8 +114,7 @@ const ResourceTable = ({
         const statusColumn = columns.find(c => c.isStatus);
         if (statusColumn && statusColumn.accessor) {
           const status = statusColumn.accessor(item);
-          const itemStatus = typeof status === 'function' ? status(item) : item[status];
-          return itemStatus === selectedStatus;
+          return status === selectedStatus;
         }
         return false;
       });

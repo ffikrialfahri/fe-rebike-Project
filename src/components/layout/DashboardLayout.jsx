@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/auth/authSlice";
-import { LogOut, MoreHorizontal, Bell, Menu } from "lucide-react";
+import { LogOut, MoreHorizontal, Bell, Menu, ChevronRight } from "lucide-react";
 import Logo3 from "@/assets/logo3.png";
 import { useState, useEffect } from "react";
 
@@ -125,7 +125,7 @@ const Sidebar = ({ navItems, isCollapsed }) => {
   );
 };
 
-const PanelHeader = ({ toggleSidebar }) => {
+const PanelHeader = ({ toggleSidebar, isCollapsed }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -138,9 +138,11 @@ const PanelHeader = ({ toggleSidebar }) => {
     <header className="bg-white p-4 border-b border-slate-200 flex justify-between items-center shadow-sm">
       <button
         onClick={toggleSidebar}
-        className="text-slate-600 hover:text-slate-800"
+        className={`text-slate-600 hover:text-slate-800 transition-transform duration-300 ease-in-out ${
+          isCollapsed ? "translate-x-2" : ""
+        }`}
       >
-        <Menu size={24} />
+                {isCollapsed ? <ChevronRight size={24} /> : <Menu size={24} />}
       </button>
       <button
         onClick={handleLogout}
@@ -179,7 +181,7 @@ export default function DashboardLayout({ navItems }) {
     <div className="flex h-screen bg-white">
       <Sidebar navItems={navItems} isCollapsed={isCollapsed} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <PanelHeader toggleSidebar={toggleSidebar} />
+        <PanelHeader toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
         <main className="flex-1 p-6 overflow-y-auto">
           <Outlet />
         </main>

@@ -4,7 +4,7 @@ import StatCard from "../../components/ui/StatCard";
 import ChartComponent from "../../components/ui/ChartComponent";
 import axios from "../../api/axios";
 import { formatRupiah } from "../../lib/navigation";
-import { LayoutDashboard } from "lucide-react";
+import { Bike, Package, LayoutDashboard } from "lucide-react";
 import RecentBookingsTable from "../../components/shared/RecentBookingsTable";
 
 export default function MitraDashboard() {
@@ -105,7 +105,7 @@ export default function MitraDashboard() {
               valueColor="text-blue-600"
               contentAlign="left"
               valueAlign="center"
-              iconType="order"
+              icon={Package}
             />
             <StatCard
               title="Product"
@@ -113,7 +113,7 @@ export default function MitraDashboard() {
               valueColor="text-green-600"
               contentAlign="left"
               valueAlign="center"
-              iconType="product"
+              icon={Bike}
             />
           </div>
           <div className="flex-grow">
@@ -123,6 +123,7 @@ export default function MitraDashboard() {
               valueColor="text-purple-600"
               className="h-full"
               contentAlign="left"
+              icon={Package}
             />
           </div>
         </div>

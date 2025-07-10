@@ -154,7 +154,10 @@ const mitraSlice = createSlice({
             })
             .addCase(fetchTransactions.fulfilled, (state, action) => {
                 state.loading = false;
-                state.transactions = action.payload;
+                // Ensure transactions is always an array, handling nested 'data' property
+                state.transactions = Array.isArray(action.payload?.data) 
+                    ? action.payload.data 
+                    : [];
             })
             .addCase(fetchTransactions.rejected, (state, action) => {
                 state.loading = false;

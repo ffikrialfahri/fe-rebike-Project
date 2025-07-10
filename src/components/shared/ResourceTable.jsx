@@ -1,9 +1,7 @@
-// ResourceTable.jsx
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { format } from 'date-fns';
-import { ClipboardList, Search } from 'lucide-react';
+import { ClipboardList, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import Card from '../ui/Card';
 
 const ResourceTable = ({
@@ -78,6 +76,39 @@ const ResourceTable = ({
   const handlePrevPage = () => {
     setCurrentPage((prev) => prev - 1);
   };
+  
+  const handlePageClick = (page) => {
+    setCurrentPage(page - 1);
+  }
+
+  const generatePageNumbers = () => {
+    const totalPages = currentPagination.totalPages;
+    const currentPageNum = currentPagination.page + 1;
+    const pageNumbers = [];
+    const siblingCount = 1;
+    
+    pageNumbers.push(1);
+    
+    if (currentPageNum > siblingCount + 2) {
+      pageNumbers.push('...');
+    }
+
+    const starPage = Math.max(2, currentPageNum - siblingCount);
+    const endPage = Math.min(totalPages - 1, currentPageNum + siblingCount);
+    for (let i = starPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    if (currentPageNum < totalPages - siblingCount - 1) {
+      pageNumbers.push('...');
+    }
+
+    if (totalPages > 1) {
+      pageNumbers.push(totalPages);
+    }
+
+    return pageNumbers;
+  }
 
   const filteredData = React.useMemo(() => {
     let result = rawData || [];
@@ -166,7 +197,6 @@ const ResourceTable = ({
         </div>
       </div>
 
-      {/* ... sisa kode tidak ada perubahan ... */}
       <div className="overflow-x-auto">
         <table className="min-w-full leading-normal">
           <thead>
@@ -215,21 +245,54 @@ const ResourceTable = ({
       </div>
 
       {currentPagination && currentPagination.totalPages > 1 && !clientSidePagination && (
-        <div className="flex justify-end mt-4 space-x-2">
-          <button
-            onClick={handlePrevPage}
-            disabled={currentPagination.page === 0}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNextPage}
-            disabled={currentPagination.page + 1 >= currentPagination.totalPages}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
+        <div className="flex justify-center mt-6">
+          <nav
+            className="flex items-center bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden"
+            aria-label="Pagination"
+            >
+            <button
+                onClick={handlePrevPage}
+                disabled={currentPagination.page === 0}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+              <ChevronLeft className="w-5 h-5" />
+              <span>Previous</span>
+            </button>
+            {generatePageNumbers().map((page, index) => (
+              <div key={index} className="flex items-center">
+                <span className="h-full border-l border-gray-200"></span>
+                {page === '...' ? (
+                  <span className="px-4 py-2 text-sm font-medium text-gray-700">...</span>
+                ) : (
+                  <button
+                  onClick={() => handlePageClick(page)}
+                  className={`px-4 py-2 text-sm font-medium
+                      ${currentPagination.page + 1 === page
+                        ? 'border-t-2 border-b-2 border-indigo-500 text-indigo-600 font-bold bg-indigo-50'
+                        : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      arial-current={currentPagination.page + 1 === page ? 'page' : undefined}
+                      >
+                    {page}
+                  </button>
+                )}
+              </div>
+            ))}
+
+            <div className='flex items-center'>
+              <span className='h-full border-l border-gray-200'></span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPagination.page + 1 >= currentPagination.totalPages}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span>Next</span>
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          
+          </nav>
+          
         </div>
       )}
     </Card>

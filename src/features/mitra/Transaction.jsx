@@ -68,7 +68,7 @@ export default function Transaction() {
         columns={columns}
         enableStatusFilter={true}
         statusOptions={statusOptions}
-        initialStatus="ALL" // The original code used "ALL"
+        initialStatus="Semua" // Changed from "ALL" to "Semua" to match ResourceTable's default filter bypass
         emptyMessage="Tidak ada transaksi yang ditemukan untuk status ini."
       />
     </>

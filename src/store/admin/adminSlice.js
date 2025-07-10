@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 const initialState = {
     partners: [],
     transactions: [],
+    users: [],
     dashboardSummary: null,
     payouts: [],
     platformFee: null,
@@ -13,14 +14,33 @@ const initialState = {
     pickupPoints: [],
     loading: false,
     error: null,
+    pagination: {
+        page: 0,
+        size: 20,
+        totalElements: 0,
+        totalPages: 0,
+    },
 };
 
 export const fetchPartners = createAsyncThunk(
     'admin/fetchPartners',
-    async ({ name = '' }, { rejectWithValue }) => {
+    async ({ id = '', page = 0, size = 20 }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/admin/partners?name=${name}`);
-            return response.data.data.data;
+            let url = '/admin/partners';
+            if (id) {
+                url = `/admin/partners/${id}`;
+            } else {
+                url = `/admin/partners?page=${page}&size=${size}`;
+            }
+            const response = await axiosInstance.get(url);
+            
+            if (id) {
+                // If searching by ID, the response is a single object, wrap it in an array
+                return { data: [response.data.data], page: 0, size: 1, totalElements: 1, totalPages: 1 };
+            } else {
+                // If fetching all partners, the response is an array within data.data
+                return response.data.data;
+            }
         } catch (error) {
             console.error("Error fetching partners:", error);
             const errorMessage = error.response?.data?.message || 'Failed to fetch partners';
@@ -30,11 +50,35 @@ export const fetchPartners = createAsyncThunk(
     }
 );
 
+export const fetchUsers = createAsyncThunk(
+    'admin/fetchUsers',
+    async ({ id = '', page = 0, size = 20 }, { rejectWithValue }) => {
+        try {
+            let url = '/admin/users';
+            if (id) {
+                url = `/admin/users/${id}`;
+            }
+            const response = await axiosInstance.get(`${url}?page=${page}&size=${size}`);
+            
+            if (id) {
+                return { data: [response.data.data], page: 0, size: 1, totalElements: 1, totalPages: 1 };
+            } else {
+                return response.data.data;
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            const errorMessage = error.response?.data?.message || 'Failed to fetch users';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
 export const fetchTransactions = createAsyncThunk(
     'admin/fetchTransactions',
-    async (_, { rejectWithValue }) => {
+    async ({ page = 0, size = 20 }, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get('/admin/transactions');
+            const response = await axiosInstance.get(`/admin/transactions?page=${page}&size=${size}`);
             return response.data.data;
         } catch (error) {
             console.error("Error fetching transactions:", error);
@@ -155,7 +199,7 @@ export const fetchPickupPoints = createAsyncThunk(
     'admin/fetchPickupPoints',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get('/admin/pickup-points');
+            const response = await axiosInstance.get('/public/pickup-points');
             return response.data.data;
         } catch (error) {
             console.error("Error fetching pickup points:", error);
@@ -284,9 +328,33 @@ const adminSlice = createSlice({
             })
             .addCase(fetchPartners.fulfilled, (state, action) => {
                 state.loading = false;
-                state.partners = action.payload;
+                state.partners = action.payload.data;
+                state.pagination = {
+                    page: action.payload.page,
+                    size: action.payload.size,
+                    totalElements: action.payload.totalElements,
+                    totalPages: action.payload.totalPages,
+                };
             })
             .addCase(fetchPartners.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchUsers.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchUsers.fulfilled, (state, action) => {
+                state.loading = false;
+                state.users = action.payload.data;
+                state.pagination = {
+                    page: action.payload.page,
+                    size: action.payload.size,
+                    totalElements: action.payload.totalElements,
+                    totalPages: action.payload.totalPages,
+                };
+            })
+            .addCase(fetchUsers.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
@@ -296,7 +364,13 @@ const adminSlice = createSlice({
             })
             .addCase(fetchTransactions.fulfilled, (state, action) => {
                 state.loading = false;
-                state.transactions = action.payload;
+                state.transactions = action.payload.data;
+                state.pagination = {
+                    page: action.payload.page,
+                    size: action.payload.size,
+                    totalElements: action.payload.totalElements,
+                    totalPages: action.payload.totalPages,
+                };
             })
             .addCase(fetchTransactions.rejected, (state, action) => {
                 state.loading = false;

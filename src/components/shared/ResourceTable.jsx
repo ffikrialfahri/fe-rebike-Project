@@ -12,48 +12,63 @@ const ResourceTable = ({
   loadingSelector,
   errorSelector,
   columns,
-  staticData = null, // New prop for static data
   enableSearch = false,
   enableStatusFilter = false,
   statusOptions = [],
   initialStatus = 'Semua',
   searchPlaceholder = 'Cari...',
   emptyMessage = 'Tidak ada data ditemukan.',
+  clientSidePagination = false, // New prop
 }) => {
-  const isStatic = !!staticData;
-  const dispatch = !isStatic ? useDispatch() : null;
+  const dispatch = useDispatch();
 
-  // Conditionally use selectors or static data
-  const data = isStatic ? staticData : (useSelector(dataSelector) || []);
-  const loading = !isStatic && useSelector(loadingSelector);
-  const error = !isStatic ? useSelector(errorSelector) : null;
+  const rawData = useSelector(dataSelector) || [];
+  const loading = useSelector(loadingSelector);
+  const error = useSelector(errorSelector);
+  const serverPagination = useSelector((state) => state.admin.pagination);
 
+  const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState(initialStatus);
 
+  const itemsPerPage = 20; // Max data per page
+
   useEffect(() => {
-    if (!isStatic && fetchDataAction) {
-      dispatch(fetchDataAction());
+    if (fetchDataAction) {
+      if (clientSidePagination) {
+        dispatch(fetchDataAction());
+      } else {
+        dispatch(fetchDataAction({ page: currentPage, size: itemsPerPage }));
+      }
     }
-  }, [dispatch, fetchDataAction, isStatic]);
+  }, [dispatch, fetchDataAction, currentPage, clientSidePagination]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(0); // Reset page on search
   };
 
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
+    setCurrentPage(0); // Reset page on status filter
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => prev - 1);
   };
 
   const filteredData = React.useMemo(() => {
-    let result = data || [];
+    let result = rawData || [];
 
     if (enableStatusFilter && selectedStatus !== 'Semua') {
       result = result.filter(item => {
         const statusColumn = columns.find(c => c.isStatus);
         if (statusColumn && statusColumn.accessor) {
           const status = statusColumn.accessor(item);
-          // For static data, accessor might be a string key
           const itemStatus = typeof status === 'function' ? status(item) : item[status];
           return itemStatus === selectedStatus;
         }
@@ -70,8 +85,24 @@ const ResourceTable = ({
       );
     }
 
+    // Apply client-side pagination if enabled
+    if (clientSidePagination) {
+      const startIndex = currentPage * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return result.slice(startIndex, endIndex);
+    }
+
     return result;
-  }, [data, searchTerm, selectedStatus, columns, enableSearch, enableStatusFilter]);
+  }, [rawData, searchTerm, selectedStatus, columns, enableSearch, enableStatusFilter, clientSidePagination, currentPage]);
+
+  const currentPagination = clientSidePagination
+    ? {
+        page: currentPage,
+        size: itemsPerPage,
+        totalElements: (rawData || []).length,
+        totalPages: Math.ceil((rawData || []).length / itemsPerPage),
+      }
+    : serverPagination;
 
   return (
     <Card className="mb-6 p-6 bg-white shadow-md rounded-lg">
@@ -151,6 +182,25 @@ const ResourceTable = ({
           </tbody>
         </table>
       </div>
+
+      {currentPagination && currentPagination.totalPages > 1 && !clientSidePagination && (
+        <div className="flex justify-end mt-4 space-x-2">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPagination.page === 0}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPagination.page + 1 >= currentPagination.totalPages}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </Card>
   );
 };

@@ -1,92 +1,677 @@
-{
-    "message": "All partners retrieved successfully.",
-    "statusCode": 200,
-    "data": {
-        "data": [
-            {
-                "id": "93128b99-933c-4e12-8a4e-b5d5713b874e",
-                "name": "fikri fahri",
-                "email": "alfikrifahri2512@gmail.com",
-                "locationName": "",
-                "totalBikes": 0,
-                "verified": true
-            },
-            {
-                "id": "70f42814-948a-4072-aa99-45b81f5664a0",
-                "name": "fikri fahri",
-                "email": "fahrialfikri05@gmail.com",
-                "locationName": "",
-                "totalBikes": 0,
-                "verified": true
-            },
-            {
-                "id": "efa36961-8e44-4277-8014-4ced9bc217ee",
-                "name": "GenUser1 Partner0",
-                "email": "partnergen1@rebike.com",
-                "locationName": "Rental GenUser1 Partner0",
-                "totalBikes": 5,
-                "verified": true
-            },
-            {
-                "id": "4fec8ba7-0892-4f63-bb39-526aa5920df8",
-                "name": "GenUser11 Partner15",
-                "email": "partnergen11@rebike.com",
-                "locationName": "Rental GenUser11 Partner15",
-                "totalBikes": 2,
-                "verified": true
-            },
-            {
-                "id": "68e69785-26a9-4089-bca0-b26c0e90d8a6",
-                "name": "GenUser14 Partner24",
-                "email": "partnergen14@rebike.com",
-                "locationName": "Rental GenUser14 Partner24",
-                "totalBikes": 6,
-                "verified": true
-            },
-            {
-                "id": "47c66300-6a9d-4a10-95fa-51962c7b67f1",
-                "name": "GenUser16 Partner92",
-                "email": "partnergen16@rebike.com",
-                "locationName": "Rental GenUser16 Partner92",
-                "totalBikes": 2,
-                "verified": true
-            },
-            {
-                "id": "6e8b10ef-5cf1-47f5-ba63-26e82ba77e55",
-                "name": "GenUser17 Partner18",
-                "email": "partnergen17@rebike.com",
-                "locationName": "Rental GenUser17 Partner18",
-                "totalBikes": 2,
-                "verified": true
-            },
-            {
-                "id": "d4c0d388-0e2f-4d9e-9a56-62bbf8cc7f4a",
-                "name": "GenUser2 Partner2",
-                "email": "partnergen2@rebike.com",
-                "locationName": "Rental GenUser2 Partner2",
-                "totalBikes": 0,
-                "verified": true
-            },
-            {
-                "id": "9029689e-ddd8-4c9e-80e1-59f7d5d35c9a",
-                "name": "GenUser22 Partner71",
-                "email": "partnergen22@rebike.com",
-                "locationName": "Rental GenUser22 Partner71",
-                "totalBikes": 1,
-                "verified": true
-            },
-            {
-                "id": "c775f33e-05ae-47a0-901b-457878a45739",
-                "name": "GenUser23 Partner45",
-                "email": "partnergen23@rebike.com",
-                "locationName": "Rental GenUser23 Partner45",
-                "totalBikes": 1,
-                "verified": true
-            }
-        ],
-        "page": 0,
-        "size": 10,
-        "totalElements": 53,
-        "totalPages": 6
-    }
-}
+GET http://localhost:5173/api/admin/pickup-points 500 (Internal Server Error)
+dispatchXhrRequest @ axios.js?v=1a74b196:1651
+xhr @ axios.js?v=1a74b196:1531
+dispatchRequest @ axios.js?v=1a74b196:2006
+Promise.then
+_request @ axios.js?v=1a74b196:2209
+request @ axios.js?v=1a74b196:2118
+Axios.<computed> @ axios.js?v=1a74b196:2246
+wrap @ axios.js?v=1a74b196:8
+(anonymous) @ adminSlice.js:202
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2345
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2379
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1466
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1724
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1557
+dispatch @ page.bundle.js:6
+(anonymous) @ ResourceTable.jsx:39
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17478
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+commitHookEffectListMount @ react-dom_client.js?v=1a74b196:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=1a74b196:8518
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9887
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9899
+flushPassiveEffects @ react-dom_client.js?v=1a74b196:11302
+(anonymous) @ react-dom_client.js?v=1a74b196:11060
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<ResourceTable>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+PickupPointManagement @ PickupPointManagement.jsx:112
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<PickupPointManagement>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+App @ App.jsx:85
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+(anonymous) @ main.jsx:16Understand this error
+adminSlice.js:205 Error fetching pickup points: AxiosError {message: 'Request failed with status code 500', name: 'AxiosError', code: 'ERR_BAD_RESPONSE', config: {…}, request: XMLHttpRequest, …}
+(anonymous) @ adminSlice.js:205
+await in (anonymous)
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2345
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2379
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1466
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1724
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1557
+dispatch @ page.bundle.js:6
+(anonymous) @ ResourceTable.jsx:39
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17478
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+commitHookEffectListMount @ react-dom_client.js?v=1a74b196:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=1a74b196:8518
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9887
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9899
+flushPassiveEffects @ react-dom_client.js?v=1a74b196:11302
+(anonymous) @ react-dom_client.js?v=1a74b196:11060
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<ResourceTable>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+PickupPointManagement @ PickupPointManagement.jsx:112
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<PickupPointManagement>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+App @ App.jsx:85
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+(anonymous) @ main.jsx:16Understand this error
+adminSlice.js:202 
+            
+            
+           GET http://localhost:5173/api/admin/pickup-points 500 (Internal Server Error)
+dispatchXhrRequest @ axios.js?v=1a74b196:1651
+xhr @ axios.js?v=1a74b196:1531
+dispatchRequest @ axios.js?v=1a74b196:2006
+Promise.then
+_request @ axios.js?v=1a74b196:2209
+request @ axios.js?v=1a74b196:2118
+Axios.<computed> @ axios.js?v=1a74b196:2246
+wrap @ axios.js?v=1a74b196:8
+(anonymous) @ adminSlice.js:202
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2345
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2379
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1466
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1724
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1557
+dispatch @ page.bundle.js:6
+(anonymous) @ ResourceTable.jsx:39
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17478
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+commitHookEffectListMount @ react-dom_client.js?v=1a74b196:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=1a74b196:8518
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10016
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=1a74b196:11461
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11432
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11469
+flushPassiveEffects @ react-dom_client.js?v=1a74b196:11309
+(anonymous) @ react-dom_client.js?v=1a74b196:11060
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<ResourceTable>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+PickupPointManagement @ PickupPointManagement.jsx:112
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<PickupPointManagement>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+App @ App.jsx:85
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+(anonymous) @ main.jsx:16Understand this error
+adminSlice.js:205 Error fetching pickup points: AxiosError {message: 'Request failed with status code 500', name: 'AxiosError', code: 'ERR_BAD_RESPONSE', config: {…}, request: XMLHttpRequest, …}
+(anonymous) @ adminSlice.js:205
+await in (anonymous)
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2345
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2379
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1466
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1724
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1557
+dispatch @ page.bundle.js:6
+(anonymous) @ ResourceTable.jsx:39
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17478
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+commitHookEffectListMount @ react-dom_client.js?v=1a74b196:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=1a74b196:8518
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10016
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=1a74b196:11461
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11432
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11469
+flushPassiveEffects @ react-dom_client.js?v=1a74b196:11309
+(anonymous) @ react-dom_client.js?v=1a74b196:11060
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<ResourceTable>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+PickupPointManagement @ PickupPointManagement.jsx:112
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<PickupPointManagement>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+App @ App.jsx:85
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopSync @ react-dom_client.js?v=1a74b196:10728
+renderRootSync @ react-dom_client.js?v=1a74b196:10711
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+(anonymous) @ main.jsx:16Understand this error
+react-dom_client.js?v=1a74b196:11645 [Violation] 'loadend' handler took 151ms
+adminSlice.js:202 
+            
+            
+           GET http://localhost:5173/api/admin/pickup-points 500 (Internal Server Error)
+dispatchXhrRequest @ axios.js?v=1a74b196:1651
+xhr @ axios.js?v=1a74b196:1531
+dispatchRequest @ axios.js?v=1a74b196:2006
+Promise.then
+_request @ axios.js?v=1a74b196:2209
+request @ axios.js?v=1a74b196:2118
+Axios.<computed> @ axios.js?v=1a74b196:2246
+wrap @ axios.js?v=1a74b196:8
+(anonymous) @ adminSlice.js:202
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2345
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2379
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1466
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1724
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1557
+dispatch @ page.bundle.js:6
+(anonymous) @ ResourceTable.jsx:39
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17478
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+commitHookEffectListMount @ react-dom_client.js?v=1a74b196:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=1a74b196:8518
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9887
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9899
+flushPassiveEffects @ react-dom_client.js?v=1a74b196:11302
+(anonymous) @ react-dom_client.js?v=1a74b196:11060
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<ResourceTable>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+PickupPointManagement @ PickupPointManagement.jsx:112
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopConcurrentByScheduler @ react-dom_client.js?v=1a74b196:10864
+renderRootConcurrent @ react-dom_client.js?v=1a74b196:10844
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36Understand this error
+adminSlice.js:205 Error fetching pickup points: AxiosError {message: 'Request failed with status code 500', name: 'AxiosError', code: 'ERR_BAD_RESPONSE', config: {…}, request: XMLHttpRequest, …}
+(anonymous) @ adminSlice.js:205
+await in (anonymous)
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2345
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2379
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1466
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1724
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1557
+dispatch @ page.bundle.js:6
+(anonymous) @ ResourceTable.jsx:39
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17478
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+commitHookEffectListMount @ react-dom_client.js?v=1a74b196:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=1a74b196:8518
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9887
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=1a74b196:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=1a74b196:9899
+flushPassiveEffects @ react-dom_client.js?v=1a74b196:11302
+(anonymous) @ react-dom_client.js?v=1a74b196:11060
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<ResourceTable>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+PickupPointManagement @ PickupPointManagement.jsx:112
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopConcurrentByScheduler @ react-dom_client.js?v=1a74b196:10864
+renderRootConcurrent @ react-dom_client.js?v=1a74b196:10844
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36Understand this error
+adminSlice.js:202 
+            
+            
+           GET http://localhost:5173/api/admin/pickup-points 500 (Internal Server Error)
+dispatchXhrRequest @ axios.js?v=1a74b196:1651
+xhr @ axios.js?v=1a74b196:1531
+dispatchRequest @ axios.js?v=1a74b196:2006
+Promise.then
+_request @ axios.js?v=1a74b196:2209
+request @ axios.js?v=1a74b196:2118
+Axios.<computed> @ axios.js?v=1a74b196:2246
+wrap @ axios.js?v=1a74b196:8
+(anonymous) @ adminSlice.js:202
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2345
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:2379
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1466
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1724
+(anonymous) @ @reduxjs_toolkit.js?v=1a74b196:1557
+dispatch @ page.bundle.js:6
+(anonymous) @ ResourceTable.jsx:39
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17478
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+commitHookEffectListMount @ react-dom_client.js?v=1a74b196:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=1a74b196:8518
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10016
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10054
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+recursivelyTraverseReconnectPassiveEffects @ react-dom_client.js?v=1a74b196:9995
+reconnectPassiveEffects @ react-dom_client.js?v=1a74b196:10009
+doubleInvokeEffectsOnFiber @ react-dom_client.js?v=1a74b196:11461
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11432
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+recursivelyTraverseAndDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11438
+commitDoubleInvokeEffectsInDEV @ react-dom_client.js?v=1a74b196:11469
+flushPassiveEffects @ react-dom_client.js?v=1a74b196:11309
+(anonymous) @ react-dom_client.js?v=1a74b196:11060
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36
+<ResourceTable>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=1a74b196:250
+PickupPointManagement @ PickupPointManagement.jsx:112
+react-stack-bottom-frame @ react-dom_client.js?v=1a74b196:17424
+renderWithHooksAgain @ react-dom_client.js?v=1a74b196:4281
+renderWithHooks @ react-dom_client.js?v=1a74b196:4217
+updateFunctionComponent @ react-dom_client.js?v=1a74b196:6619
+beginWork @ react-dom_client.js?v=1a74b196:7654
+runWithFiberInDEV @ react-dom_client.js?v=1a74b196:1485
+performUnitOfWork @ react-dom_client.js?v=1a74b196:10868
+workLoopConcurrentByScheduler @ react-dom_client.js?v=1a74b196:10864
+renderRootConcurrent @ react-dom_client.js?v=1a74b196:10844
+performWorkOnRoot @ react-dom_client.js?v=1a74b196:10330
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=1a74b196:11623
+performWorkUntilDeadline @ react-dom_client.js?v=1a74b196:36Understand this error
+adminSlice.js:205 Error fetching pickup points: AxiosError {message: 'Request failed with status code 500', name: 'AxiosError', code: 'ERR_BAD_RESPONSE', config: {…}, request: XMLHttpRequest, …}

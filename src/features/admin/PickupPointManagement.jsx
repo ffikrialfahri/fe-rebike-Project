@@ -1,38 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import Card from "../../components/ui/Card";
-import { MapPin, PlusCircle, Edit, Trash2, ClipboardList, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { MapPin, PlusCircle, Edit, Trash2 } from 'lucide-react';
 import axiosInstance from '../../api/axios';
 
 import PickupPointFormModal from '../../components/modals/PickupPointFormModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import ResourceTable from '../../components/shared/ResourceTable';
+import Card from "../../components/ui/Card";
+import { fetchPickupPoints } from "../../store/admin/adminSlice";
 
 export default function PickupPointManagement() {
-  const [pickupPoints, setPickupPoints] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [selectedPickupPoint, setSelectedPickupPoint] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [pickupPointToDelete, setPickupPointToDelete] = useState(null);
-
-  const fetchPickupPoints = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get('/public/pickup-points');
-      setPickupPoints(response.data.data || []);
-      setError(null);
-    } catch (err) {
-      setError('Gagal memuat data lokasi penjemputan. Silakan coba lagi nanti.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPickupPoints();
-  }, []);
 
   const handleAddClick = () => {
     setSelectedPickupPoint(null);
@@ -52,7 +35,7 @@ export default function PickupPointManagement() {
   const handleConfirmDelete = async () => {
     try {
       await axiosInstance.delete(`/admin/pickup-points/${pickupPointToDelete}`);
-      setPickupPoints(pickupPoints.filter(point => point.pickupPointID !== pickupPointToDelete));
+      dispatch(fetchPickupPoints({})); // Refresh data after deletion
       // Optionally show a success notification
     } catch (err) {
       console.error("Failed to delete pickup point:", err);
@@ -67,15 +50,12 @@ export default function PickupPointManagement() {
     try {
       if (selectedPickupPoint) {
         // Edit existing pickup point
-        const response = await axiosInstance.put(`/admin/pickup-points/${selectedPickupPoint.pickupPointID}`, data);
-        setPickupPoints(pickupPoints.map(point =>
-          point.pickupPointID === selectedPickupPoint.pickupPointID ? response.data.data : point
-        ));
+        await axiosInstance.put(`/admin/pickup-points/${selectedPickupPoint.pickupPointID}`, data);
       } else {
         // Add new pickup point
-        const response = await axiosInstance.post('/admin/pickup-points', data);
-        setPickupPoints([...pickupPoints, response.data.data]);
+        await axiosInstance.post('/admin/pickup-points', data);
       }
+      dispatch(fetchPickupPoints({})); // Refresh data after form submission
       // Optionally show a success notification
     } catch (err) {
       console.error("Failed to save pickup point:", err);
@@ -86,79 +66,30 @@ export default function PickupPointManagement() {
     }
   };
 
-  const renderContent = () => {
-    if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center py-10 text-slate-500">
-          <Loader2 className="w-12 h-12 text-gray-400 mb-3 animate-spin" />
-          <p>Memuat data...</p>
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="flex flex-col items-center justify-center py-10 text-red-500">
-          <ClipboardList className="w-12 h-12 mb-3" />
-          <p>{error}</p>
-          <button onClick={fetchPickupPoints} className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-            Coba Lagi
+  const columns = [
+    { header: 'Nama Lokasi', accessor: (item) => item.locationName },
+    { header: 'Alamat', accessor: (item) => item.address },
+    {
+      header: 'Aksi',
+      cell: (item) => (
+        <div className="flex items-center space-x-2">
+          <button
+            className="text-indigo-600 hover:text-indigo-800 text-xs font-semibold"
+            onClick={() => handleEditClick(item)}
+          >
+            <Edit size={16} />
+          </button>
+          <button
+            className="text-red-600 hover:text-red-800 text-xs font-semibold"
+            onClick={() => handleDeleteClick(item.pickupPointID)}
+          >
+            <Trash2 size={16} />
           </button>
         </div>
-      );
-    }
-
-    if (pickupPoints && pickupPoints.length > 0) {
-      return (
-        <div className="overflow-x-auto rounded-lg border border-slate-200">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-3 border-b-2 border-gray-200">Nama Lokasi</th>
-                <th className="p-3 border-b-2 border-gray-200">Alamat</th>
-                <th className="p-3 border-b-2 border-gray-200">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pickupPoints.map((point) => (
-                <tr
-                  key={point.pickupPointID}
-                  className="border-b border-slate-100 last:border-b-0"
-                >
-                  <td className="p-3 font-medium">{point.locationName}</td>
-                  <td className="p-3">{point.address}</td>
-                  <td className="p-3">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        className="text-indigo-600 hover:text-indigo-800 text-xs font-semibold"
-                        onClick={() => handleEditClick(point)}
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        className="text-red-600 hover:text-red-800 text-xs font-semibold"
-                        onClick={() => handleDeleteClick(point.pickupPointID)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex flex-col items-center justify-center py-10 text-slate-500">
-        <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
-        <p>Tidak ada lokasi penjemputan yang ditemukan.</p>
-        <p className="text-xs mt-1">Coba tambahkan lokasi penjemputan baru.</p>
-      </div>
-    );
-  };
+      ),
+      accessor: (item) => item.pickupPointID, // Dummy accessor for actions column
+    },
+  ];
 
   return (
     <>
@@ -178,7 +109,15 @@ export default function PickupPointManagement() {
             <span>Tambah Lokasi</span>
           </button>
         </div>
-        {renderContent()}
+        <ResourceTable
+          title=""
+          fetchDataAction={fetchPickupPoints}
+          dataSelector={(state) => state.admin.pickupPoints}
+          loadingSelector={(state) => state.admin.loading}
+          errorSelector={(state) => state.admin.error}
+          columns={columns}
+          emptyMessage="Tidak ada lokasi penjemputan yang ditemukan."
+          />
       </Card>
 
       {isFormModalOpen && (

@@ -38,7 +38,6 @@ export const adminNavItems = {
         { name: 'Keuangan', path: '/admin/keuangan', icon: Banknote },
     ],
     account: [
-      { name: "Verifikasi Mitra", path: "/admin/mitra-verification", icon: ShieldCheck },
       { name: "Pengaturan Akun", path: "/admin/profil", icon: Settings }
     ],
 };

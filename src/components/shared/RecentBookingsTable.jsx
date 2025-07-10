@@ -1,4 +1,5 @@
 import { ClipboardList } from "lucide-react";
+import { format } from "date-fns";
 import { formatRupiah } from "../../lib/navigation";
 import Card from "../ui/Card";
 
@@ -46,7 +47,9 @@ export default function RecentBookingsTable({
           <table className="min-w-full bg-white">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b bg-gray-100 text-left">ID Booking</th>
+                <th className="py-2 px-4 border-b bg-gray-100 text-left">Customer Name</th>
+                <th className="py-2 px-4 border-b bg-gray-100 text-left">Partner Name</th>
+                <th className="py-2 px-4 border-b bg-gray-100 text-left">Date</th>
                 <th className="py-2 px-4 border-b bg-gray-100 text-left">Payment Status</th>
                 <th className="py-2 px-4 border-b bg-gray-100 text-left">Booking Status</th>
                 <th className="py-2 px-4 border-b bg-gray-100 text-left">Total Cost</th>
@@ -55,7 +58,9 @@ export default function RecentBookingsTable({
             <tbody>
               {transactionsArray.slice(0, limit).map((transaction) => (
                 <tr key={transaction.transactionID}>
-                  <td className="py-2 px-4 border-b">{transaction.transactionID}</td>
+                  <td className="py-2 px-4 border-b">{`${transaction.customer.firstName} ${transaction.customer.lastName}`}</td>
+                  <td className="py-2 px-4 border-b">{`${transaction.partner.firstName} ${transaction.partner.lastName}`}</td>
+                  <td className="py-2 px-4 border-b">{format(new Date(transaction.bookingDate), "dd/MM/yyyy")}</td>
                   <td className="py-2 px-4 border-b">{transaction.paymentStatus}</td>
                   <td className="py-2 px-4 border-b">{transaction.bookingStatus}</td>
                   <td className="py-2 px-4 border-b">{formatRupiah(transaction.totalCost)}</td>

@@ -103,7 +103,7 @@ export default function AdminDashboard() {
             />
           </div>
           <div className="flex-grow grid grid-cols-2 gap-6 items-center text-center ">
-            <Link to="/admin/mitra-verification">
+            <Link to="/admin/partners">
               <StatCard
                 title="Verifikasi Mitra"
                 value={unverifiedPartnersCount}

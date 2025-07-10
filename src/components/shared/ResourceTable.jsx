@@ -28,13 +28,12 @@ const ResourceTable = ({
 
   const [currentPage, setCurrentPage] = useState(0);
   
-  // DIUBAH: State untuk input dan state untuk filter dipisahkan
-  const [searchInput, setSearchInput] = useState(''); // Untuk menampung nilai dari input field
-  const [searchTerm, setSearchTerm] = useState('');     // Untuk filter data yang sesungguhnya (di-trigger oleh tombol)
+  const [searchInput, setSearchInput] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [selectedStatus, setSelectedStatus] = useState(initialStatus);
 
-  const itemsPerPage = 20;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     if (fetchDataAction) {
@@ -46,18 +45,15 @@ const ResourceTable = ({
     }
   }, [dispatch, fetchDataAction, currentPage, clientSidePagination]);
 
-  // DIUBAH: Handler ini sekarang hanya mengubah state untuk input field
   const handleSearchInputChange = (event) => {
     setSearchInput(event.target.value);
   };
 
-  // BARU: Handler untuk tombol "Cari"
   const handleSearchSubmit = () => {
-    setSearchTerm(searchInput); // Terapkan nilai dari input ke filter
-    setCurrentPage(0); // Reset ke halaman pertama setelah pencarian
+    setSearchTerm(searchInput);
+    setCurrentPage(0);
   };
 
-  // BARU: Handler untuk menekan tombol "Enter" di input field
   const handleSearchKeyPress = (event) => {
     if (event.key === 'Enter') {
       handleSearchSubmit();
@@ -125,8 +121,6 @@ const ResourceTable = ({
       });
     }
 
-    // DIUBAH: Logika filter tidak berubah, tapi dependency array-nya sekarang menggunakan `searchTerm`
-    // Ini berarti filter hanya akan berjalan ketika `searchTerm` berubah (saat tombol Cari diklik)
     if (enableSearch && searchTerm) {
       result = result.filter(item =>
         columns.some(column => {
@@ -154,26 +148,32 @@ const ResourceTable = ({
       }
     : serverPagination;
 
+  const tableColumns = [
+    { 
+      header: 'NO',
+      cell: (item, index) => <span>{currentPage * itemsPerPage + index + 1}</span>
+    },
+    ...columns
+  ];
+
   return (
     <Card className="mb-6 p-6 bg-white shadow-md rounded-lg">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 border-b border-gray-200 pb-4 gap-4">
         <h2 className="text-xl font-semibold text-slate-700">{title}</h2>
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           {enableSearch && (
-            // DIUBAH: Membungkus input dan tombol dalam satu div
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
-                  value={searchInput} // DIUBAH: value menggunakan state `searchInput`
-                  onChange={handleSearchInputChange} // DIUBAH: handler baru untuk input
-                  onKeyPress={handleSearchKeyPress} // BARU: Menambahkan handler untuk tombol Enter
+                  value={searchInput}
+                  onChange={handleSearchInputChange}
+                  onKeyPress={handleSearchKeyPress}
                   className="border border-gray-300 rounded-md p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
                 />
               </div>
-              {/* BARU: Tombol "Cari" ditambahkan di sini */}
               <button
                 onClick={handleSearchSubmit}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -201,7 +201,7 @@ const ResourceTable = ({
         <table className="min-w-full leading-normal">
           <thead>
             <tr>
-              {columns.map((col, index) => (
+              {tableColumns.map((col, index) => (
                 <th
                   key={index}
                   className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
@@ -214,25 +214,25 @@ const ResourceTable = ({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-10">Memuat data...</td>
+                <td colSpan={tableColumns.length} className="text-center py-10">Memuat data...</td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-10 text-red-500">Error: {error.message || 'Gagal memuat data'}</td>
+                <td colSpan={tableColumns.length} className="text-center py-10 text-red-500">Error: {error.message || 'Gagal memuat data'}</td>
               </tr>
             ) : filteredData.length > 0 ? (
               filteredData.map((item, rowIndex) => (
                 <tr key={rowIndex}>
-                  {columns.map((col, colIndex) => (
+                  {tableColumns.map((col, colIndex) => (
                     <td key={colIndex} className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      {col.cell ? col.cell(item) : <p className="text-gray-900 whitespace-no-wrap">{col.accessor(item)}</p>}
+                      {col.cell ? col.cell(item, rowIndex) : <p className="text-gray-900 whitespace-no-wrap">{col.accessor(item)}</p>}
                     </td>
                   ))}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} className="text-center py-10">
+                <td colSpan={tableColumns.length} className="text-center py-10">
                   <div className="flex flex-col items-center justify-center text-slate-500">
                     <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
                     <p>{emptyMessage}</p>

@@ -49,8 +49,9 @@ const StatusBadge = ({ status, type }) => {
 };
 
 const columns = [
-  { header: 'Booking ID', accessor: (item) => item.transactionID },
-  { header: 'Pengguna', accessor: (item) => item.customer.firstName },
+  { header: 'PARTNER NAME', accessor: (item) => item.partner.username },
+  { header: 'CUSTOMER NAME', accessor: (item) => item.customer.username },
+  { header: 'DATE', accessor: (item) => format(new Date(item.bookingDate), 'dd/MM/yyyy HH:mm') },
   { header: 'Start Date', accessor: (item) => format(new Date(item.startDate), 'dd/MM/yyyy HH:mm') },
   { header: 'End Date', accessor: (item) => format(new Date(item.endDate), 'dd/MM/yyyy HH:mm') },
   { header: 'Jumlah', accessor: (item) => `Rp ${item.totalCost.toLocaleString('id-ID')}` },

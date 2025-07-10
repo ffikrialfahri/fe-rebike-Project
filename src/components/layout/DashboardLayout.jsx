@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/auth/authSlice";
 import { LogOut, MoreHorizontal, Bell, User } from "lucide-react";
@@ -89,7 +89,7 @@ const Sidebar = ({ navItems }) => {
   );
 };
 
-const PanelHeader = ({ title }) => {
+const PanelHeader = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -99,8 +99,7 @@ const PanelHeader = ({ title }) => {
   };
 
   return (
-    <header className="bg-white p-4 border-b border-slate-200 flex justify-between items-center shadow-sm">
-      <h2 className="text-2xl font-semibold text-text-dark">{title}</h2>
+    <header className="bg-white p-4 border-b border-slate-200 flex justify-end items-center shadow-sm">
       <button
         onClick={handleLogout}
         className="text-sm text-slate-600 hover:text-danger font-semibold transition flex items-center gap-2 bg-slate-100 hover:bg-red-100 px-3 py-2 rounded-lg"
@@ -113,28 +112,11 @@ const PanelHeader = ({ title }) => {
 };
 
 export default function DashboardLayout({ navItems }) {
-  const location = useLocation();
-  const currentPath = location.pathname;
-
-  const getPageTitle = () => {
-    const allNavItems = [
-      ...(navItems.navigate || []),
-      ...(navItems.account || []),
-      ...(navItems.subscriptions || []),
-    ];
-    const currentItem = allNavItems.find(
-      (item) => item.path === currentPath || (item.path === "/admin/dashboard" && currentPath === "/admin")
-    );
-    return currentItem ? currentItem.name : "Dashboard";
-  };
-
-  const pageTitle = getPageTitle();
-
   return (
     <div className="flex h-screen bg-white">
       <Sidebar navItems={navItems} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <PanelHeader title={pageTitle} />
+        <PanelHeader />
         <main className="flex-1 p-6 overflow-y-auto">
           <Outlet />
         </main>

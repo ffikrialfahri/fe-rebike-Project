@@ -31,6 +31,7 @@ export default function UserManajement() {
     try {
       await axios.patch(`/admin/partners/${partnerToBlock}/verify`, { isVerified: false });
       toast.success("Mitra berhasil diblokir.");
+      dispatch(fetchPartners({}));
     } catch (err) {
       console.error("Error blocking partner:", err);
       toast.error("Gagal memblokir mitra.");

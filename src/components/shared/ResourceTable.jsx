@@ -1,3 +1,4 @@
+// ResourceTable.jsx
 
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,7 +19,7 @@ const ResourceTable = ({
   initialStatus = 'Semua',
   searchPlaceholder = 'Cari...',
   emptyMessage = 'Tidak ada data ditemukan.',
-  clientSidePagination = false, // New prop
+  clientSidePagination = false,
 }) => {
   const dispatch = useDispatch();
 
@@ -28,10 +29,14 @@ const ResourceTable = ({
   const serverPagination = useSelector((state) => state.admin.pagination);
 
   const [currentPage, setCurrentPage] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
+  
+  // DIUBAH: State untuk input dan state untuk filter dipisahkan
+  const [searchInput, setSearchInput] = useState(''); // Untuk menampung nilai dari input field
+  const [searchTerm, setSearchTerm] = useState('');     // Untuk filter data yang sesungguhnya (di-trigger oleh tombol)
+
   const [selectedStatus, setSelectedStatus] = useState(initialStatus);
 
-  const itemsPerPage = 20; // Max data per page
+  const itemsPerPage = 20;
 
   useEffect(() => {
     if (fetchDataAction) {
@@ -43,14 +48,27 @@ const ResourceTable = ({
     }
   }, [dispatch, fetchDataAction, currentPage, clientSidePagination]);
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setCurrentPage(0); // Reset page on search
+  // DIUBAH: Handler ini sekarang hanya mengubah state untuk input field
+  const handleSearchInputChange = (event) => {
+    setSearchInput(event.target.value);
+  };
+
+  // BARU: Handler untuk tombol "Cari"
+  const handleSearchSubmit = () => {
+    setSearchTerm(searchInput); // Terapkan nilai dari input ke filter
+    setCurrentPage(0); // Reset ke halaman pertama setelah pencarian
+  };
+
+  // BARU: Handler untuk menekan tombol "Enter" di input field
+  const handleSearchKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearchSubmit();
+    }
   };
 
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
-    setCurrentPage(0); // Reset page on status filter
+    setCurrentPage(0);
   };
 
   const handleNextPage = () => {
@@ -76,6 +94,8 @@ const ResourceTable = ({
       });
     }
 
+    // DIUBAH: Logika filter tidak berubah, tapi dependency array-nya sekarang menggunakan `searchTerm`
+    // Ini berarti filter hanya akan berjalan ketika `searchTerm` berubah (saat tombol Cari diklik)
     if (enableSearch && searchTerm) {
       result = result.filter(item =>
         columns.some(column => {
@@ -85,7 +105,6 @@ const ResourceTable = ({
       );
     }
 
-    // Apply client-side pagination if enabled
     if (clientSidePagination) {
       const startIndex = currentPage * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
@@ -110,15 +129,26 @@ const ResourceTable = ({
         <h2 className="text-xl font-semibold text-slate-700">{title}</h2>
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           {enableSearch && (
-            <div className="relative w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder={searchPlaceholder}
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="border border-gray-300 rounded-md p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
-              />
+            // DIUBAH: Membungkus input dan tombol dalam satu div
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="relative flex-grow">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder={searchPlaceholder}
+                  value={searchInput} // DIUBAH: value menggunakan state `searchInput`
+                  onChange={handleSearchInputChange} // DIUBAH: handler baru untuk input
+                  onKeyPress={handleSearchKeyPress} // BARU: Menambahkan handler untuk tombol Enter
+                  className="border border-gray-300 rounded-md p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
+                />
+              </div>
+              {/* BARU: Tombol "Cari" ditambahkan di sini */}
+              <button
+                onClick={handleSearchSubmit}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Cari
+              </button>
             </div>
           )}
           {enableStatusFilter && (
@@ -136,6 +166,7 @@ const ResourceTable = ({
         </div>
       </div>
 
+      {/* ... sisa kode tidak ada perubahan ... */}
       <div className="overflow-x-auto">
         <table className="min-w-full leading-normal">
           <thead>

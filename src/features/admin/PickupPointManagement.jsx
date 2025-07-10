@@ -8,6 +8,7 @@ import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import ResourceTable from '../../components/shared/ResourceTable';
 import Card from "../../components/ui/Card";
 import { fetchPickupPoints } from "../../store/admin/adminSlice";
+import toast from 'react-hot-toast';
 
 export default function PickupPointManagement() {
   const dispatch = useDispatch();
@@ -59,7 +60,7 @@ export default function PickupPointManagement() {
       // Optionally show a success notification
     } catch (err) {
       console.error("Failed to save pickup point:", err);
-      // Optionally show an error notification
+      toast.error("Gagal menyimpan lokasi penjemputan.");
     } finally {
       setIsFormModalOpen(false);
       setSelectedPickupPoint(null);

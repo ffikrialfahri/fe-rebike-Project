@@ -6,6 +6,7 @@ import axios from "../../api/axios";
 import EditPartnerModal from "../../components/modals/EditPartnerModal";
 import ConfirmationModal from "../../components/modals/ConfirmationModal";
 import ResourceTable from "../../components/shared/ResourceTable";
+import toast from 'react-hot-toast';
 
 export default function UserManajement() {
   const dispatch = useDispatch();
@@ -15,15 +16,10 @@ export default function UserManajement() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [partnerToBlock, setPartnerToBlock] = useState(null);
 
-  const handleEditClick = (partner) => {
-    setSelectedPartner(partner);
-    setIsModalOpen(true);
-  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedPartner(null);
-    // ResourceTable will handle refetching data after modal closes
   };
 
   const handleBlockClick = (partnerId) => {
@@ -34,11 +30,10 @@ export default function UserManajement() {
   const handleConfirmBlock = async () => {
     try {
       await axios.patch(`/admin/partners/${partnerToBlock}/verify`, { isVerified: false });
-      // ResourceTable will handle refetching data after block
-      alert("Mitra berhasil diblokir!");
+      toast.success("Mitra berhasil diblokir.");
     } catch (err) {
       console.error("Error blocking partner:", err);
-      alert("Gagal memblokir mitra.");
+      toast.error("Gagal memblokir mitra.");
     } finally {
       setIsConfirmModalOpen(false);
       setPartnerToBlock(null);
@@ -68,12 +63,6 @@ export default function UserManajement() {
       header: 'Aksi',
       cell: (item) => (
         <div className="flex items-center space-x-2">
-          <button
-            className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
-            onClick={() => handleEditClick(item)}
-          >
-            Edit
-          </button>
           <button
             className="text-red-600 hover:text-red-800 text-xs font-semibold"
             onClick={() => handleBlockClick(item.id)}

@@ -13,6 +13,7 @@ const initialState = {
     businessRecommendations: [],
     pickupPoints: [],
     loading: false,
+    transactionsLoading: false,
     error: null,
     pagination: {
         page: 0,
@@ -79,7 +80,7 @@ export const fetchTransactions = createAsyncThunk(
     async ({ page = 0, size = 20 }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`/admin/transactions?page=${page}&size=${size}`);
-            return response.data.data;
+            return response.data;
         } catch (error) {
             console.error("Error fetching transactions:", error);
             const errorMessage = error.response?.data?.message || 'Failed to fetch transactions';
@@ -359,21 +360,21 @@ const adminSlice = createSlice({
                 state.error = action.payload;
             })
             .addCase(fetchTransactions.pending, (state) => {
-                state.loading = true;
+                state.transactionsLoading = true;
                 state.error = null;
             })
             .addCase(fetchTransactions.fulfilled, (state, action) => {
-                state.loading = false;
-                state.transactions = action.payload.data;
+                state.transactionsLoading = false;
+                state.transactions = action.payload.data.data;
                 state.pagination = {
-                    page: action.payload.page,
-                    size: action.payload.size,
-                    totalElements: action.payload.totalElements,
-                    totalPages: action.payload.totalPages,
+                    page: action.payload.data.page,
+                    size: action.payload.data.size,
+                    totalElements: action.payload.data.totalElements,
+                    totalPages: action.payload.data.totalPages,
                 };
             })
             .addCase(fetchTransactions.rejected, (state, action) => {
-                state.loading = false;
+                state.transactionsLoading = false;
                 state.error = action.payload;
             })
             .addCase(updatePartner.pending, (state) => {

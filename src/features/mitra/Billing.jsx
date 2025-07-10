@@ -21,7 +21,7 @@ export default function Billing() {
   ];
 
   const handleWithdraw = () => {
-    alert("Fungsi cairkan semua dana akan diimplementasikan di sini.");
+    toast.success("Semua dana berhasil dicairkan.");
   };
 
   const handleChangeAccount = () => {

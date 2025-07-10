@@ -41,7 +41,7 @@ export default function RecentBookingsTable({
     <Card className="min-h-[400px] p-4">
       <h3 className="text-lg font-semibold text-black">{title}</h3>
       {subtitle}
-      {transactionsArray.length > 0 ? (
+      {transactionsArray.length > 0 && !loading ? (
         <div className="overflow-x-auto mt-2">
           <table className="min-w-full bg-white">
             <thead>

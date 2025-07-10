@@ -12,7 +12,7 @@ import { fetchDashboardSummary, fetchPartners, fetchTransactions } from '../../s
 
 export default function AdminDashboard() {
   const dispatch = useDispatch();
-  const { dashboardSummary, partners, transactions, loading, error } = useSelector((state) => state.admin);
+  const { dashboardSummary, partners, transactions, loading, error, transactionsLoading } = useSelector((state) => state.admin);
 
   const [unverifiedPartnersCount, setUnverifiedPartnersCount] = useState(0);
 
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
           title="Transaksi Terbaru"
           subtitle="Aktivitas Transaksi Terbaru"
           transactions={transactions}
-          loading={loading}
+          loading={transactionsLoading}
           error={error}
         />
       </div>

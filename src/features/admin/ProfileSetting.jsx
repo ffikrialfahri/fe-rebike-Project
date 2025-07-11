@@ -16,7 +16,6 @@ export default function ProfileSetting() {
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
-    username: '',
     phoneNumber: '',
     file: null,
   });
@@ -40,7 +39,6 @@ export default function ProfileSetting() {
       setProfileData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
-        username: user.username || '',
         phoneNumber: user.phoneNumber || '',
         file: null,
       });
@@ -143,17 +141,6 @@ export default function ProfileSetting() {
               type="text"
               name="lastName"
               value={profileData.lastName}
-              onChange={handleProfileChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Username</label>
-            <input
-              type="text"
-              name="username"
-              value={profileData.username}
               onChange={handleProfileChange}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               required

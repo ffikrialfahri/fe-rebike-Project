@@ -264,7 +264,9 @@ export const updateUserProfile = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
             const formData = new FormData();
-            formData.append('request', new Blob([JSON.stringify({ firstName: userData.firstName, lastName: userData.lastName, username: userData.username, phoneNumber: userData.phoneNumber })], { type: 'application/json' }));
+            formData.append('firstName', userData.firstName);
+            formData.append('lastName', userData.lastName);
+            formData.append('phoneNumber', userData.phoneNumber);
             if (userData.file) {
                 formData.append('file', userData.file);
             }
@@ -274,7 +276,7 @@ export const updateUserProfile = createAsyncThunk(
                 },
             });
             toast.success('Profil berhasil diperbarui!');
-            return response.data.data; // Assuming backend returns updated user data
+            return response.data.data;
         } catch (error) {
             console.error("Error updating user profile:", error);
             const errorMessage = error.response?.data?.message || 'Gagal memperbarui profil';

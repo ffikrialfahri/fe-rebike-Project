@@ -2,10 +2,11 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/auth/authSlice";
 import { LogOut, MoreHorizontal, Bell, Menu, ChevronRight } from "lucide-react";
+import NotificationModal from "../modals/NotificationModal";
 import Logo3 from "@/assets/logo3.png";
 import { useState, useEffect } from "react";
 
-const Sidebar = ({ navItems, isCollapsed }) => {
+const Sidebar = ({ navItems, isCollapsed, toggleNotificationModal, isNotificationModalOpen }) => {
   const { user } = useSelector((state) => state.auth);
   const basePath = user?.roles?.includes("ROLE_PARTNER") ? "/mitra" : "/admin";
 
@@ -49,10 +50,13 @@ const Sidebar = ({ navItems, isCollapsed }) => {
           )}
         </div>
         {!isCollapsed && (
-          <button className="relative text-slate-500 hover:text-slate-800">
-            <Bell size={22} />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
+          <div className="relative">
+            <button className="relative text-slate-500 hover:text-slate-800" onClick={toggleNotificationModal}>
+              <Bell size={22} />
+              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <NotificationModal isOpen={isNotificationModalOpen} onClose={toggleNotificationModal} notifications={[]} />
+          </div>
         )}
       </div>
       <div className="p-4">
@@ -139,10 +143,10 @@ const PanelHeader = ({ toggleSidebar, isCollapsed }) => {
       <button
         onClick={toggleSidebar}
         className={`text-slate-600 hover:text-slate-800 transition-transform duration-300 ease-in-out ${
-          isCollapsed ? "translate-x-2" : ""
+          isCollapsed ? "rotate-90 translate-x-2" : ""
         }`}
       >
-                {isCollapsed ? <ChevronRight size={24} /> : <Menu size={24} />}
+        {isCollapsed ? <ChevronRight size={24} /> : <Menu size={24} />}
       </button>
       <button
         onClick={handleLogout}
@@ -157,9 +161,14 @@ const PanelHeader = ({ toggleSidebar, isCollapsed }) => {
 
 export default function DashboardLayout({ navItems }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  const toggleNotificationModal = () => {
+    setIsNotificationModalOpen(!isNotificationModalOpen);
   };
 
   useEffect(() => {
@@ -179,7 +188,7 @@ export default function DashboardLayout({ navItems }) {
 
   return (
     <div className="flex h-screen bg-white">
-      <Sidebar navItems={navItems} isCollapsed={isCollapsed} />
+      <Sidebar navItems={navItems} isCollapsed={isCollapsed} toggleNotificationModal={toggleNotificationModal} isNotificationModalOpen={isNotificationModalOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <PanelHeader toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
         <main className="flex-1 p-6 overflow-y-auto">
@@ -189,3 +198,4 @@ export default function DashboardLayout({ navItems }) {
     </div>
   );
 }
+

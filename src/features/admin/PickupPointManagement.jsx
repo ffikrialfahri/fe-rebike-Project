@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapPin, PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { MapPin, PlusCircle } from 'lucide-react';
 import axiosInstance from '../../api/axios';
 
 import PickupPointFormModal from '../../components/modals/PickupPointFormModal';
-import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import ResourceTable from '../../components/shared/ResourceTable';
 import Card from "../../components/ui/Card";
 import { fetchPickupPoints } from "../../store/admin/adminSlice";
@@ -15,36 +14,10 @@ export default function PickupPointManagement() {
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [selectedPickupPoint, setSelectedPickupPoint] = useState(null);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [pickupPointToDelete, setPickupPointToDelete] = useState(null);
 
   const handleAddClick = () => {
     setSelectedPickupPoint(null);
     setIsFormModalOpen(true);
-  };
-
-  const handleEditClick = (point) => {
-    setSelectedPickupPoint(point);
-    setIsFormModalOpen(true);
-  };
-
-  const handleDeleteClick = (pointId) => {
-    setPickupPointToDelete(pointId);
-    setIsConfirmModalOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      await axiosInstance.delete(`/admin/pickup-points/${pickupPointToDelete}`);
-      dispatch(fetchPickupPoints({})); // Refresh data after deletion
-      // Optionally show a success notification
-    } catch (err) {
-      console.error("Failed to delete pickup point:", err);
-      // Optionally show an error notification
-    } finally {
-      setIsConfirmModalOpen(false);
-      setPickupPointToDelete(null);
-    }
   };
 
   const handleFormSubmit = async (data) => {
@@ -70,26 +43,6 @@ export default function PickupPointManagement() {
   const columns = [
     { header: 'Nama Lokasi', accessor: (item) => item.locationName },
     { header: 'Alamat', accessor: (item) => item.address },
-    {
-      header: 'Aksi',
-      cell: (item) => (
-        <div className="flex items-center space-x-2">
-          <button
-            className="text-indigo-600 hover:text-indigo-800 text-xs font-semibold"
-            onClick={() => handleEditClick(item)}
-          >
-            <Edit size={16} />
-          </button>
-          <button
-            className="text-red-600 hover:text-red-800 text-xs font-semibold"
-            onClick={() => handleDeleteClick(item.pickupPointID)}
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
-      ),
-      accessor: (item) => item.pickupPointID, // Dummy accessor for actions column
-    },
   ];
 
   return (
@@ -132,13 +85,6 @@ export default function PickupPointManagement() {
           initialData={selectedPickupPoint}
         />
       )}
-
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        message="Apakah Anda yakin ingin menghapus lokasi penjemputan ini? Aksi ini tidak dapat dibatalkan."
-      />
     </>
   );
 }

@@ -1,8 +1,10 @@
-import React from 'react';
-import { ArrowRightLeft } from 'lucide-react';
-import { fetchTransactions } from '../../store/admin/adminSlice';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ArrowRightLeft, ArrowLeft } from 'lucide-react';
+import { fetchTransactions, fetchPartners } from '../../store/admin/adminSlice';
 import ResourceTable from '../../components/shared/ResourceTable';
 import { format } from 'date-fns';
+import Card from '../../components/ui/Card';
 
 const StatusBadge = ({ status, type }) => {
   const baseClasses = 'relative inline-block px-3 py-1 font-semibold leading-tight';
@@ -48,7 +50,7 @@ const StatusBadge = ({ status, type }) => {
   );
 };
 
-const columns = [
+const allTransactionsColumns = [
   { header: 'PARTNER NAME', accessor: (item) => item.partner.username },
   { header: 'CUSTOMER NAME', accessor: (item) => item.customer.username },
   { header: 'DATE', accessor: (item) => format(new Date(item.bookingDate), 'dd/MM/yyyy HH:mm') },
@@ -77,23 +79,149 @@ const statusOptions = [
 ];
 
 export default function Transaction() {
+  const dispatch = useDispatch();
+  const [activeTab, setActiveTab] = useState('allTransactions');
+  const [selectedPartner, setSelectedPartner] = useState(null);
+
+  const transactionsData = useSelector((state) => state.admin.transactions || []);
+  const partnersData = useSelector((state) => state.admin.partners || []);
+  const loadingTransactions = useSelector((state) => state.admin.transactionsLoading);
+  const loadingPartners = useSelector((state) => state.admin.loading);
+  const error = useSelector((state) => state.admin.error);
+
+  useEffect(() => {
+    // Fetch transactions initially
+    dispatch(fetchTransactions({}));
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Fetch partners only when the detail tab is active
+    if (activeTab === 'byPartner') {
+      dispatch(fetchPartners({}));
+    }
+  }, [dispatch, activeTab]);
+
+  const handleSelectPartner = (partner) => {
+    setSelectedPartner(partner);
+  };
+
+  const handleBackToPartnerList = () => {
+    setSelectedPartner(null);
+  };
+
+  const partnerColumns = [
+    { header: 'ID Partner', accessor: (item) => item.id },
+    { header: 'Nama Partner', accessor: (item) => item.name },
+    { header: 'Email', accessor: (item) => item.email },
+    {
+      header: 'Aksi',
+      cell: (item) => (
+        <button
+          onClick={() => handleSelectPartner(item)}
+          className="text-brand-primary hover:underline"
+        >
+          Lihat Transaksi
+        </button>
+      ),
+    },
+  ];
+
+  const renderAllTransactions = () => (
+    <ResourceTable
+      title="Daftar Transaksi"
+      fetchDataAction={fetchTransactions}
+      dataSelector={(state) => state.admin.transactions}
+      loadingSelector={(state) => state.admin.transactionsLoading}
+      errorSelector={(state) => state.admin.error}
+      columns={allTransactionsColumns}
+      enableStatusFilter={true}
+      statusOptions={statusOptions}
+      emptyMessage="Tidak ada transaksi yang ditemukan."
+    />
+  );
+
+  const renderPartnerDetails = () => {
+    if (selectedPartner) {
+      const partnerTransactions = transactionsData.filter(
+        (tx) => tx.partner.partnerId === selectedPartner.id
+      );
+      return (
+        <div>
+          <button
+            onClick={handleBackToPartnerList}
+            className="flex items-center gap-2 mb-4 text-slate-600 hover:text-slate-800"
+          >
+            <ArrowLeft size={20} />
+            Kembali ke Daftar Partner
+          </button>
+          <ResourceTable
+            title={`Transaksi untuk ${selectedPartner.name}`}
+            dataSelector={() => partnerTransactions}
+            loadingSelector={() => loadingTransactions}
+            errorSelector={() => error}
+            columns={allTransactionsColumns}
+            clientSidePagination={true}
+            enableStatusFilter={true}
+            statusOptions={statusOptions}
+            emptyMessage="Tidak ada transaksi untuk partner ini."
+          />
+        </div>
+      );
+    }
+
+    return (
+      <Card>
+        <h2 className="text-xl font-semibold p-4">Daftar Partner</h2>
+        <ResourceTable
+          title=""
+          fetchDataAction={fetchPartners}
+          dataSelector={(state) => state.admin.partners}
+          loadingSelector={(state) => state.admin.loading}
+          errorSelector={(state) => state.admin.error}
+          columns={partnerColumns}
+          enableSearch={true}
+          searchPlaceholder="Cari nama partner..."
+          emptyMessage="Tidak ada partner ditemukan."
+        />
+      </Card>
+    );
+  };
+
   return (
     <>
       <div className="flex items-center gap-4 mb-6">
         <ArrowRightLeft className="w-8 h-8 text-slate-700" />
         <h1 className="text-3xl font-bold text-slate-800">Transactions</h1>
       </div>
-      <ResourceTable
-        title="Daftar Transaksi"
-        fetchDataAction={fetchTransactions}
-        dataSelector={(state) => state.admin.transactions}
-        loadingSelector={(state) => state.admin.loading}
-        errorSelector={(state) => state.admin.error}
-        columns={columns}
-        enableStatusFilter={true}
-        statusOptions={statusOptions}
-        emptyMessage="Tidak ada transaksi yang ditemukan."
-      />
+
+      <div className="mb-6 border-b border-slate-200">
+        <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+          <button
+            onClick={() => setActiveTab('allTransactions')}
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'allTransactions'
+                ? 'border-brand-primary text-brand-primary'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+            }`}
+          >
+            Semua Transaksi
+          </button>
+          <button
+            onClick={() => setActiveTab('byPartner')}
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'byPartner'
+                ? 'border-brand-primary text-brand-primary'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+            }`}
+          >
+            Detail Per Partner
+          </button>
+        </nav>
+      </div>
+
+      <div>
+        {activeTab === 'allTransactions' ? renderAllTransactions() : renderPartnerDetails()}
+      </div>
     </>
   );
 }

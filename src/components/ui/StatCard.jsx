@@ -17,7 +17,7 @@ export default function StatCard({
   return (
     <Card className={`relative flex flex-col h-full p-4 overflow-hidden ${className || ''}`}>
       {Icon && (
-        <div className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 -rotate-12 w-40 h-40 opacity-20 pointer-events-none">
+        <div className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4 -rotate-12 w-40 h-40 opacity-5 pointer-events-none">
           <Icon className="w-full h-full" />
         </div>
       )}

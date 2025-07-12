@@ -1,5 +1,5 @@
 import { fetchUsers } from '../../store/admin/adminSlice';
-import { Users, Lightbulb } from 'lucide-react';
+import { Users, Lightbulb, SquarePen, Trash2 } from 'lucide-react';
 import ResourceTable from '../../components/shared/ResourceTable';
 import Card from "../../components/ui/Card";
 
@@ -24,6 +24,28 @@ export default function UserManagement() {
     { header: 'Nama', accessor: (item) => `${item.firstName} ${item.lastName}` },
     { header: 'Email', accessor: (item) => item.email },
     { header: 'Nomor Telepon', accessor: (item) => item.phoneNumber },
+    {
+        header: 'Aksi',
+        cell: (item) => (
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => { /* Handle edit logic */ }}
+              className="text-blue-600 hover:text-blue-800"
+              title="Edit Pengguna"
+            >
+              <SquarePen size={20} />
+            </button>
+            <button
+              onClick={() => { /* Handle delete logic */ }}
+              className="text-red-600 hover:text-red-800"
+              title="Hapus Pengguna"
+            >
+              <Trash2 size={20} />
+            </button>
+          </div>
+        ),
+        accessor: (item) => item.userID, // or any unique identifier
+      },
   ];
 
   return (

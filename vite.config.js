@@ -16,7 +16,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://buck-darling-minnow.ngrok-free.app',
+        target: 'https://072f0a9bddda.ngrok-free.app',
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {

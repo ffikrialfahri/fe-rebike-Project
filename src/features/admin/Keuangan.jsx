@@ -2,22 +2,19 @@ import React, { useEffect, useState } from 'react';
 import Card from "../../components/ui/Card";
 import { Landmark, History, CircleDollarSign } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchDashboardSummary, fetchPayouts, processPayout, fetchPlatformFee, updatePlatformFee } from '../../store/admin/adminSlice';
+import { fetchDashboardSummary, fetchPayouts, processPayout } from '../../store/admin/adminSlice';
 import ProcessPayoutModal from '../../components/modals/ProcessPayoutModal';
-import UpdateFeeModal from '../../components/modals/UpdateFeeModal';
 
 export default function Keuangan() {
   const dispatch = useDispatch();
-  const { dashboardSummary, payouts, platformFee, loading, error } = useSelector((state) => state.admin);
+  const { dashboardSummary, payouts, loading, error } = useSelector((state) => state.admin);
 
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const [selectedPayout, setSelectedPayout] = useState(null);
-  const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchDashboardSummary());
     dispatch(fetchPayouts());
-    dispatch(fetchPlatformFee());
   }, [dispatch]);
 
   const handleProcessPayoutClick = (payout) => {
@@ -27,14 +24,6 @@ export default function Keuangan() {
 
   const handleConfirmProcessPayout = (payoutId, status, notes) => {
     dispatch(processPayout({ payoutId, status, notes }));
-  };
-
-  const handleUpdateFeeClick = () => {
-    setIsFeeModalOpen(true);
-  };
-
-  const handleConfirmUpdateFee = (newFeePercentage) => {
-    dispatch(updatePlatformFee(newFeePercentage));
   };
 
   if (loading) {
@@ -65,17 +54,6 @@ export default function Keuangan() {
           >
             Cairkan Semua Dana
           </button> */}
-        </Card>
-        {/* Platform Fee Panel */}
-        <Card className="p-6 bg-white shadow-md rounded-lg">
-          <h2 className="text-xl font-semibold text-slate-700 mb-2">Biaya Platform</h2>
-          <p className="text-3xl font-bold text-indigo-600 mb-4">{platformFee !== null ? `${platformFee}%` : 'Memuat...'}</p>
-          <button
-            onClick={handleUpdateFeeClick}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300"
-          >
-            Ubah Biaya Platform
-          </button>
         </Card>
       </div>
 
@@ -170,15 +148,7 @@ export default function Keuangan() {
           payout={selectedPayout}
         />
       )}
-
-      {platformFee !== null && (
-        <UpdateFeeModal
-          isOpen={isFeeModalOpen}
-          onClose={() => setIsFeeModalOpen(false)}
-          onConfirm={handleConfirmUpdateFee}
-          currentFee={platformFee}
-        />
-      )}
     </>
   );
 }
+

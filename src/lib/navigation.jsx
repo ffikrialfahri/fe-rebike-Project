@@ -34,7 +34,6 @@ export const adminNavItems = {
         { name: 'Manajemen Partner', path: '/admin/partners', icon: Users },
         { name: 'Manajemen User', path: '/admin/users', icon: User },
         { name: 'Manajemen Transaksi', path: '/admin/transaksi', icon: Package },
-        { name: 'Manajemen Lokasi Penjemputan', path: '/admin/pickup-points', icon: MapPin },
         { name: 'Keuangan', path: '/admin/keuangan', icon: Banknote },
     ],
     account: [

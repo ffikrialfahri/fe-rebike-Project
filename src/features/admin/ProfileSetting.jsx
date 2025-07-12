@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Card from "../../components/ui/Card";
-import { UserCog, ClipboardList } from 'lucide-react';
+import { UserCog } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUserProfile } from '../../store/admin/adminSlice';
+import { updateUserProfile, fetchPlatformFee, updatePlatformFee } from '../../store/admin/adminSlice';
 import toast from 'react-hot-toast';
-import { getUsagePolicies, createUsagePolicy, updateUsagePolicy, deleteUsagePolicy } from '../../api/usagePoliciesApi';
-import UsagePolicyFormModal from '../../components/modals/UsagePolicyFormModal';
-import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import UpdateFeeModal from '../../components/modals/UpdateFeeModal';
 
 export default function ProfileSetting() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { loading, error } = useSelector((state) => state.admin);
+  const { platformFee } = useSelector((state) => state.admin);
 
   const [profileData, setProfileData] = useState({
     firstName: '',
@@ -19,20 +17,7 @@ export default function ProfileSetting() {
     phoneNumber: '',
     file: null,
   });
-  const [usagePolicies, setUsagePolicies] = useState([]);
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [editingPolicy, setEditingPolicy] = useState(null);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [policyToDelete, setPolicyToDelete] = useState(null);
-
-  const refreshUsagePolicies = async () => {
-    try {
-      const policies = await getUsagePolicies();
-      setUsagePolicies(policies);
-    } catch (err) {
-      toast.error(`Gagal memuat kebijakan penggunaan: ${err}`);
-    }
-  };
+  const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -43,8 +28,8 @@ export default function ProfileSetting() {
         file: null,
       });
     }
-    refreshUsagePolicies();
-  }, [user]);
+    dispatch(fetchPlatformFee());
+  }, [user, dispatch]);
 
   const handleProfileChange = (e) => {
     const { name, value, files } = e.target;
@@ -71,46 +56,12 @@ export default function ProfileSetting() {
     }
   };
 
-  const handleAddPolicyClick = () => {
-    setEditingPolicy(null);
-    setIsFormModalOpen(true);
+  const handleUpdateFeeClick = () => {
+    setIsFeeModalOpen(true);
   };
 
-  const handleEditPolicyClick = (policy) => {
-    setEditingPolicy(policy);
-    setIsFormModalOpen(true);
-  };
-
-  const handleSavePolicy = async (policyData) => {
-    try {
-      if (editingPolicy) {
-        await updateUsagePolicy(editingPolicy.id, policyData);
-        toast.success('Kebijakan berhasil diperbarui!');
-      } else {
-        await createUsagePolicy(policyData);
-        toast.success('Kebijakan berhasil ditambahkan!');
-      }
-      setIsFormModalOpen(false);
-      refreshUsagePolicies();
-    } catch (err) {
-      toast.error(`Gagal menyimpan kebijakan: ${err}`);
-    }
-  };
-
-  const handleDeletePolicyClick = (policyId) => {
-    setPolicyToDelete(policyId);
-    setIsConfirmModalOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      await deleteUsagePolicy(policyToDelete);
-      toast.success('Kebijakan berhasil dihapus!');
-      setIsConfirmModalOpen(false);
-      refreshUsagePolicies();
-    } catch (err) {
-      toast.error(`Gagal menghapus kebijakan. Kebijakan ini mungkin sedang digunakan atau memiliki keterkaitan dengan data lain.`);
-    }
+  const handleConfirmUpdateFee = (newFeePercentage) => {
+    dispatch(updatePlatformFee(newFeePercentage));
   };
 
   return (
@@ -122,7 +73,7 @@ export default function ProfileSetting() {
       </div>
       {/* Informasi Profil Admin */}
       <Card className="mb-6 p-6 bg-white shadow-md rounded-lg">
-        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Informasi Profil</h3>
+        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Account information</h3>
         <form onSubmit={handleUpdateProfile} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Nama Depan</label>
@@ -170,97 +121,49 @@ export default function ProfileSetting() {
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
           >
-            Perbarui Profil
+            Update Account
           </button>
         </form>
       </Card>
 
-      {/* Kebijakan Penggunaan */}
-      <Card className="p-6 bg-white shadow-md rounded-lg mt-6">
-        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Kebijakan Penggunaan</h3>
-        <button
-          onClick={handleAddPolicyClick}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300 mb-4"
-        >
-          Tambah Kebijakan Baru
-        </button>
-        <div className="overflow-x-auto">
-          <table className="min-w-full leading-normal">
-            <thead>
-              <tr>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Nama Kebijakan
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Deskripsi
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Diizinkan
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {usagePolicies.length > 0 ? (
-                usagePolicies.map((policy) => (
-                  <tr key={policy.id}>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">{policy.policyName}</p>
-                    </td>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">{policy.description}</p>
-                    </td>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <p className="text-gray-900 whitespace-no-wrap">{policy.permitted ? 'Ya' : 'Tidak'}</p>
-                    </td>
-                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <button
-                        onClick={() => handleEditPolicyClick(policy)}
-                        className="text-indigo-600 hover:text-indigo-900 mr-3"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeletePolicyClick(policy.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Hapus
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center text-slate-500">
-                    <div className="flex flex-col items-center justify-center py-10">
-                      <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
-                      <p>Tidak ada kebijakan penggunaan yang ditemukan.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      <Card className="p-6 bg-white shadow-md rounded-lg mt-10 mb-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-xl font-semibold text-slate-700">User Settings</h3>
+            <p className="text-sm text-gray-600 mt-1">Change your password</p>
+          </div>
+          <button
+            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-300"
+          >
+            User Settings -&gt;
+          </button>
         </div>
       </Card>
 
-      <UsagePolicyFormModal
-        isOpen={isFormModalOpen}
-        onClose={() => setIsFormModalOpen(false)}
-        onSave={handleSavePolicy}
-        policy={editingPolicy}
-      />
+      {/* Setting Account Fee Card */}
+      <Card className="p-6 bg-white shadow-md rounded-lg mt-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-xl font-semibold text-slate-700">Setting Account Fee</h3>
+            <p className="text-sm text-gray-600 mt-1">Setting account fee.</p>
+          </div>
+          <button
+            onClick={handleUpdateFeeClick}
+            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-300"
+          >
+            Setting Fee -&gt;
+          </button>
+        </div>
+      </Card>
 
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        message="Apakah Anda yakin ingin menghapus kebijakan ini? Tindakan ini tidak dapat dibatalkan."
-        confirmText="Hapus"
-        cancelText="Batal"
-      />
+      {platformFee !== null && (
+        <UpdateFeeModal
+          isOpen={isFeeModalOpen}
+          onClose={() => setIsFeeModalOpen(false)}
+          onConfirm={handleConfirmUpdateFee}
+          currentFee={platformFee}
+        />
+      )}
     </>
   );
 }

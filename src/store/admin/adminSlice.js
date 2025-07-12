@@ -11,7 +11,6 @@ const initialState = {
     platformFee: null,
     fraudAlerts: [],
     businessRecommendations: [],
-    pickupPoints: [],
     loading: false,
     transactionsLoading: false,
     error: null,
@@ -190,69 +189,6 @@ export const fetchBusinessRecommendations = createAsyncThunk(
         } catch (error) {
             console.error("Error fetching business recommendations:", error);
             const errorMessage = error.response?.data?.message || 'Failed to fetch business recommendations';
-            toast.error(errorMessage);
-            return rejectWithValue(errorMessage);
-        }
-    }
-);
-
-export const fetchPickupPoints = createAsyncThunk(
-    'admin/fetchPickupPoints',
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await axiosInstance.get('/public/pickup-points');
-            return response.data.data;
-        } catch (error) {
-            console.error("Error fetching pickup points:", error);
-            const errorMessage = error.response?.data?.message || 'Failed to fetch pickup points';
-            toast.error(errorMessage);
-            return rejectWithValue(errorMessage);
-        }
-    }
-);
-
-export const createPickupPoint = createAsyncThunk(
-    'admin/createPickupPoint',
-    async (pickupPointData, { rejectWithValue }) => {
-        try {
-            const response = await axiosInstance.post('/admin/pickup-points', pickupPointData);
-            toast.success('Lokasi penjemputan berhasil ditambahkan!');
-            return response.data.data;
-        } catch (error) {
-            console.error("Error creating pickup point:", error);
-            const errorMessage = error.response?.data?.message || 'Gagal menambahkan lokasi penjemputan';
-            toast.error(errorMessage);
-            return rejectWithValue(errorMessage);
-        }
-    }
-);
-
-export const updatePickupPoint = createAsyncThunk(
-    'admin/updatePickupPoint',
-    async ({ id, ...pickupPointData }, { rejectWithValue }) => {
-        try {
-            const response = await axiosInstance.put(`/admin/pickup-points/${id}`, pickupPointData);
-            toast.success('Lokasi penjemputan berhasil diperbarui!');
-            return response.data.data;
-        } catch (error) {
-            console.error("Error updating pickup point:", error);
-            const errorMessage = error.response?.data?.message || 'Gagal memperbarui lokasi penjemputan';
-            toast.error(errorMessage);
-            return rejectWithValue(errorMessage);
-        }
-    }
-);
-
-export const deletePickupPoint = createAsyncThunk(
-    'admin/deletePickupPoint',
-    async (id, { rejectWithValue }) => {
-        try {
-            await axiosInstance.delete(`/admin/pickup-points/${id}`);
-            toast.success('Lokasi penjemputan berhasil dihapus!');
-            return id;
-        } catch (error) {
-            console.error("Error deleting pickup point:", error);
-            const errorMessage = error.response?.data?.message || 'Gagal menghapus lokasi penjemputan';
             toast.error(errorMessage);
             return rejectWithValue(errorMessage);
         }
@@ -475,56 +411,6 @@ const adminSlice = createSlice({
                 state.businessRecommendations = action.payload;
             })
             .addCase(fetchBusinessRecommendations.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(fetchPickupPoints.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchPickupPoints.fulfilled, (state, action) => {
-                state.loading = false;
-                state.pickupPoints = action.payload;
-            })
-            .addCase(fetchPickupPoints.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(createPickupPoint.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(createPickupPoint.fulfilled, (state, action) => {
-                state.loading = false;
-                state.pickupPoints.push(action.payload);
-            })
-            .addCase(createPickupPoint.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(updatePickupPoint.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(updatePickupPoint.fulfilled, (state, action) => {
-                state.loading = false;
-                state.pickupPoints = state.pickupPoints.map((point) =>
-                    point.pickupPointID === action.payload.pickupPointID ? action.payload : point
-                );
-            })
-            .addCase(updatePickupPoint.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(deletePickupPoint.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(deletePickupPoint.fulfilled, (state, action) => {
-                state.loading = false;
-                state.pickupPoints = state.pickupPoints.filter((point) => point.pickupPointID !== action.payload);
-            })
-            .addCase(deletePickupPoint.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

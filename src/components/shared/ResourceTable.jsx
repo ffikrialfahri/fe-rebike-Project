@@ -123,7 +123,10 @@ const ResourceTable = ({
     if (enableSearch && searchTerm) {
       result = result.filter(item =>
         columns.some(column => {
-          const value = column.accessor(item);
+          // Only search in columns explicitly marked as searchable, or all if none are marked
+          if (column.searchable === false) return false; // Skip if explicitly not searchable
+
+          const value = typeof column.accessor === 'function' ? column.accessor(item) : undefined;
           return value && value.toString().toLowerCase().includes(searchTerm.toLowerCase());
         })
       );

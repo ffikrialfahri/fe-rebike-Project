@@ -110,7 +110,7 @@ export default function Transaction() {
   };
 
   const partnerColumns = [
-    { header: 'ID Partner', accessor: (item) => item.id },
+    { header: 'ID Partner', accessor: (item) => item.id, searchable: true },
     { header: 'Nama Partner', accessor: (item) => item.name },
     { header: 'Email', accessor: (item) => item.email },
     {
@@ -214,7 +214,7 @@ export default function Transaction() {
                 : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
             }`}
           >
-            Detail Per Partner
+            Detail Partner Transactions
           </button>
         </nav>
       </div>

@@ -76,7 +76,7 @@ export default function LoginPage({ isOpen, onClose }) {
               onClose();
             } else if (user.roles.includes("ROLE_PARTNER")) {
               console.log("ini mitra", user)
-              navigate("/mitra/dashboard", { replace: true });
+              navigate("/mitra", { replace: true });
               onClose();
             } else {
               navigate("/", { replace: true });

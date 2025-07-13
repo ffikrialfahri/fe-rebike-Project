@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
-import { HashLink } from "react-router-hash-link"; // Import HashLink
+import { HashLink } from "react-router-hash-link";
 import LandingLayout from "@/components/layout/LandingLayout";
 import Card from "@/components/ui/Card";
 import LoginPage from '@/components/pages/Login/LoginPage';

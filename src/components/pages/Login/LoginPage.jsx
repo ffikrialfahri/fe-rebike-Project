@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "@/store/auth/authSlice";
+import { loginUser, setShowMitraInfoModal } from "@/store/auth/authSlice";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -75,8 +75,7 @@ export default function LoginPage({ isOpen, onClose }) {
               navigate("/admin/dashboard", { replace: true });
               onClose();
             } else if (user.roles.includes("ROLE_PARTNER")) {
-              console.log("ini mitra", user)
-              navigate("/mitra", { replace: true });
+              dispatch(setShowMitraInfoModal(true));
               onClose();
             } else {
               navigate("/", { replace: true });
@@ -181,6 +180,6 @@ export default function LoginPage({ isOpen, onClose }) {
           </p>
         </div>
       </div>
-    </div>
+      </div>
   );
 }

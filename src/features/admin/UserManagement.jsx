@@ -69,32 +69,7 @@ export default function UserManagement() {
           searchPlaceholder="Cari berdasarkan ID pengguna..."
           emptyMessage="Tidak ada data pengguna yang ditemukan."
         />
-
-        <Card className="p-6 bg-white shadow-md rounded-lg">
-          <h2 className="text-xl font-semibold text-slate-700 mb-4 flex items-center gap-2">
-            <Lightbulb className="w-6 h-6 text-yellow-500" /> Rekomendasi Bisnis
-          </h2>
-          <div className="overflow-x-auto">
-            {businessRecommendations.length > 0 ? (
-              <ul className="list-disc pl-5 space-y-2 text-slate-700">
-                {businessRecommendations.map((rec, index) => (
-                  <li key={index}>
-                    <p className="font-semibold">{rec.recommendation}</p>
-                    <p className="text-sm text-slate-600">Alasan: {rec.reason}</p>
-                    <p className={`text-xs font-medium ${rec.severity === 'HIGH' ? 'text-red-500' : rec.severity === 'MEDIUM' ? 'text-orange-500' : 'text-green-500'}`}>
-                      Prioritas: {rec.severity}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-10 text-slate-500">
-                <ClipboardList className="w-12 h-12 text-gray-400 mb-3" />
-                <p>Tidak ada rekomendasi bisnis saat ini.</p>
-              </div>
-            )}
-          </div>
-        </Card>
+        
       </div>
     </div>
   );

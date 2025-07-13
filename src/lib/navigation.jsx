@@ -34,7 +34,7 @@ export const adminNavItems = {
         { name: 'Manajemen Partner', path: '/admin/partners', icon: Users },
         { name: 'Manajemen User', path: '/admin/users', icon: User },
         { name: 'Manajemen Transaksi', path: '/admin/transaksi', icon: Package },
-        { name: 'Keuangan', path: '/admin/keuangan', icon: Banknote },
+        { name: 'Permintaan Pencairan', path: '/admin/keuangan', icon: Banknote },
     ],
     account: [
       { name: "Pengaturan Akun", path: "/admin/profil", icon: Settings }

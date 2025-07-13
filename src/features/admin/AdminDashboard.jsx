@@ -86,7 +86,7 @@ export default function AdminDashboard() {
         <div className="flex flex-col gap-6">
           <div className="flex-grow grid grid-cols-2 gap-6">
             <StatCard
-              title="Total Pengguna"
+              title="Total Customer"
               value={dashboardSummary?.totalUsers?.toLocaleString() || '0'}
               valueColor="text-teal-600"
               contentAlign="left"
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
           <div className="flex-grow grid grid-cols-2 gap-6 items-center text-center ">
             <Link to="/admin/partners">
               <StatCard
-                title="Verifikasi Mitra"
+                title="Verifikasi Partner"
                 value={unverifiedPartnersCount}
                 valueColor="text-blue-600"
                 contentAlign="left"
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
               />
             </Link>
             <StatCard
-              title="Total Mitra"
+              title="Total Partner"
               value={dashboardSummary?.totalPartners?.toLocaleString() || '0'}
               valueColor="text-green-600"
               contentAlign="left"

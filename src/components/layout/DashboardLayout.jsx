@@ -118,11 +118,7 @@ const Sidebar = ({ navItems, isCollapsed, toggleNotificationModal, isNotificatio
               <p className="text-xs text-slate-500">{user?.email}</p>
             </div>
           )}
-          {!isCollapsed && (
-            <button className="text-slate-500 hover:text-slate-800">
-              <MoreHorizontal size={20} />
-            </button>
-          )}
+          
         </div>
       </div>
     </aside>

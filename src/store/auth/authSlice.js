@@ -11,6 +11,7 @@ const initialState = {
     mutationLoading: false,
     error: null,
     verifySuccess: false,
+    showMitraInfoModal: false, // New state for MitraInfoPage modal
 };
 
 export const loginUser = createAsyncThunk(
@@ -145,6 +146,9 @@ const authSlice = createSlice({
             state.verifySuccess = false;
             state.error = null;
         },
+        setShowMitraInfoModal: (state, action) => {
+            state.showMitraInfoModal = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -221,5 +225,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout, resetAuthStatus } = authSlice.actions;
+export const { logout, resetAuthStatus, setShowMitraInfoModal } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Smartphone, LogIn, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const qrCodeGooglePlay = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://play.google.com';
@@ -8,7 +8,7 @@ const stepsData = [
   {
     stepNumber: 0,
     left: {
-      title: "Pendaftaran Berhasil!",
+      title: "Login Berhasil!",
       description: "Selamat datang di keluarga besar Rebike. Langkah terakhir Anda adalah mengunduh Aplikasi Partner kami untuk mulai mengelola bisnis Anda.",
     },
     right: (
@@ -71,13 +71,22 @@ const stepsData = [
          <h3 className="text-2xl font-bold mb-4">Satu Akun, Semua Akses</h3>
          <p className="mb-6 opacity-90">Gunakan kredensial yang sama untuk mengakses semua fitur manajemen mitra di aplikasi.</p>
          <LogIn size={80} className="mx-auto opacity-80" />
+         <p className="text-center text-white text-sm mt-6">
+            Ada kendala? <a href="mailto:support@rebike.com" className="text-white hover:underline">Hubungi Tim Support Kami</a>.
+          </p>
        </div>
     ),
   },
 ];
 
-const MitraInfoPage = () => {
+const MitraInfoPage = ({ isOpen, onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
+
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep(0);
+    }
+  }, [isOpen]);
 
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, stepsData.length - 1));
@@ -89,9 +98,23 @@ const MitraInfoPage = () => {
 
   const activeStepData = stepsData[currentStep];
 
+  if (!isOpen) return null;
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
-      <div className="max-w-4xl w-full bg-white shadow-xl rounded-2xl overflow-hidden md:flex">
+    <div
+      className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4 transition-opacity duration-300"
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-4xl w-full bg-white shadow-xl rounded-2xl overflow-hidden md:flex"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white hover:text-slate-800 text-2xl font-bold z-10"
+        >
+          &times;
+        </button>
         
         {/* --- Left Side: Konten Dinamis --- */}
         <div className="md:w-1/2 p-8 flex flex-col justify-between">
@@ -114,7 +137,7 @@ const MitraInfoPage = () => {
                     <div 
                         key={step.stepNumber}
                         className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                            currentStep >= step.stepNumber ? 'bg-blue-600 scale-125' : 'bg-gray-300'
+                            currentStep >= step.stepNumber ? 'bg-teal-600 scale-125' : 'bg-gray-300'
                         }`}
                     ></div>
                 ))}
@@ -133,7 +156,7 @@ const MitraInfoPage = () => {
               <button
                 onClick={handleNext}
                 disabled={currentStep === stepsData.length - 1}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
               >
                 Next
                 <ChevronRight className="h-5 w-5" />
@@ -143,16 +166,12 @@ const MitraInfoPage = () => {
         </div>
 
         {/* --- Right Side: Visual Dinamis --- */}
-        <div className="hidden md:flex md:w-1/2 bg-blue-600 p-8 items-center justify-center relative overflow-hidden">
+        <div className="hidden md:flex md:w-1/2 bg-teal-500 p-8 items-center justify-center relative overflow-hidden">
            <div key={currentStep} className="w-full h-full flex items-center justify-center animate-fade-in-right">
              {activeStepData.right}
            </div>
         </div>
-
       </div>
-       <p className="text-center text-gray-500 text-sm mt-6">
-          Ada kendala? <a href="mailto:support@rebike.com" className="text-blue-600 hover:underline">Hubungi Tim Support Kami</a>.
-        </p>
     </div>
   );
 };

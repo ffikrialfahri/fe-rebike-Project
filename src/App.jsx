@@ -1,7 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { useSelector, useDispatch } from "react-redux";
+import MitraInfoPage from "./components/pages/Mitra/MitraInfoPage.jsx";
+import { setShowMitraInfoModal } from "./store/auth/authSlice";
 
-// Layout dan Halaman Publik
+// Layout Panel
+import AdminPanel from "./components/pages/Admin/AdminPanel.jsx";
+
 import LandingPage from "./components/pages/LandingPage/LandingPage.jsx";
 import RegisterPage from "./components/pages/Registrasi/RegistrasiPage.jsx";
 import AdminLoginPage from "./components/pages/Admin/AdminLoginPages.jsx";
@@ -13,9 +18,7 @@ import ResetPasswordPage from "./components/pages/Auth/ResetPasswordPage.jsx";
 import VerifyEmailPage from "./components/pages/Auth/VerifyEmailPage.jsx";
 import SsoCallbackPage from "./components/pages/Auth/SsoCallbackPage.jsx";
 
-// Layout Panel
-import AdminPanel from "./components/pages/Admin/AdminPanel.jsx";
-import MitraInfoPage from "./components/pages/Mitra/MitraInfoPage.jsx";
+
 
 // Fitur Panel Admin
 import AdminDashboard from "./features/admin/AdminDashboard.jsx";
@@ -27,6 +30,9 @@ import KeuanganAdmin from "./features/admin/Keuangan.jsx";
 import ProfileSettingAdmin from "./features/admin/ProfileSetting.jsx";
 
 function App() {
+  const dispatch = useDispatch();
+  const { showMitraInfoModal } = useSelector((state) => state.auth);
+
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
@@ -39,16 +45,6 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/auth/sso-callback" element={<SsoCallbackPage />} />
-
-        {/* --- RUTE MITRA --- */}
-        <Route
-          path="/mitra"
-          element={
-            <ProtectedRoute requiredRole="ROLE_PARTNER">
-              <MitraInfoPage />
-            </ProtectedRoute>
-          }
-        />
 
         {/* --- RUTE ADMIN --- */}
         <Route
@@ -69,6 +65,11 @@ function App() {
           <Route path="profil" element={<ProfileSettingAdmin />} />
         </Route>
       </Routes>
+
+      <MitraInfoPage
+        isOpen={showMitraInfoModal}
+        onClose={() => dispatch(setShowMitraInfoModal(false))}
+      />
     </>
   );
 }

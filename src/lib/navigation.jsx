@@ -1,24 +1,10 @@
 import { 
-  AreaChart, Car, LayoutDashboard, Package, History, Users, Receipt, User, 
-  Settings, FileText, Banknote, ShieldCheck, MapPin 
+  LayoutDashboard, Users, Receipt, User, 
+  Settings, FileText, Banknote, ShieldCheck, MapPin, Package 
 } from "lucide-react";
 
 
-export const mitraNavItems = {
-    navigate: [
-        { name: 'Dasbor', path: '/mitra/dashboard', icon: LayoutDashboard },
-        { name: 'Transaksi', path: '/mitra/transaction', icon: Package },
-        { name: 'Manajement Product', path: '/mitra/armada', icon: Car },
-        { name: 'Report & Finance', path: '/mitra/laporan', icon: AreaChart },
-        { name: 'History', path: '/mitra/history', icon: History },
-    ],
-    account: [
-      { name: "Pengaturan Akun", path: "/mitra/profil", icon: Settings }
-    ],
-    subscriptions: [
-      { name: "Billing", path: "/mitra/billing", icon: Receipt }
-    ],
-};
+
 
 export const formatRupiah = (amount) => {
   return new Intl.NumberFormat('id-ID', {

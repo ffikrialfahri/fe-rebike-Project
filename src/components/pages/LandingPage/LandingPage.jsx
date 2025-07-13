@@ -4,6 +4,8 @@ import { HashLink } from "react-router-hash-link";
 import LandingLayout from "@/components/layout/LandingLayout";
 import Card from "@/components/ui/Card";
 import LoginPage from '@/components/pages/Login/LoginPage';
+import { useDispatch } from "react-redux";
+import { setShowMitraInfoModal } from "../../../store/auth/authSlice";
 import {
   MapPin,
   Bike,
@@ -25,6 +27,12 @@ export default function LandingPage() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
+
+  const dispatch = useDispatch();
+
+  const handleOpenMitraInfoModal = () => {
+    dispatch(setShowMitraInfoModal(true));
+  };
 
   const ICON_LOCATIONS = <MapPin className="w-6 h-6" />;
 
@@ -221,12 +229,12 @@ export default function LandingPage() {
             Kembangkan bisnis Anda bersama kami. Jangkau ribuan pelanggan baru
             dan kelola usaha Anda dengan lebih mudah.
           </p>
-          <Link
-            to="/register"
+          <button
+            onClick={handleOpenMitraInfoModal}
             className="bg-white text-brand-primary hover:bg-slate-100 font-bold py-3 px-8 rounded-lg transition text-lg shadow-md"
           >
             Daftar Sebagai Mitra
-          </Link>
+          </button>
         </div>
       </section>
 

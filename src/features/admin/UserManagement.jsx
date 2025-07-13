@@ -1,9 +1,11 @@
 import { fetchUsers } from '../../store/admin/adminSlice';
-import { Users, Lightbulb, SquarePen, Trash2 } from 'lucide-react';
+import { Users, UserRoundX, Hand } from 'lucide-react';
 import ResourceTable from '../../components/shared/ResourceTable';
 import Card from "../../components/ui/Card";
+import { useDispatch } from 'react-redux';
 
 export default function UserManagement() {
+  const dispatch = useDispatch();
 
   // Data dummy untuk rekomendasi bisnis, bisa diganti dengan data dari API jika ada
   const businessRecommendations = [
@@ -19,28 +21,49 @@ export default function UserManagement() {
     },
   ];
 
+  const handleSuspendUser = (userId, isEnabled) => {
+    // Aksi suspend kosong untuk saat ini
+    console.log(`Suspend user with ID: ${userId}, current status: ${isEnabled}`);
+    // Nanti akan ditambahkan dispatch(updateUserStatus({ userId, isEnabled: !isEnabled }));
+  };
+
   const columns = [
     { header: 'ID', accessor: (item) => item.userID },
     { header: 'Nama', accessor: (item) => `${item.firstName} ${item.lastName}` },
     { header: 'Email', accessor: (item) => item.email },
     { header: 'Nomor Telepon', accessor: (item) => item.phoneNumber },
     {
+        header: 'Status',
+        accessor: (item) => item.isEnabled ? 'Aktif' : 'Suspended',
+        cell: (item) => (
+          <span
+            className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
+              item.isEnabled ? 'text-green-900' : 'text-red-900'
+            }`}
+          >
+            <span
+              aria-hidden
+              className={`absolute inset-0 opacity-50 rounded-full ${
+                item.isEnabled ? 'bg-green-200' : 'bg-red-200'
+              }`}
+            ></span>
+            <span className="relative">{item.isEnabled ? 'Aktif' : 'Suspended'}</span>
+          </span>
+        ),
+    },
+    {
         header: 'Aksi',
         cell: (item) => (
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => { /* Handle edit logic */ }}
-              className="text-blue-600 hover:text-blue-800"
-              title="Edit Pengguna"
+              onClick={() => handleSuspendUser(item.userID, item.isEnabled)}
+              className={`text-red-600 hover:text-red-800 ${
+                item.isEnabled ? '' : 'opacity-50 cursor-not-allowed'
+              }`}
+              title={item.isEnabled ? 'Suspend Pengguna' : 'Pengguna Sudah Disuspend'}
+              disabled={!item.isEnabled}
             >
-              <SquarePen size={20} />
-            </button>
-            <button
-              onClick={() => { /* Handle delete logic */ }}
-              className="text-red-600 hover:text-red-800"
-              title="Hapus Pengguna"
-            >
-              <Trash2 size={20} />
+              <UserRoundX size={20} />
             </button>
           </div>
         ),

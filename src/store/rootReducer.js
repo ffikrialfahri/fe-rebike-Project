@@ -1,6 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import authReducer from './auth/authSlice';
-import mitraReducer from './mitra/mitraSlice';
+import mitraReducer from '../archive/mitraSlice';
 import adminReducer from './admin/adminSlice';
 
 const rootReducer = combineReducers({

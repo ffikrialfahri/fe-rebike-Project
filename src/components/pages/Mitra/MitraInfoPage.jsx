@@ -8,8 +8,8 @@ const stepsData = [
   {
     stepNumber: 0,
     left: {
-      title: "Login Berhasil!",
-      description: "Selamat datang di keluarga besar Rebike. Langkah terakhir Anda adalah mengunduh Aplikasi Partner kami untuk mulai mengelola bisnis Anda.",
+      title: "Ingin Bergabung ke Rebike?",
+      description: "Selamat datang di keluarga besar Rebike. Langkah anda semakin dekat Anda hanya perlu mengunduh Aplikasi Partner kami untuk mulai registrasi dan mengelola bisnis anda.",
     },
     right: (
       <div className="text-center text-white">
@@ -63,8 +63,8 @@ const stepsData = [
   {
     stepNumber: 3,
     left: {
-      title: "3. Login Kembali",
-      description: "Buka aplikasi yang sudah terpasang, lalu masuk menggunakan email dan password yang telah Anda daftarkan sebelumnya.",
+      title: "3. Daftar atau Login",
+      description: "Buka aplikasi yang sudah terpasang, lalu Registrasi terlebih dahulu untuk mendaftarkan akun, selanjutnya anda hanya perlu masuk menggunakan email dan password yang telah Anda daftarkan sebelumnya.",
     },
     right: (
        <div className="text-center text-white">

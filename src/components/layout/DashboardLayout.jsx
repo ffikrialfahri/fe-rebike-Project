@@ -144,13 +144,13 @@ const PanelHeader = ({ toggleSidebar, isCollapsed }) => {
       >
         {isCollapsed ? <ChevronRight size={24} /> : <Menu size={24} />}
       </button>
-      <button
+      {/* <button
         onClick={handleLogout}
         className="text-sm text-slate-600 hover:text-danger font-semibold transition flex items-center gap-2 bg-slate-100 hover:bg-red-100 px-3 py-2 rounded-lg"
       >
         <LogOut size={16} />
         <span>Logout</span>
-      </button>
+      </button> */}
     </header>
   );
 };
@@ -177,7 +177,7 @@ export default function DashboardLayout({ navItems }) {
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize(); // Set initial state
+    handleResize();
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);

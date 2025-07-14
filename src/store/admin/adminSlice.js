@@ -57,8 +57,10 @@ export const fetchUsers = createAsyncThunk(
             let url = '/admin/users';
             if (id) {
                 url = `/admin/users/${id}`;
+            } else {
+                url = `/admin/users?page=${page}&size=${size}`;
             }
-            const response = await axiosInstance.get(`${url}?page=${page}&size=${size}`);
+            const response = await axiosInstance.get(url);
             
             if (id) {
                 return { data: [response.data.data], page: 0, size: 1, totalElements: 1, totalPages: 1 };

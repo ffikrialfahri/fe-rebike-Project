@@ -37,13 +37,17 @@ const ResourceTable = ({
 
   useEffect(() => {
     if (fetchDataAction) {
-      if (clientSidePagination) {
+      if (searchTerm) {
+        // If there's a search term, fetch by ID and reset pagination
+        dispatch(fetchDataAction({ id: searchTerm }));
+        setCurrentPage(0); // Reset current page when searching
+      } else if (clientSidePagination) {
         dispatch(fetchDataAction());
       } else {
         dispatch(fetchDataAction({ page: currentPage, size: itemsPerPage }));
       }
     }
-  }, [dispatch, fetchDataAction, currentPage, clientSidePagination]);
+  }, [dispatch, fetchDataAction, currentPage, clientSidePagination, searchTerm]);
 
   const handleSearchInputChange = (event) => {
     setSearchInput(event.target.value);
@@ -52,6 +56,7 @@ const ResourceTable = ({
   const handleSearchSubmit = () => {
     setSearchTerm(searchInput);
     setCurrentPage(0);
+    setSearchInput(''); // Clear the search input after submission
   };
 
   const handleSearchKeyPress = (event) => {

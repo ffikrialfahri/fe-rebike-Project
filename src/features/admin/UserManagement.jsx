@@ -56,7 +56,7 @@ export default function UserManagement() {
               }`}
             ></span>
             <span className="relative">
-              {item.nonLocked ? 'Aktif' : `Suspended${item.suspensionReason ? `: ${item.suspensionReason}` : ''}`}
+              {item.nonLocked ? 'Aktif' : 'Suspended'}
             </span>
           </span>
         ),

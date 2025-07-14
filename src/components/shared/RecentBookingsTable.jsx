@@ -2,6 +2,7 @@ import { ClipboardList } from "lucide-react";
 import { format } from "date-fns";
 import { formatRupiah } from "../../lib/navigation";
 import Card from "../ui/Card";
+import StatusBadge from "../ui/StatusBadge";
 
 export default function RecentBookingsTable({
   title,
@@ -47,23 +48,23 @@ export default function RecentBookingsTable({
           <table className="min-w-full bg-white">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b bg-gray-100 text-left">Customer Name</th>
-                <th className="py-2 px-4 border-b bg-gray-100 text-left">Partner Name</th>
-                <th className="py-2 px-4 border-b bg-gray-100 text-left">Date</th>
-                <th className="py-2 px-4 border-b bg-gray-100 text-left">Payment Status</th>
-                <th className="py-2 px-4 border-b bg-gray-100 text-left">Booking Status</th>
-                <th className="py-2 px-4 border-b bg-gray-100 text-left">Total Cost</th>
+                <th className="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer Name</th>
+                <th className="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Partner Name</th>
+                <th className="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                <th className="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Payment Status</th>
+                <th className="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Booking Status</th>
+                <th className="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total Cost</th>
               </tr>
             </thead>
             <tbody>
               {transactionsArray.slice(0, limit).map((transaction) => (
                 <tr key={transaction.transactionID}>
-                  <td className="py-2 px-4 border-b">{`${transaction.customer.firstName} ${transaction.customer.lastName}`}</td>
-                  <td className="py-2 px-4 border-b">{`${transaction.partner.firstName} ${transaction.partner.lastName}`}</td>
-                  <td className="py-2 px-4 border-b">{format(new Date(transaction.bookingDate), "dd/MM/yyyy")}</td>
-                  <td className="py-2 px-4 border-b">{transaction.paymentStatus}</td>
-                  <td className="py-2 px-4 border-b">{transaction.bookingStatus}</td>
-                  <td className="py-2 px-4 border-b">{formatRupiah(transaction.totalCost)}</td>
+                  <td className="py-3 px-4 border-b border-gray-200 text-sm">{`${transaction.customer.firstName} ${transaction.customer.lastName}`}</td>
+                  <td className="py-3 px-4 border-b border-gray-200 text-sm">{`${transaction.partner.firstName} ${transaction.partner.lastName}`}</td>
+                  <td className="py-3 px-4 border-b border-gray-200 text-sm">{format(new Date(transaction.bookingDate), "dd/MM/yyyy")}</td>
+                  <td className="py-3 px-4 border-b border-gray-200 text-sm"><StatusBadge status={transaction.paymentStatus} type="payment" /></td>
+                  <td className="py-3 px-4 border-b border-gray-200 text-sm"><StatusBadge status={transaction.bookingStatus} type="booking" /></td>
+                  <td className="py-3 px-4 border-b border-gray-200 text-sm">{formatRupiah(transaction.totalCost)}</td>
                 </tr>
               ))}
             </tbody>

@@ -12,7 +12,6 @@ dist
 dist-ssr
 *.local
 
-src/archive/
 IDE/
 # Editor directories and files
 .vscode/*

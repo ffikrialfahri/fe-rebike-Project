@@ -75,7 +75,7 @@ export default function SuspensionReasonModal({ isOpen, onClose, onConfirm, curr
       </Modal>
     );
   } else {
-    // Modal for unsuspend confirmation (no reason needed)
+    // Modal for unsuspend confirmation
     return (
       <Modal isOpen={isOpen} onClose={onClose} title="Konfirmasi Aktifkan Pengguna">
         <p className="text-gray-700 mb-4">Apakah Anda yakin ingin mengaktifkan kembali pengguna ini?</p>
@@ -89,7 +89,10 @@ export default function SuspensionReasonModal({ isOpen, onClose, onConfirm, curr
           </button>
           <button
             type="button"
-            onClick={() => onConfirm('')} // Pass empty string for unsuspend reason
+            onClick={() => {
+              onConfirm(''); // Pass empty string for unsuspend reason
+              onClose(); // Close modal after confirmation
+            }}
             className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300"
           >
             Aktifkan

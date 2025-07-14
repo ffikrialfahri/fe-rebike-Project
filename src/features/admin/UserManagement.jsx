@@ -106,7 +106,7 @@ export default function UserManagement() {
           errorSelector={(state) => state.admin.error}
           columns={columns}
           enableSearch={true}
-          searchPlaceholder="Cari berdasarkan ID pengguna..."
+          searchPlaceholder="Cari ID pengguna..."
           emptyMessage="Tidak ada data pengguna yang ditemukan."
         />
         

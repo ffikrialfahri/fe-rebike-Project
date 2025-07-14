@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { fetchPartners } from "../../store/admin/adminSlice";
-import { Users, CheckCircle, Search, RefreshCcw, SquarePen, Trash2, UserRoundX } from 'lucide-react';
+import { useState, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPartners, fetchUsers } from "../../store/admin/adminSlice";
+import { Users, CheckCircle, Search, RefreshCcw, UserRoundX } from 'lucide-react';
 import axios from "../../api/axios";
-import EditPartnerModal from "../../components/modals/EditPartnerModal";
 import ConfirmationModal from "../../components/modals/ConfirmationModal";
 import ResourceTable from "../../components/shared/ResourceTable";
 import Card from "../../components/ui/Card";
@@ -11,26 +10,24 @@ import toast from 'react-hot-toast';
 
 export default function PartnerManagement() {
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState('allPartners'); // 'verification' or 'allPartners'
+  const [activeTab, setActiveTab] = useState('allPartners');
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPartner, setSelectedPartner] = useState(null);
+  const { partners, users, loading, error } = useSelector((state) => state.admin);
+
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [partnerToBlock, setPartnerToBlock] = useState(null);
 
-  // State for verification section
   const [unverifiedPartners, setUnverifiedPartners] = useState([]);
   const [loadingVerification, setLoadingVerification] = useState(true);
   const [errorVerification, setErrorVerification] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch unverified partners
   const fetchUnverifiedPartners = async () => {
     setLoadingVerification(true);
     try {
-      const response = await axios.get("/admin/partners");
+      const response = await axios.get("/admin/partners?size=1000"); // Fetch all for client-side filtering
       const filteredPartners = response.data.data.data.filter(
-        (partner) => !partner.verified
+        (partner) => !partner.isVerified // Backend uses isVerified
       );
       setUnverifiedPartners(filteredPartners);
     } catch (err) {
@@ -44,32 +41,26 @@ export default function PartnerManagement() {
   useEffect(() => {
     if (activeTab === 'verification') {
       fetchUnverifiedPartners();
+    } else {
+      dispatch(fetchPartners({ page: 0, size: 1000 }));
+      dispatch(fetchUsers({ page: 0, size: 1000 }));
     }
-  }, [activeTab]);
+  }, [dispatch, activeTab]);
 
-  // Handle verification
   const handleVerifyPartner = async (partnerId) => {
     try {
-      await axios.patch(`/admin/partners/${partnerId}/verify`, { isVerified: true }, { withCredentials: true });
+      await axios.patch(`/admin/partners/${partnerId}/verify`, { isVerified: true });
       toast.success("Partner berhasil diverifikasi!");
       fetchUnverifiedPartners(); // Refresh verification list
-      dispatch(fetchPartners({})); // Refresh main partner list
     } catch (err) {
       toast.error("Gagal memverifikasi partner.");
       console.error("Error verifying partner:", err);
     }
   };
 
-  // Filter for verification search
   const filteredForVerification = unverifiedPartners.filter((partner) =>
     partner.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Handlers for main partner list
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedPartner(null);
-  };
 
   const handleBlockClick = (partnerId) => {
     setPartnerToBlock(partnerId);
@@ -78,12 +69,11 @@ export default function PartnerManagement() {
 
   const handleConfirmBlock = async () => {
     try {
-      await axios.patch(`/admin/partners/${partnerToBlock}/verify`, { isVerified: false });
-      toast.success("Partner berhasil diblokir.");
-      dispatch(fetchPartners({})); // Refresh main list
-      fetchUnverifiedPartners(); // Refresh verification list
+      // Logic for blocking user is handled in UserManagement page now.
+      // This button in partner list should probably suspend the user.
+      console.log("Blocking/Suspending partner:", partnerToBlock);
+      toast.info("Fungsi blokir/suspend akan diimplementasikan.");
     } catch (err) {
-      console.error("Error blocking partner:", err);
       toast.error("Gagal memblokir partner.");
     } finally {
       setIsConfirmModalOpen(false);
@@ -91,24 +81,59 @@ export default function PartnerManagement() {
     }
   };
 
+  const mergedData = useMemo(() => {
+    if (!partners.length || !users.length) {
+      return [];
+    }
+    const usersMap = new Map(users.map(user => [user.userID, user]));
+    return partners.map(partner => {
+      const correspondingUser = usersMap.get(partner.id);
+      return {
+        ...partner,
+        nonLocked: correspondingUser ? correspondingUser.nonLocked : true, // Default to true if user not found
+      };
+    }).filter(p => usersMap.has(p.id)); // Only include partners that have a corresponding user
+  }, [partners, users]);
+  
   const columns = [
     { header: 'ID', accessor: (item) => item.id },
-    { header: 'Nama Partner', accessor: (item) => item.name },
+    { header: 'Nama Partner', accessor: (item) => item.name, searchable: true },
     { header: 'Email', accessor: (item) => item.email },
     {
-      header: 'Status',
+      header: 'Status Verifikasi',
       cell: (item) => (
         <span
           className={
-            item?.verified
+            item.isVerified // Backend uses isVerified
               ? "text-green-600 font-medium"
               : "text-red-600 font-medium"
           }
         >
-          {item?.verified ? "Terverifikasi" : "Belum Terverifikasi"}
+          {item.isVerified ? "Terverifikasi" : "Belum Terverifikasi"}
         </span>
       ),
-      accessor: (item) => item.verified,
+      accessor: (item) => item.isVerified,
+    },
+    {
+      header: 'Status Suspend',
+      cell: (item) => (
+        <span
+          className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
+            item.nonLocked ? 'text-green-900' : 'text-red-900'
+          }`}
+        >
+          <span
+            aria-hidden
+            className={`absolute inset-0 opacity-50 rounded-full ${
+              item.nonLocked ? 'bg-green-200' : 'bg-red-200'
+            }`}
+          ></span>
+          <span className="relative">
+            {item.nonLocked ? 'Aktif' : 'Suspended'}
+          </span>
+        </span>
+      ),
+      accessor: (item) => (item.nonLocked ? 'Aktif' : 'Suspended'),
     },
     {
       header: 'Aksi',
@@ -152,9 +177,9 @@ export default function PartnerManagement() {
       </Card>
       <Card className="p-4 mb-6">
         {loadingVerification ? (
-            <p>Memuat data partner...</p>
+            <p className="text-center py-10">Memuat data partner...</p>
         ) : errorVerification ? (
-            <p>Error: {errorVerification.message}</p>
+            <p className="text-center py-10 text-red-500">Error: {errorVerification.message}</p>
         ) : filteredForVerification.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white">
@@ -192,17 +217,17 @@ export default function PartnerManagement() {
       </Card>
     </>
   );
-
+  
   const renderAllPartnersContent = () => (
     <ResourceTable
       title="Daftar Semua Partner"
-      fetchDataAction={fetchPartners}
-      dataSelector={(state) => state.admin.partners}
-      loadingSelector={(state) => state.admin.loading}
-      errorSelector={(state) => state.admin.error}
+      staticData={mergedData}
+      loading={loading}
+      error={error}
       columns={columns}
+      clientSidePagination={true}
       enableSearch={true}
-      searchPlaceholder="Cari ID atau nama partner..."
+      searchPlaceholder="Cari berdasarkan nama partner..."
       emptyMessage="Tidak ada partner yang ditemukan."
     />
   );
@@ -243,19 +268,11 @@ export default function PartnerManagement() {
         {activeTab === 'verification' ? renderVerificationContent() : renderAllPartnersContent()}
       </div>
 
-      {selectedPartner && (
-        <EditPartnerModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          partnerData={selectedPartner}
-        />
-      )}
-
       <ConfirmationModal
         isOpen={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={handleConfirmBlock}
-        message="Apakah Anda yakin ingin memblokir partner ini? Partner yang diblokir tidak akan dapat login dan motornya tidak akan tersedia untuk disewa."
+        message="Fungsi blokir/suspend user dilakukan di halaman Manajemen User. Apakah Anda ingin melanjutkan?"
       />
     </>
   );

@@ -51,11 +51,11 @@ const Sidebar = ({ navItems, isCollapsed, toggleNotificationModal, isNotificatio
         </div>
         {!isCollapsed && (
           <div className="relative">
-            <button className="relative text-slate-500 hover:text-slate-800" onClick={toggleNotificationModal}>
+            {/* <button className="relative text-slate-500 hover:text-slate-800" onClick={toggleNotificationModal}>
               <Bell size={22} />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-            <NotificationModal isOpen={isNotificationModalOpen} onClose={toggleNotificationModal} notifications={[]} />
+            </button> */}
+            {/* <NotificationModal isOpen={isNotificationModalOpen} onClose={toggleNotificationModal} notifications={[]} /> */}
           </div>
         )}
       </div>

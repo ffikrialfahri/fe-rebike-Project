@@ -1,46 +1,122 @@
 {
-    "message": "Dashboard summary retrieved successfully.",
+    "message": "All users retrieved successfully.",
     "statusCode": 200,
     "data": {
-        "totalUsers": 102,
-        "totalPartners": 49,
-        "totalTransactions": 52,
-        "platformRevenue": 1368485.6000,
-        "userGrowth": {
-            "labels": [
-                "Feb",
-                "Mar",
-                "Apr",
-                "Mei",
-                "Jun",
-                "Jul"
-            ],
-            "data": [
-                0,
-                0,
-                0,
-                0,
-                0,
-                102
-            ]
-        },
-        "partnerGrowth": {
-            "labels": [
-                "Feb",
-                "Mar",
-                "Apr",
-                "Mei",
-                "Jun",
-                "Jul"
-            ],
-            "data": [
-                0,
-                0,
-                0,
-                0,
-                0,
-                49
-            ]
-        }
+        "data": [
+            {
+                "userID": "4d6f0ee3-484e-4de7-b7d6-dd5e90833e0c",
+                "username": "MerahMeruh",
+                "firstName": "Akun baru",
+                "lastName": "Baru ",
+                "email": "kuntulmabur99@gmail.com",
+                "phoneNumber": "088946461655",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "57370c63-e91f-4661-b559-9038c4657b85",
+                "username": "Muhamadfikrinabil",
+                "firstName": "Muhamad Fikri",
+                "lastName": "Nabil Assyawali",
+                "email": "muhamadfikrinabilassyawali@gmail.com",
+                "phoneNumber": "088584876794",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "90b57090-0c9c-491b-9693-5674050c7499",
+                "username": "partnergen97",
+                "firstName": "GenUser97",
+                "lastName": "Partner36",
+                "email": "partnergen97@rebike.com",
+                "phoneNumber": "08484423954",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "547d5a10-d44b-4c67-858b-9069e6e924e8",
+                "username": "customergen96",
+                "firstName": "GenUser96",
+                "lastName": "Customer24",
+                "email": "customergen96@rebike.com",
+                "phoneNumber": "08487763398",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "d47d0338-2906-42ef-94a6-ed7ef7924671",
+                "username": "partnergen95",
+                "firstName": "GenUser95",
+                "lastName": "Partner20",
+                "email": "partnergen95@rebike.com",
+                "phoneNumber": "08695764989",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "b990a2ea-7c64-4791-b0d7-d766ce655c23",
+                "username": "partnergen94",
+                "firstName": "GenUser94",
+                "lastName": "Partner98",
+                "email": "partnergen94@rebike.com",
+                "phoneNumber": "08851002934",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "3cc00ba5-99e3-4511-85bf-c4bcd7fce768",
+                "username": "customergen93",
+                "firstName": "GenUser93",
+                "lastName": "Customer36",
+                "email": "customergen93@rebike.com",
+                "phoneNumber": "08214890786",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "8ebe224a-d4dc-420c-94cd-d1631164bc03",
+                "username": "partnergen92",
+                "firstName": "GenUser92",
+                "lastName": "Partner2",
+                "email": "partnergen92@rebike.com",
+                "phoneNumber": "08466319846",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "6afe834e-c2bd-46e7-8cf3-c1bb3060d46c",
+                "username": "partnergen91",
+                "firstName": "GenUser91",
+                "lastName": "Partner37",
+                "email": "partnergen91@rebike.com",
+                "phoneNumber": "08943298971",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            },
+            {
+                "userID": "cd77f14e-ee41-45e3-8a27-d9d03f02e949",
+                "username": "partnergen90",
+                "firstName": "GenUser90",
+                "lastName": "Partner48",
+                "email": "partnergen90@rebike.com",
+                "phoneNumber": "08603246864",
+                "photoUrl": "https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png",
+                "suspensionReason": null,
+                "nonLocked": true
+            }
+        ],
+        "page": 0,
+        "size": 10,
+        "totalElements": 102,
+        "totalPages": 11
     }
 }

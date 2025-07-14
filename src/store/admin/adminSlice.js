@@ -199,11 +199,15 @@ export const fetchBusinessRecommendations = createAsyncThunk(
 
 export const suspendUser = createAsyncThunk(
     'admin/suspendUser',
-    async ({ userId, isSuspend }, { rejectWithValue }) => {
+    async ({ userId, isSuspend, reason = null }, { rejectWithValue }) => {
         try {
-            await axiosInstance.patch(`/admin/users/${userId}/suspend`, { isSuspend });
+            const body = { isSuspend };
+            if (reason !== null) {
+                body.reason = reason;
+            }
+            await axiosInstance.patch(`/admin/users/${userId}/suspend`, body);
             toast.success(`User ${isSuspend ? 'suspended' : 'unsuspended'} successfully!`);
-            return { userId, isSuspend };
+            return { userId, nonLocked: !isSuspend, suspensionReason: reason };
         } catch (error) {
             console.error("Error suspending/unsuspending user:", error);
             const errorMessage = error.response?.data?.message || `Failed to ${isSuspend ? 'suspend' : 'unsuspend'} user`;
@@ -464,7 +468,7 @@ const adminSlice = createSlice({
                 state.loading = false;
                 state.users = state.users.map((user) =>
                     user.userID === action.payload.userId
-                        ? { ...user, nonLocked: !action.payload.isSuspend }
+                        ? { ...user, nonLocked: action.payload.nonLocked, suspensionReason: action.payload.suspensionReason }
                         : user
                 );
             })

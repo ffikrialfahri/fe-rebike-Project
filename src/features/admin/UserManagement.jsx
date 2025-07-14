@@ -4,48 +4,35 @@ import ResourceTable from '../../components/shared/ResourceTable';
 import Card from "../../components/ui/Card";
 import { useDispatch } from 'react-redux';
 import { useState } from 'react';
-import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import SuspensionReasonModal from '../../components/modals/SuspensionReasonModal';
 
 export default function UserManagement() {
   const dispatch = useDispatch();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [actionType, setActionType] = useState(''); // 'suspend' or 'unsuspend'
+  const [isSuspensionModalOpen, setIsSuspensionModalOpen] = useState(false);
+  const [userToSuspend, setUserToSuspend] = useState(null);
 
-  // Data dummy untuk rekomendasi bisnis, bisa diganti dengan data dari API jika ada
-  const businessRecommendations = [
-    {
-      recommendation: 'Lakukan promosi untuk pengguna baru.',
-      reason: 'Pertumbuhan pengguna baru bulan ini melambat signifikan dibandingkan bulan lalu.',
-      severity: 'HIGH',
-    },
-    {
-      recommendation: 'Optimalkan harga sewa motor di akhir pekan.',
-      reason: 'Tingkat pemanfaatan motor rendah pada hari Sabtu dan Minggu.',
-      severity: 'MEDIUM',
-    },
-  ];
-
-  const handleSuspendUser = (userId, isSuspend) => {
-    setSelectedUser({ userId, isSuspend });
-    setActionType(isSuspend ? 'unsuspend' : 'suspend');
-    setIsModalOpen(true);
+  const handleSuspendUser = (user) => {
+    setUserToSuspend(user);
+    setIsSuspensionModalOpen(true);
   };
 
-  const confirmSuspendUser = async () => {
-    if (selectedUser) {
-      await dispatch(suspendUser(selectedUser));
-      dispatch(fetchUsers({ page: 0, size: 20 })); // Re-fetch users after successful suspend/unsuspend
-      setIsModalOpen(false);
-      setSelectedUser(null);
-      setActionType('');
+  const handleUnsuspendUser = async (user) => {
+    await dispatch(suspendUser({ userId: user.userID, isSuspend: false, reason: "" }));
+    dispatch(fetchUsers({ page: 0, size: 20 })); // Re-fetch users after successful unsuspend
+  };
+
+  const confirmSuspension = async (reason) => {
+    if (userToSuspend) {
+      await dispatch(suspendUser({ userId: userToSuspend.userID, isSuspend: true, reason }));
+      dispatch(fetchUsers({ page: 0, size: 20 })); // Re-fetch users after successful suspend
+      setIsSuspensionModalOpen(false);
+      setUserToSuspend(null);
     }
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedUser(null);
-    setActionType('');
+  const closeSuspensionModal = () => {
+    setIsSuspensionModalOpen(false);
+    setUserToSuspend(null);
   };
 
   const columns = [
@@ -68,7 +55,9 @@ export default function UserManagement() {
                 item.nonLocked ? 'bg-green-200' : 'bg-red-200'
               }`}
             ></span>
-            <span className="relative">{item.nonLocked ? 'Aktif' : 'Suspended'}</span>
+            <span className="relative">
+              {item.nonLocked ? 'Aktif' : `Suspended${item.suspensionReason ? `: ${item.suspensionReason}` : ''}`}
+            </span>
           </span>
         ),
     },
@@ -78,7 +67,7 @@ export default function UserManagement() {
           <div className="flex items-center space-x-4">
             {item.nonLocked ? (
               <button
-                onClick={() => handleSuspendUser(item.userID, false)}
+                onClick={() => handleSuspendUser(item)}
                 className="text-red-600 hover:text-red-800"
                 title="Suspend Pengguna"
               >
@@ -86,7 +75,7 @@ export default function UserManagement() {
               </button>
             ) : (
               <button
-                onClick={() => handleSuspendUser(item.userID, true)}
+                onClick={() => handleUnsuspendUser(item)}
                 className="text-green-600 hover:text-green-800"
                 title="Aktifkan Pengguna"
               >
@@ -121,11 +110,11 @@ export default function UserManagement() {
           emptyMessage="Tidak ada data pengguna yang ditemukan."
         />
         
-        <ConfirmationModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          onConfirm={confirmSuspendUser}
-          message={`Apakah Anda yakin ingin ${actionType === 'suspend' ? 'menangguhkan' : 'mengaktifkan'} pengguna ini?`}
+        <SuspensionReasonModal
+          isOpen={isSuspensionModalOpen}
+          onClose={closeSuspensionModal}
+          onConfirm={confirmSuspension}
+          currentStatus={userToSuspend?.nonLocked ? 'Aktif' : 'Suspended'}
         />
       </div>
     </div>

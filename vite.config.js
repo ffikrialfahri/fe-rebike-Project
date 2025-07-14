@@ -16,14 +16,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://ede2b2067ac3.ngrok-free.app',
+        target: 'https://69392b5acc37.ngrok-free.app',
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            if (req.url.includes('/admin/partners/') && req.url.includes('/verify')) {
-              proxyReq.removeHeader('Origin');
-            }
+            proxyReq.removeHeader('Origin');
           });
         },
       },

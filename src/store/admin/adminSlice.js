@@ -195,6 +195,22 @@ export const fetchBusinessRecommendations = createAsyncThunk(
     }
 );
 
+export const suspendUser = createAsyncThunk(
+    'admin/suspendUser',
+    async ({ userId, isSuspend }, { rejectWithValue }) => {
+        try {
+            await axiosInstance.patch(`/admin/users/${userId}/suspend`, { isSuspend });
+            toast.success(`User ${isSuspend ? 'suspended' : 'unsuspended'} successfully!`);
+            return { userId, isSuspend };
+        } catch (error) {
+            console.error("Error suspending/unsuspending user:", error);
+            const errorMessage = error.response?.data?.message || `Failed to ${isSuspend ? 'suspend' : 'unsuspend'} user`;
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
 export const updateUserProfile = createAsyncThunk(
     'admin/updateUserProfile',
     async (userData, { rejectWithValue }) => {
@@ -435,6 +451,22 @@ const adminSlice = createSlice({
                 // Password change successful, no state update needed for data
             })
             .addCase(changeUserPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(suspendUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(suspendUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.users = state.users.map((user) =>
+                    user.userID === action.payload.userId
+                        ? { ...user, nonLocked: !action.payload.isSuspend }
+                        : user
+                );
+            })
+            .addCase(suspendUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

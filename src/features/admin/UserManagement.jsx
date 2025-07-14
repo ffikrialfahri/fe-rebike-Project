@@ -1,11 +1,16 @@
-import { fetchUsers } from '../../store/admin/adminSlice';
+import { fetchUsers, suspendUser } from '../../store/admin/adminSlice';
 import { Users, UserRoundX, Hand } from 'lucide-react';
 import ResourceTable from '../../components/shared/ResourceTable';
 import Card from "../../components/ui/Card";
 import { useDispatch } from 'react-redux';
+import { useState } from 'react';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 export default function UserManagement() {
   const dispatch = useDispatch();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [actionType, setActionType] = useState(''); // 'suspend' or 'unsuspend'
 
   // Data dummy untuk rekomendasi bisnis, bisa diganti dengan data dari API jika ada
   const businessRecommendations = [
@@ -21,10 +26,26 @@ export default function UserManagement() {
     },
   ];
 
-  const handleSuspendUser = (userId, isEnabled) => {
-    // Aksi suspend kosong untuk saat ini
-    console.log(`Suspend user with ID: ${userId}, current status: ${isEnabled}`);
-    // Nanti akan ditambahkan dispatch(updateUserStatus({ userId, isEnabled: !isEnabled }));
+  const handleSuspendUser = (userId, isSuspend) => {
+    setSelectedUser({ userId, isSuspend });
+    setActionType(isSuspend ? 'unsuspend' : 'suspend');
+    setIsModalOpen(true);
+  };
+
+  const confirmSuspendUser = async () => {
+    if (selectedUser) {
+      await dispatch(suspendUser(selectedUser));
+      dispatch(fetchUsers({ page: 0, size: 20 })); // Re-fetch users after successful suspend/unsuspend
+      setIsModalOpen(false);
+      setSelectedUser(null);
+      setActionType('');
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+    setActionType('');
   };
 
   const columns = [
@@ -34,20 +55,20 @@ export default function UserManagement() {
     { header: 'Nomor Telepon', accessor: (item) => item.phoneNumber },
     {
         header: 'Status',
-        accessor: (item) => item.isEnabled ? 'Aktif' : 'Suspended',
+        accessor: (item) => item.nonLocked ? 'Aktif' : 'Suspended',
         cell: (item) => (
           <span
             className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
-              item.isEnabled ? 'text-green-900' : 'text-red-900'
+              item.nonLocked ? 'text-green-900' : 'text-red-900'
             }`}
           >
             <span
               aria-hidden
               className={`absolute inset-0 opacity-50 rounded-full ${
-                item.isEnabled ? 'bg-green-200' : 'bg-red-200'
+                item.nonLocked ? 'bg-green-200' : 'bg-red-200'
               }`}
             ></span>
-            <span className="relative">{item.isEnabled ? 'Aktif' : 'Suspended'}</span>
+            <span className="relative">{item.nonLocked ? 'Aktif' : 'Suspended'}</span>
           </span>
         ),
     },
@@ -55,16 +76,23 @@ export default function UserManagement() {
         header: 'Aksi',
         cell: (item) => (
           <div className="flex items-center space-x-4">
-            <button
-              onClick={() => handleSuspendUser(item.userID, item.isEnabled)}
-              className={`text-red-600 hover:text-red-800 ${
-                item.isEnabled ? '' : 'opacity-50 cursor-not-allowed'
-              }`}
-              title={item.isEnabled ? 'Suspend Pengguna' : 'Pengguna Sudah Disuspend'}
-              disabled={!item.isEnabled}
-            >
-              <UserRoundX size={20} />
-            </button>
+            {item.nonLocked ? (
+              <button
+                onClick={() => handleSuspendUser(item.userID, false)}
+                className="text-red-600 hover:text-red-800"
+                title="Suspend Pengguna"
+              >
+                <UserRoundX size={20} />
+              </button>
+            ) : (
+              <button
+                onClick={() => handleSuspendUser(item.userID, true)}
+                className="text-green-600 hover:text-green-800"
+                title="Aktifkan Pengguna"
+              >
+                <Hand size={20} />
+              </button>
+            )}
           </div>
         ),
         accessor: (item) => item.userID, // or any unique identifier
@@ -93,6 +121,12 @@ export default function UserManagement() {
           emptyMessage="Tidak ada data pengguna yang ditemukan."
         />
         
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onConfirm={confirmSuspendUser}
+          message={`Apakah Anda yakin ingin ${actionType === 'suspend' ? 'menangguhkan' : 'mengaktifkan'} pengguna ini?`}
+        />
       </div>
     </div>
   );

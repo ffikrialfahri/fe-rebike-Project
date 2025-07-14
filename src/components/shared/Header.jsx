@@ -39,12 +39,12 @@ export default function Header({ onLoginClick }) {
               </HashLink>
             ))}
           </nav>
-          {/* <button
+          <button
             onClick={onLoginClick}
             className="border border-teal-600 text-teal-600 font-semibold px-4 py-2 rounded-lg hover:bg-teal-50 transition"
           >
             Login
-          </button> */}
+          </button>
           <button className="md:hidden" onClick={toggleMobileMenu}>
             <Menu size={24} />
           </button>

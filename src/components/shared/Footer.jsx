@@ -1,3 +1,5 @@
+import { Facebook, Instagram, Twitter, Mail, Phone } from "lucide-react";
+
 export default function Footer() {
   return (
     <footer id="footer" className="bg-slate-800 text-white">
@@ -44,30 +46,34 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Kontak</h3>
             <ul className="space-y-2 text-sm">
-              <li className="text-slate-400">📧 support@re-bike.com</li>
-              <li className="text-slate-400">📞 +62 812 3456 7890</li>
+              <li className="flex items-center text-slate-400">
+                <Mail className="w-4 h-4 mr-2" /> official.rebike@gmail.com
+              </li>
+              <li className="flex items-center text-slate-400">
+                <Phone className="w-4 h-4 mr-2" /> 0838-0954-5147
+              </li>
             </ul>
           </div>
           <div>
             <h3 className="font-semibold mb-4">Media Sosial</h3>
-            <div className="flex space-x-4 text-lg">
+            <div className="flex space-x-4">
               <a
                 href="#"
                 className="text-slate-400 hover:text-white transition"
               >
-                📘
+                <Facebook className="w-6 h-6" />
               </a>
               <a
                 href="#"
                 className="text-slate-400 hover:text-white transition"
               >
-                📸
+                <Instagram className="w-6 h-6" />
               </a>
               <a
                 href="#"
                 className="text-slate-400 hover:text-white transition"
               >
-                🐦
+                <Twitter className="w-6 h-6" />
               </a>
             </div>
           </div>

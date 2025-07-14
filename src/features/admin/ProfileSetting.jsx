@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Card from "../../components/ui/Card";
-import { UserCog } from 'lucide-react';
+import { UserCog, ArrowRight } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserProfile, fetchPlatformFee, updatePlatformFee } from '../../store/admin/adminSlice';
 import toast from 'react-hot-toast';
@@ -136,9 +136,10 @@ export default function ProfileSetting() {
           </div>
           <button
             onClick={() => setIsPasswordModalOpen(true)}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-300"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-blue-500 text-white ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
           >
-            User Settings -&gt;
+            <span>User Settings</span>
+            <ArrowRight className="w-4 h-4 ml-2" />
           </button>
         </div>
       </Card>
@@ -152,9 +153,10 @@ export default function ProfileSetting() {
           </div>
           <button
             onClick={handleUpdateFeeClick}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-300"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm bg-blue-500 text-white font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
           >
-            Setting Fee -&gt;
+            <span>Setting Fee</span>
+            <ArrowRight className="w-4 h-4 ml-2" />
           </button>
         </div>
       </Card>

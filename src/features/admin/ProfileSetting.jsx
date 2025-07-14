@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateUserProfile, fetchPlatformFee, updatePlatformFee } from '../../store/admin/adminSlice';
 import toast from 'react-hot-toast';
 import UpdateFeeModal from '../../components/modals/UpdateFeeModal';
+import axios from '../../api/axios';
 
 export default function ProfileSetting() {
   const dispatch = useDispatch();
@@ -16,6 +17,11 @@ export default function ProfileSetting() {
     lastName: '',
     phoneNumber: '',
     file: null,
+  });
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
   const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
 
@@ -46,13 +52,45 @@ export default function ProfileSetting() {
     }
   };
 
-  const handleUpdateProfile = async (e) => {
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmitProfile = async (e) => {
     e.preventDefault();
     try {
       await dispatch(updateUserProfile(profileData)).unwrap();
       toast.success('Profil berhasil diperbarui!');
     } catch (err) {
       toast.error(`Gagal memperbarui profil: ${err.message || err}`);
+    }
+  };
+
+  const handleSubmitPassword = async (e) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('Konfirmasi password baru tidak cocok.');
+      return;
+    }
+
+    try {
+      await axios.patch('/user/password', {
+        oldPassword: passwordData.oldPassword,
+        newPassword: passwordData.newPassword,
+        confirmPassword: passwordData.confirmPassword,
+      });
+      toast.success('Password berhasil diubah!');
+      setPasswordData({
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+    } catch (err) {
+      toast.error(`Gagal mengubah password: ${err.response?.data?.message || err.message || err}`);
     }
   };
 
@@ -74,7 +112,7 @@ export default function ProfileSetting() {
       {/* Informasi Profil Admin */}
       <Card className="mb-6 p-6 bg-white shadow-md rounded-lg">
         <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">Account information</h3>
-        <form onSubmit={handleUpdateProfile} className="space-y-4">
+        <form onSubmit={handleSubmitProfile} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Nama Depan</label>
             <input
@@ -127,17 +165,48 @@ export default function ProfileSetting() {
       </Card>
 
       <Card className="p-6 bg-white shadow-md rounded-lg mt-10 mb-6">
-        <div className="flex justify-between items-center">
+        <h3 className="text-xl font-semibold text-slate-700 mb-4 border-b border-gray-200 pb-2">User Settings</h3>
+        <form onSubmit={handleSubmitPassword} className="space-y-4">
           <div>
-            <h3 className="text-xl font-semibold text-slate-700">User Settings</h3>
-            <p className="text-sm text-gray-600 mt-1">Change your password</p>
+            <label className="block text-sm font-medium text-gray-700">Password Lama</label>
+            <input
+              type="password"
+              name="oldPassword"
+              value={passwordData.oldPassword}
+              onChange={handlePasswordChange}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Password Baru</label>
+            <input
+              type="password"
+              name="newPassword"
+              value={passwordData.newPassword}
+              onChange={handlePasswordChange}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Konfirmasi Password Baru</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={passwordData.confirmPassword}
+              onChange={handlePasswordChange}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
           </div>
           <button
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-300"
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
           >
-            User Settings -&gt;
+            Ganti Password
           </button>
-        </div>
+        </form>
       </Card>
 
       {/* Setting Account Fee Card */}
@@ -151,7 +220,7 @@ export default function ProfileSetting() {
             onClick={handleUpdateFeeClick}
             className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition duration-300"
           >
-            Setting Fee -&gt;
+            Setting Fee ->
           </button>
         </div>
       </Card>

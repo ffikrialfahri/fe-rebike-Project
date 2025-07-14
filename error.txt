@@ -1,312 +1,46 @@
-client:495 [vite] connecting...
-client:618 [vite] connected.
-react-dom_client.js?v=7329a4c5:17987 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
-adminSlice.js:202  PATCH http://localhost:5173/api/admin/users/4d6f0ee3-484e-4de7-b7d6-dd5e90833e0c/suspend 403 (Forbidden)
-dispatchXhrRequest @ axios.js?v=7329a4c5:1651
-xhr @ axios.js?v=7329a4c5:1531
-dispatchRequest @ axios.js?v=7329a4c5:2006
-Promise.then
-_request @ axios.js?v=7329a4c5:2209
-request @ axios.js?v=7329a4c5:2118
-httpMethod @ axios.js?v=7329a4c5:2256
-wrap @ axios.js?v=7329a4c5:8
-(anonymous) @ adminSlice.js:202
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:2345
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:2379
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1466
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1724
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1557
-dispatch @ page.bundle.js:6
-handleSuspendUser @ UserManagement.jsx:25
-onClick @ UserManagement.jsx:58
-executeDispatch @ react-dom_client.js?v=7329a4c5:11736
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-processDispatchQueue @ react-dom_client.js?v=7329a4c5:11772
-(anonymous) @ react-dom_client.js?v=7329a4c5:12182
-batchedUpdates$1 @ react-dom_client.js?v=7329a4c5:2628
-dispatchEventForPluginEventSystem @ react-dom_client.js?v=7329a4c5:11877
-dispatchEvent @ react-dom_client.js?v=7329a4c5:14792
-dispatchDiscreteEvent @ react-dom_client.js?v=7329a4c5:14773
-<button>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-cell @ UserManagement.jsx:57
-(anonymous) @ ResourceTable.jsx:230
-(anonymous) @ ResourceTable.jsx:228
-ResourceTable @ ResourceTable.jsx:226
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performSyncWorkOnRoot @ react-dom_client.js?v=7329a4c5:11635
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=7329a4c5:11536
-processRootScheduleInMicrotask @ react-dom_client.js?v=7329a4c5:11558
-(anonymous) @ react-dom_client.js?v=7329a4c5:11649
-<ResourceTable>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-UserManagement @ UserManagement.jsx:89
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=7329a4c5:11623
-performWorkUntilDeadline @ react-dom_client.js?v=7329a4c5:36
-<UserManagement>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-App @ App.jsx:61
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=7329a4c5:11623
-performWorkUntilDeadline @ react-dom_client.js?v=7329a4c5:36
-<App>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-(anonymous) @ main.jsx:16
-adminSlice.js:206 Error suspending/unsuspending user: AxiosError {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
-(anonymous) @ adminSlice.js:206
-await in (anonymous)
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:2345
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:2379
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1466
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1724
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1557
-dispatch @ page.bundle.js:6
-handleSuspendUser @ UserManagement.jsx:25
-onClick @ UserManagement.jsx:58
-executeDispatch @ react-dom_client.js?v=7329a4c5:11736
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-processDispatchQueue @ react-dom_client.js?v=7329a4c5:11772
-(anonymous) @ react-dom_client.js?v=7329a4c5:12182
-batchedUpdates$1 @ react-dom_client.js?v=7329a4c5:2628
-dispatchEventForPluginEventSystem @ react-dom_client.js?v=7329a4c5:11877
-dispatchEvent @ react-dom_client.js?v=7329a4c5:14792
-dispatchDiscreteEvent @ react-dom_client.js?v=7329a4c5:14773
-<button>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-cell @ UserManagement.jsx:57
-(anonymous) @ ResourceTable.jsx:230
-(anonymous) @ ResourceTable.jsx:228
-ResourceTable @ ResourceTable.jsx:226
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performSyncWorkOnRoot @ react-dom_client.js?v=7329a4c5:11635
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=7329a4c5:11536
-processRootScheduleInMicrotask @ react-dom_client.js?v=7329a4c5:11558
-(anonymous) @ react-dom_client.js?v=7329a4c5:11649
-<ResourceTable>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-UserManagement @ UserManagement.jsx:89
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=7329a4c5:11623
-performWorkUntilDeadline @ react-dom_client.js?v=7329a4c5:36
-<UserManagement>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-App @ App.jsx:61
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=7329a4c5:11623
-performWorkUntilDeadline @ react-dom_client.js?v=7329a4c5:36
-<App>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-(anonymous) @ main.jsx:16
-
-
-
-
-client:495 [vite] connecting...
-client:618 [vite] connected.
-react-dom_client.js?v=7329a4c5:17987 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
-adminSlice.js:202  PATCH http://localhost:5173/api/admin/users/4d6f0ee3-484e-4de7-b7d6-dd5e90833e0c/suspend 403 (Forbidden)
-dispatchXhrRequest @ axios.js?v=7329a4c5:1651
-xhr @ axios.js?v=7329a4c5:1531
-dispatchRequest @ axios.js?v=7329a4c5:2006
-Promise.then
-_request @ axios.js?v=7329a4c5:2209
-request @ axios.js?v=7329a4c5:2118
-httpMethod @ axios.js?v=7329a4c5:2256
-wrap @ axios.js?v=7329a4c5:8
-(anonymous) @ adminSlice.js:202
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:2345
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:2379
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1466
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1724
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1557
-dispatch @ page.bundle.js:6
-handleSuspendUser @ UserManagement.jsx:25
-onClick @ UserManagement.jsx:58
-executeDispatch @ react-dom_client.js?v=7329a4c5:11736
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-processDispatchQueue @ react-dom_client.js?v=7329a4c5:11772
-(anonymous) @ react-dom_client.js?v=7329a4c5:12182
-batchedUpdates$1 @ react-dom_client.js?v=7329a4c5:2628
-dispatchEventForPluginEventSystem @ react-dom_client.js?v=7329a4c5:11877
-dispatchEvent @ react-dom_client.js?v=7329a4c5:14792
-dispatchDiscreteEvent @ react-dom_client.js?v=7329a4c5:14773
-<button>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-cell @ UserManagement.jsx:57
-(anonymous) @ ResourceTable.jsx:230
-(anonymous) @ ResourceTable.jsx:228
-ResourceTable @ ResourceTable.jsx:226
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performSyncWorkOnRoot @ react-dom_client.js?v=7329a4c5:11635
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=7329a4c5:11536
-processRootScheduleInMicrotask @ react-dom_client.js?v=7329a4c5:11558
-(anonymous) @ react-dom_client.js?v=7329a4c5:11649
-<ResourceTable>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-UserManagement @ UserManagement.jsx:89
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=7329a4c5:11623
-performWorkUntilDeadline @ react-dom_client.js?v=7329a4c5:36
-<UserManagement>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-App @ App.jsx:61
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=7329a4c5:11623
-performWorkUntilDeadline @ react-dom_client.js?v=7329a4c5:36
-<App>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-(anonymous) @ main.jsx:16
-adminSlice.js:206 Error suspending/unsuspending user: AxiosError {message: 'Request failed with status code 403', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
-(anonymous) @ adminSlice.js:206
-await in (anonymous)
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:2345
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:2379
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1466
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1724
-(anonymous) @ @reduxjs_toolkit.js?v=7329a4c5:1557
-dispatch @ page.bundle.js:6
-handleSuspendUser @ UserManagement.jsx:25
-onClick @ UserManagement.jsx:58
-executeDispatch @ react-dom_client.js?v=7329a4c5:11736
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-processDispatchQueue @ react-dom_client.js?v=7329a4c5:11772
-(anonymous) @ react-dom_client.js?v=7329a4c5:12182
-batchedUpdates$1 @ react-dom_client.js?v=7329a4c5:2628
-dispatchEventForPluginEventSystem @ react-dom_client.js?v=7329a4c5:11877
-dispatchEvent @ react-dom_client.js?v=7329a4c5:14792
-dispatchDiscreteEvent @ react-dom_client.js?v=7329a4c5:14773
-<button>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-cell @ UserManagement.jsx:57
-(anonymous) @ ResourceTable.jsx:230
-(anonymous) @ ResourceTable.jsx:228
-ResourceTable @ ResourceTable.jsx:226
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performSyncWorkOnRoot @ react-dom_client.js?v=7329a4c5:11635
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=7329a4c5:11536
-processRootScheduleInMicrotask @ react-dom_client.js?v=7329a4c5:11558
-(anonymous) @ react-dom_client.js?v=7329a4c5:11649
-<ResourceTable>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-UserManagement @ UserManagement.jsx:89
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=7329a4c5:11623
-performWorkUntilDeadline @ react-dom_client.js?v=7329a4c5:36
-<UserManagement>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-App @ App.jsx:61
-react-stack-bottom-frame @ react-dom_client.js?v=7329a4c5:17424
-renderWithHooksAgain @ react-dom_client.js?v=7329a4c5:4281
-renderWithHooks @ react-dom_client.js?v=7329a4c5:4217
-updateFunctionComponent @ react-dom_client.js?v=7329a4c5:6619
-beginWork @ react-dom_client.js?v=7329a4c5:7654
-runWithFiberInDEV @ react-dom_client.js?v=7329a4c5:1485
-performUnitOfWork @ react-dom_client.js?v=7329a4c5:10868
-workLoopSync @ react-dom_client.js?v=7329a4c5:10728
-renderRootSync @ react-dom_client.js?v=7329a4c5:10711
-performWorkOnRoot @ react-dom_client.js?v=7329a4c5:10330
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=7329a4c5:11623
-performWorkUntilDeadline @ react-dom_client.js?v=7329a4c5:36
-<App>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=7329a4c5:250
-(anonymous) @ main.jsx:16
+{
+    "message": "Dashboard summary retrieved successfully.",
+    "statusCode": 200,
+    "data": {
+        "totalUsers": 102,
+        "totalPartners": 49,
+        "totalTransactions": 52,
+        "platformRevenue": 1368485.6000,
+        "userGrowth": {
+            "labels": [
+                "Feb",
+                "Mar",
+                "Apr",
+                "Mei",
+                "Jun",
+                "Jul"
+            ],
+            "data": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                102
+            ]
+        },
+        "partnerGrowth": {
+            "labels": [
+                "Feb",
+                "Mar",
+                "Apr",
+                "Mei",
+                "Jun",
+                "Jul"
+            ],
+            "data": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                49
+            ]
+        }
+    }
+}

@@ -52,6 +52,26 @@ export default function AdminDashboard() {
         tension: 0.1,
         fill: true,
       },
+      {
+        label: "Pertumbuhan Mitra",
+        data: dashboardSummary.partnerGrowth?.data || [],
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        tension: 0.1,
+        fill: true,
+      },
+      {
+        label: "Jumlah Transaksi",
+        data: dashboardSummary.userGrowth?.labels.map((_, index) => 
+          index === dashboardSummary.userGrowth.labels.length - 1 
+            ? dashboardSummary.totalTransactions 
+            : 0
+        ) || [],
+        borderColor: "rgb(54, 162, 235)",
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        tension: 0.1,
+        fill: true,
+      },
     ],
   };
 

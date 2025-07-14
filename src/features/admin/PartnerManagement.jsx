@@ -121,20 +121,6 @@ export default function PartnerManagement() {
           >
             <UserRoundX size={20} />
           </button>
-          <button
-            onClick={() => { /* Handle edit logic */ }}
-            className="text-blue-600 hover:text-blue-800"
-            title="Edit Partner"
-          >
-            <SquarePen size={20} />
-          </button>
-          <button
-            onClick={() => { /* Handle delete logic */ }}
-            className="text-red-600 hover:text-red-800"
-            title="Hapus Partner"
-          >
-            <Trash2 size={20} />
-          </button>
         </div>
       ),
       accessor: (item) => item.id,

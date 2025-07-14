@@ -22,6 +22,7 @@ import {
 // Pastikan path aset Anda benar
 import Logo2 from "@/assets/Logo2.png";
 import Logo3 from "@/assets/logo3.png";
+import bgMobileApp from "@/assets/bgMobileApp.JPG";
 
 export default function LandingPage() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -243,11 +244,15 @@ export default function LandingPage() {
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center gap-12">
               <div className="md:w-1/2 text-center">
-                <img
-                  src="https://placehold.co/350x600/c7f0ed/0d9488?text=Aplikasi+Rebike"
-                  alt="Mockup Aplikasi Rebike di Smartphone"
-                  className="inline-block rounded-3xl shadow-2xl"
-                />
+                <div className="relative mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-xl">
+                    <div className="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute"></div>
+                    <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
+                    <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
+                    <div className="h-[64px] w-[3px] bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
+                    <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white dark:bg-gray-800">
+                        <img src={bgMobileApp} className="w-full h-full object-cover" alt="Aplikasi Rebike di Smartphone" />
+                    </div>
+                </div>
               </div>
               <div className="md:w-1/2 text-center md:text-left">
                 <h2 className="text-3xl font-bold mb-4">

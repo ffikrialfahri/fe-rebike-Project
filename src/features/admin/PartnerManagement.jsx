@@ -12,10 +12,11 @@ export default function PartnerManagement() {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('allPartners');
 
-  const { partners, users, loading, error } = useSelector((state) => state.admin);
+  const { partners: allPartners, users: allUsers, loading, error } = useSelector((state) => state.admin);
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [partnerToBlock, setPartnerToBlock] = useState(null);
+  // --- PERBAIKAN 1: Mengganti nama state agar lebih jelas ---
+  const [partnerToRevoke, setPartnerToRevoke] = useState(null);
 
   const [unverifiedPartners, setUnverifiedPartners] = useState([]);
   const [loadingVerification, setLoadingVerification] = useState(true);
@@ -25,11 +26,11 @@ export default function PartnerManagement() {
   const fetchUnverifiedPartners = async () => {
     setLoadingVerification(true);
     try {
-      const response = await axios.get("/admin/partners?size=1000"); // Fetch all for client-side filtering
-      const filteredPartners = response.data.data.data.filter(
-        (partner) => !partner.isVerified // Backend uses isVerified
+      const response = await axios.get("/admin/partners?size=1000");
+      const filtered = response.data.data.data.filter(
+        (partner) => !partner.verified
       );
-      setUnverifiedPartners(filteredPartners);
+      setUnverifiedPartners(filtered);
     } catch (err) {
       setErrorVerification(err);
       toast.error("Gagal memuat data partner untuk verifikasi.");
@@ -51,9 +52,10 @@ export default function PartnerManagement() {
     try {
       await axios.patch(`/admin/partners/${partnerId}/verify`, { isVerified: true });
       toast.success("Partner berhasil diverifikasi!");
-      fetchUnverifiedPartners(); // Refresh verification list
+      setUnverifiedPartners(prev => prev.filter(p => p.id !== partnerId));
+      dispatch(fetchPartners({ page: 0, size: 1000 }));
     } catch (err) {
-      toast.error("Gagal memverifikasi partner.");
+      toast.error(`Gagal memverifikasi partner: ${err.response?.data?.message || err.message}`);
       console.error("Error verifying partner:", err);
     }
   };
@@ -62,39 +64,57 @@ export default function PartnerManagement() {
     partner.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleBlockClick = (partnerId) => {
-    setPartnerToBlock(partnerId);
+  // --- PERBAIKAN 2: Mengganti nama fungsi agar lebih jelas ---
+  const handleRevokeVerificationClick = (partner) => {
+    setPartnerToRevoke(partner);
     setIsConfirmModalOpen(true);
   };
 
-  const handleConfirmBlock = async () => {
+  // --- PERBAIKAN 3: Mengimplementasikan logika untuk mencabut verifikasi ---
+  const handleConfirmRevoke = async () => {
+    if (!partnerToRevoke) return;
+
     try {
-      // Logic for blocking user is handled in UserManagement page now.
-      // This button in partner list should probably suspend the user.
-      console.log("Blocking/Suspending partner:", partnerToBlock);
-      toast.info("Fungsi blokir/suspend akan diimplementasikan.");
+      // Panggil API untuk mengubah status verifikasi menjadi false
+      await axios.patch(`/admin/partners/${partnerToRevoke.id}/verify`, { isVerified: false });
+      toast.success(`Verifikasi untuk partner ${partnerToRevoke.name} berhasil dicabut.`);
+      
+      // Refresh data di kedua tab
+      dispatch(fetchPartners({ page: 0, size: 1000 }));
+      if (activeTab === 'verification') {
+        fetchUnverifiedPartners();
+      }
+
     } catch (err) {
-      toast.error("Gagal memblokir partner.");
+      toast.error(`Gagal mencabut verifikasi: ${err.response?.data?.message || err.message}`);
+      console.error("Error revoking verification:", err);
     } finally {
       setIsConfirmModalOpen(false);
-      setPartnerToBlock(null);
+      setPartnerToRevoke(null);
     }
   };
 
   const mergedData = useMemo(() => {
-    if (!partners.length || !users.length) {
+    if (!allPartners.length || !allUsers.length) {
       return [];
     }
-    const usersMap = new Map(users.map(user => [user.userID, user]));
-    return partners.map(partner => {
-      const correspondingUser = usersMap.get(partner.id);
-      return {
-        ...partner,
-        nonLocked: correspondingUser ? correspondingUser.nonLocked : true, // Default to true if user not found
-      };
-    }).filter(p => usersMap.has(p.id)); // Only include partners that have a corresponding user
-  }, [partners, users]);
-  
+    const usersMap = new Map(allUsers.map(user => [user.userID, user]));
+    return allPartners
+      .map(partner => {
+        const correspondingUser = usersMap.get(partner.id);
+        if (!correspondingUser) return null;
+        
+        return {
+          id: partner.id,
+          name: partner.name,
+          email: partner.email,
+          verified: partner.verified,
+          nonLocked: correspondingUser.nonLocked,
+        };
+      })
+      .filter(Boolean);
+  }, [allPartners, allUsers]);
+
   const columns = [
     { header: 'ID', accessor: (item) => item.id },
     { header: 'Nama Partner', accessor: (item) => item.name, searchable: true },
@@ -104,15 +124,15 @@ export default function PartnerManagement() {
       cell: (item) => (
         <span
           className={
-            item.isVerified // Backend uses isVerified
+            item.verified
               ? "text-green-600 font-medium"
               : "text-red-600 font-medium"
           }
         >
-          {item.isVerified ? "Terverifikasi" : "Belum Terverifikasi"}
+          {item.verified ? "Terverifikasi" : "Belum Terverifikasi"}
         </span>
       ),
-      accessor: (item) => item.isVerified,
+      accessor: (item) => item.verified,
     },
     {
       header: 'Status Suspend',
@@ -139,13 +159,16 @@ export default function PartnerManagement() {
       header: 'Aksi',
       cell: (item) => (
         <div className="flex items-center space-x-4">
-          <button
-            className="text-yellow-600 hover:text-yellow-800"
-            onClick={() => handleBlockClick(item.id)}
-            title="Nonaktifkan Partner"
-          >
-            <UserRoundX size={20} />
-          </button>
+          {item.verified && ( // Hanya tampilkan tombol jika partner sudah terverifikasi
+            <button
+              className="text-yellow-600 hover:text-yellow-800"
+              // --- PERBAIKAN 4: Panggil fungsi yang benar ---
+              onClick={() => handleRevokeVerificationClick(item)}
+              title="Cabut Verifikasi Partner"
+            >
+              <UserRoundX size={20} />
+            </button>
+          )}
         </div>
       ),
       accessor: (item) => item.id,
@@ -160,7 +183,7 @@ export default function PartnerManagement() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input
               type="text"
-              placeholder="Cari berdasarkan nama bisnis..."
+              placeholder="Cari berdasarkan nama..."
               className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -177,7 +200,7 @@ export default function PartnerManagement() {
       </Card>
       <Card className="p-4 mb-6">
         {loadingVerification ? (
-            <p className="text-center py-10">Memuat data partner...</p>
+            <p className="text-center py-10">Memuat data...</p>
         ) : errorVerification ? (
             <p className="text-center py-10 text-red-500">Error: {errorVerification.message}</p>
         ) : filteredForVerification.length > 0 ? (
@@ -271,8 +294,9 @@ export default function PartnerManagement() {
       <ConfirmationModal
         isOpen={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
-        onConfirm={handleConfirmBlock}
-        message="Fungsi blokir/suspend user dilakukan di halaman Manajemen User. Apakah Anda ingin melanjutkan?"
+        onConfirm={handleConfirmRevoke}
+        // --- PERBAIKAN 5: Pesan konfirmasi yang lebih sesuai ---
+        message={`Apakah Anda yakin ingin mencabut status verifikasi untuk partner "${partnerToRevoke?.name}"? Partner ini akan muncul kembali di tab verifikasi.`}
       />
     </>
   );

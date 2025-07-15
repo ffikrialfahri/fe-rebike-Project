@@ -1,15 +1,16 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
+import { setShowLoginModal } from "@/store/auth/authSlice";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
+  const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const location = useLocation();
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" state={{ from: location }} replace />;
-  }
+  const hasRequiredRole = requiredRole ? user?.roles?.includes(requiredRole) : true;
 
-  if (requiredRole && !user.roles?.includes(requiredRole)) {
+  if (!isAuthenticated || !hasRequiredRole) {
+    dispatch(setShowLoginModal({ isOpen: true, redirectTo: location.pathname }));
     return <Navigate to="/" replace />;
   }
 

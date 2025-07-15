@@ -48,7 +48,7 @@ const AuthButton = ({ disabled, children, className = "" }) => (
 export default function LoginPage({ isOpen, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error: reduxError } = useSelector((state) => state.auth);
+  const { loading, error: reduxError, redirectTo } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -72,7 +72,7 @@ export default function LoginPage({ isOpen, onClose }) {
         onSuccess: (user) => {
           if (user && user.roles) {
             if (user.roles.includes("ROLE_ADMIN")) {
-              navigate("/admin/dashboard", { replace: true });
+              navigate(redirectTo || "/admin/dashboard", { replace: true });
               onClose();
             } else if (user.roles.includes("ROLE_PARTNER")) {
               dispatch(setShowMitraInfoModal(true));

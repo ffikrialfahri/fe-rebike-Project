@@ -2,14 +2,14 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import MitraInfoPage from "./components/pages/Mitra/MitraInfoPage.jsx";
-import { setShowMitraInfoModal } from "./store/auth/authSlice";
+import { setShowMitraInfoModal, setShowLoginModal } from "./store/auth/authSlice";
 
 // Layout Panel
 import AdminPanel from "./components/pages/Admin/AdminPanel.jsx";
 
 import LandingPage from "./components/pages/LandingPage/LandingPage.jsx";
 import RegisterPage from "./components/pages/Registrasi/RegistrasiPage.jsx";
-import AdminLoginPage from "./components/pages/Admin/AdminLoginPages.jsx";
+import LoginPage from "./components/pages/Login/LoginPage.jsx";
 
 // Komponen dan Halaman Otentikasi
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx";
@@ -31,7 +31,7 @@ import ProfileSettingAdmin from "./features/admin/ProfileSetting.jsx";
 
 function App() {
   const dispatch = useDispatch();
-  const { showMitraInfoModal } = useSelector((state) => state.auth);
+  const { showMitraInfoModal, showLoginModal } = useSelector((state) => state.auth);
 
   return (
     <>
@@ -40,7 +40,6 @@ function App() {
         {/* --- RUTE PUBLIK & OTENTIKASI --- */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login/admin" element={<AdminLoginPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
@@ -69,6 +68,10 @@ function App() {
       <MitraInfoPage
         isOpen={showMitraInfoModal}
         onClose={() => dispatch(setShowMitraInfoModal(false))}
+      />
+      <LoginPage
+        isOpen={showLoginModal}
+        onClose={() => dispatch(setShowLoginModal(false))}
       />
     </>
   );

@@ -12,6 +12,8 @@ const initialState = {
     error: null,
     verifySuccess: false,
     showMitraInfoModal: false, // New state for MitraInfoPage modal
+    showLoginModal: false, // New state for Login Modal
+    redirectTo: null, // New state to store the path to redirect after login
 };
 
 export const loginUser = createAsyncThunk(
@@ -149,6 +151,10 @@ const authSlice = createSlice({
         setShowMitraInfoModal: (state, action) => {
             state.showMitraInfoModal = action.payload;
         },
+        setShowLoginModal: (state, action) => {
+            state.showLoginModal = action.payload.isOpen;
+            state.redirectTo = action.payload.redirectTo || null;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -225,5 +231,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout, resetAuthStatus, setShowMitraInfoModal } = authSlice.actions;
+export const { logout, resetAuthStatus, setShowMitraInfoModal, setShowLoginModal } = authSlice.actions;
 export default authSlice.reducer;

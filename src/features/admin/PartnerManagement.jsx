@@ -155,24 +155,24 @@ export default function PartnerManagement() {
       ),
       accessor: (item) => (item.nonLocked ? 'Aktif' : 'Suspended'),
     },
-    {
-      header: 'Aksi',
-      cell: (item) => (
-        <div className="flex items-center space-x-4">
-          {item.verified && ( // Hanya tampilkan tombol jika partner sudah terverifikasi
-            <button
-              className="text-yellow-600 hover:text-yellow-800"
-              // --- PERBAIKAN 4: Panggil fungsi yang benar ---
-              onClick={() => handleRevokeVerificationClick(item)}
-              title="Cabut Verifikasi Partner"
-            >
-              <UserRoundX size={20} />
-            </button>
-          )}
-        </div>
-      ),
-      accessor: (item) => item.id,
-    },
+    // {
+    //   header: 'Aksi',
+    //   cell: (item) => (
+    //     <div className="flex items-center space-x-4">
+    //       {item.verified && ( // Hanya tampilkan tombol jika partner sudah terverifikasi
+    //         <button
+    //           className="text-yellow-600 hover:text-yellow-800"
+    //           // --- PERBAIKAN 4: Panggil fungsi yang benar ---
+    //           onClick={() => handleRevokeVerificationClick(item)}
+    //           title="Cabut Verifikasi Partner"
+    //         >
+    //           <UserRoundX size={20} />
+    //         </button>
+    //       )}
+    //     </div>
+    //   ),
+    //   accessor: (item) => item.id,
+    // },
   ];
 
   const renderVerificationContent = () => (
